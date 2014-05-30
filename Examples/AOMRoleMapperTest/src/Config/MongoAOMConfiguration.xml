@@ -1,0 +1,11 @@
+<Configuration>
+	<Host>localhost</Host>
+	<Database>aomtest</Database>
+ 	<EntityTypeCollectionName>EntityTypeCollection</EntityTypeCollectionName>
+	<EntityTypeToCollectionMap entityType=".*Account.*" package="banking" collection="AccountType" />
+	<EntityTypeToCollectionMap entityType="person" package="banking" collection="PersonType" />
+	<EntityTypeToCollectionMap entityType="legalEntity" package="banking" collection="PersonType" />
+	<EntityTypeToCollectionMap entityType="departmentAPatient" package="medical" collection="PartyTypeA" />
+	<EntityTypeToCollectionMap entityType="departmentBPatient" package="medical" collection="PartyTypeB" />
+	<EntityTypeToCollectionMap entityType=".*" collection="GenericType" />	
+</Configuration>

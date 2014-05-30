@@ -1,0 +1,5 @@
+<Configuration>
+    <Host>localhost</Host>
+    <Database>esfingegenexample</Database>
+    <EntityTypeCollectionName>EntityTypeCollection</EntityTypeCollectionName>
+</Configuration>

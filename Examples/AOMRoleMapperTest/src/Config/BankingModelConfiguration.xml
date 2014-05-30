@@ -1,0 +1,25 @@
+<Model>
+ 	<Data>
+ 		<EntityType name="savingsAccount" package="banking" adaptedClass="org.esfinge.aom.example.bankingsystem.accounts.AccountType">
+ 			<PropertyType name="balance" type="java.lang.Double" adaptedClass="org.esfinge.aom.example.bankingsystem.accounts.AccountPropertyType" />
+ 			<PropertyType name="yield" type="java.lang.Double" adaptedClass="org.esfinge.aom.example.bankingsystem.accounts.AccountPropertyType" />
+ 		</EntityType>
+ 		<EntityType name="checkingAccount" package="banking" adaptedClass="org.esfinge.aom.example.bankingsystem.accounts.AccountType">
+ 			<PropertyType name="balance" type="java.lang.Double" adaptedClass="org.esfinge.aom.example.bankingsystem.accounts.AccountPropertyType" />
+ 			<PropertyType name="withdrawalsWithoutFee" type="java.lang.Integer" adaptedClass="org.esfinge.aom.example.bankingsystem.accounts.AccountPropertyType" /> 			
+ 		</EntityType>
+ 		<EntityType name="person" package="banking" adaptedClass="org.esfinge.aom.example.bankingsystem.person.PersonType">
+ 			<PropertyType name="id" type="java.lang.Object" adaptedClass="org.esfinge.aom.example.bankingsystem.person.PersonPropertyType" />
+ 			<PropertyType name="name" type="java.lang.String" adaptedClass="org.esfinge.aom.example.bankingsystem.person.PersonPropertyType" />
+ 		</EntityType>
+ 		<EntityType name="legalEntity" package="banking" adaptedClass="org.esfinge.aom.example.bankingsystem.person.PersonType">
+ 			<PropertyType name="id" type="java.lang.Object" adaptedClass="org.esfinge.aom.example.bankingsystem.person.PersonPropertyType" />
+ 			<PropertyType name="companyName" type="java.lang.String" adaptedClass="org.esfinge.aom.example.bankingsystem.person.PersonPropertyType" />
+ 		</EntityType>
+ 		<Relationship>
+ 			<EntityType name="savingsAccount" package="banking">
+ 				<PropertyType name="owner" type="person" package="banking" adaptedClass="org.esfinge.aom.example.bankingsystem.accounts.AccountPropertyType"/>
+ 			</EntityType>
+ 		</Relationship>
+ 	</Data>	
+</Model>

@@ -1,0 +1,13 @@
+<Model>
+ 	<Data>
+ 		<EntityType name="departmentAPatient" package="medical" adaptedClass="org.esfinge.aom.example.medical.PartyType">
+ 			<PropertyType name="height" type="java.lang.Float" adaptedClass="org.esfinge.aom.example.medical.ObservationType" />
+ 			<PropertyType name="weight" type="java.lang.Float" adaptedClass="org.esfinge.aom.example.medical.ObservationType" />
+ 			<PropertyType name="bloodType" type="java.lang.String" adaptedClass="org.esfinge.aom.example.medical.ObservationType" />
+ 		</EntityType>
+ 		<EntityType name="departmentBPatient" package="medical" adaptedClass="org.esfinge.aom.example.medical.PartyType">
+ 			<PropertyType name="hasDiabetes" type="java.lang.Boolean" adaptedClass="org.esfinge.aom.example.medical.ObservationType" />
+ 			<PropertyType name="age" type="java.lang.Integer" adaptedClass="org.esfinge.aom.example.medical.ObservationType" /> 			
+ 		</EntityType>
+ 	</Data>	
+</Model>

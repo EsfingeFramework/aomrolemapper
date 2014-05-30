@@ -1,0 +1,29 @@
+#1 When I have some entities for some entity type and later on I delete some property type of this entity type,
+   it will give a NPE when retrieving this entity IF THIS ENTITY IS NOT ALREADY LOADED
+
+
+java.lang.NullPointerException
+	at org.esfinge.aom.model.impl.GenericProperty.setValue(GenericProperty.java:41)
+	at org.esfinge.aom.model.impl.GenericProperty.<init>(GenericProperty.java:16)
+	at org.esfinge.aom.model.impl.GenericEntity.setProperty(GenericEntity.java:69)
+	at org.esfinge.aom.manager.visitors.CreateEntityVisitor.visitProperty(CreateEntityVisitor.java:32)
+	at org.esfinge.aom.persistence.mongodb.MongoAOM.getEntity(MongoAOM.java:188)
+	at org.esfinge.aom.manager.ModelManager.getEntity(ModelManager.java:155)
+	at org.esfinge.aom.manager.ModelManager.getEntitiesForType(ModelManager.java:76)
+	at br.com.bernardorufino.esfinge.genexample.model.DataManager.getEntities(DataManager.java:56)
+	at br.com.bernardorufino.esfinge.genexample.view.data.DataTabController.updateEntitiesList(DataTabController.java:76)
+	at br.com.bernardorufino.esfinge.genexample.view.data.DataTabController.access$000(DataTabController.java:31)
+	at br.com.bernardorufino.esfinge.genexample.view.data.DataTabController$1.changed(DataTabController.java:71)
+	at br.com.bernardorufino.esfinge.genexample.view.data.DataTabController$1.changed(DataTabController.java:67)
+	at com.sun.javafx.binding.ExpressionHelper$Generic.fireValueChangedEvent(ExpressionHelper.java:367)
+	at com.sun.javafx.binding.ExpressionHelper.fireValueChangedEvent(ExpressionHelper.java:100)
+	at javafx.beans.property.ObjectPropertyBase.fireValueChangedEvent(ObjectPropertyBase.java:123)
+	at javafx.beans.property.ObjectPropertyBase.markInvalid(ObjectPropertyBase.java:130)
+	at javafx.beans.property.ObjectPropertyBase.set(ObjectPropertyBase.java:163)
+
+
+#2 When entities are already loaded, when I make modifications to the corresponding entity type,
+   they don't get updated. Maybe an update method would be useful.
+   ModelManager.getFreshEntity()
+
+#3 Renaming propertyType does not rename entity proeperties

@@ -1,0 +1,5 @@
+* Support collections as property values and relationships
+* Adapt the Accountability pattern to the property-based relationship implemented in the framework
+* Support static properties that are relationships
+* Support inheritance
+* Support entity type properties (equivalent to static attributes in object-oriented programming)

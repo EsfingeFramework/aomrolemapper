@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import javafx.scene.text.Font?><?import javafx.scene.text.Text?>
+
+<GridPane hgap="15.0" prefHeight="326.0" prefWidth="442.0" vgap="10.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="br.com.bernardorufino.esfinge.genexample.view.metadata.MetadataTabController">
+  <children>
+    <ListView fx:id="vListEntityTypes" prefHeight="269.0000999999975" prefWidth="202.0" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <GridPane id="GridPane" GridPane.columnIndex="0" GridPane.rowIndex="0">
+      <children>
+        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tipos" translateY="1.0" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="87.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+          <children>
+            <Button mnemonicParsing="false" onAction="#newEntityTypeClick" text="Novo" />
+          </children>
+        </HBox>
+      </children>
+      <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+      </columnConstraints>
+      <rowConstraints>
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+    </GridPane>
+    <GridPane hgap="10.0" vgap="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <children>
+        <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+          <children>
+            <Label alignment="CENTER_LEFT" contentDisplay="LEFT" text="Nome" textAlignment="LEFT" />
+          </children>
+        </HBox>
+        <TextField fx:id="vTextFieldName" prefHeight="22.000099999997474" prefWidth="150.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="0" />
+        <VBox id="VBox" alignment="TOP_CENTER" prefHeight="217.00009999999747" spacing="5.0" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="2">
+          <children>
+            <TableView fx:id="vTablePropertyTypes" disable="false" editable="true" prefHeight="202.0" prefWidth="195.0" tableMenuButtonVisible="false">
+              <columns>
+                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="97.0" text="Nome" fx:id="vColPropertyTypeName" />
+                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="92.0" text="Tipo" fx:id="vColPropertyTypeType" />
+              </columns>
+            </TableView>
+          </children>
+        </VBox>
+        <GridPane id="GridPane" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="1">
+          <children>
+            <HBox id="HBox" alignment="CENTER_RIGHT" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+              <children>
+                <Button id="vNewUserButton" mnemonicParsing="false" onAction="#deletePropertyTypeClick" text="Deletar" />
+              </children>
+            </HBox>
+            <Label text="Propriedades" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+          </children>
+          <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+          </rowConstraints>
+        </GridPane>
+        <HBox alignment="BOTTOM_CENTER" minHeight="19.0" prefHeight="22.0" prefWidth="195.0" spacing="4.0" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="3">
+          <children>
+            <TextField fx:id="vNewPropertyTypeName" prefHeight="23.0" prefWidth="86.0" />
+            <TextField fx:id="vNewPropertyTypeType" onAction="#addPropertyType" prefHeight="22.999900000002526" prefWidth="70.0" />
+            <Button alignment="CENTER" cache="false" contentDisplay="CENTER" defaultButton="false" graphicTextGap="4.0" minHeight="19.0" minWidth="22.0" mnemonicParsing="false" onAction="#addPropertyType" opacity="1.0" pickOnBounds="true" prefHeight="22.0" prefWidth="28.37109375" text="+" textAlignment="CENTER" textOverrun="ELLIPSIS" wrapText="false">
+              <font>
+                <Font size="12.0" />
+              </font>
+            </Button>
+          </children>
+        </HBox>
+      </children>
+      <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="109.0" minWidth="10.0" prefWidth="35.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="146.0" minWidth="10.0" prefWidth="111.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="146.0" minWidth="7.0" prefWidth="29.0" />
+      </columnConstraints>
+      <rowConstraints>
+        <RowConstraints maxHeight="76.0" minHeight="10.0" prefHeight="23.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="220.0" minHeight="0.0" prefHeight="20.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="227.0" minHeight="10.0" prefHeight="187.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="227.0" minHeight="10.0" prefHeight="22.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+    </GridPane>
+    <HBox id="HBox" alignment="CENTER_RIGHT" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+      <children>
+        <Button id="vNewUserButton" mnemonicParsing="false" onAction="#deleteEntityTypeClick" text="Deletar" />
+        <Button id="saveUserClick" cancelButton="false" defaultButton="false" mnemonicParsing="false" onAction="#saveUserClick" text="Salvar" />
+      </children>
+    </HBox>
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="215.0" minWidth="10.0" prefWidth="203.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="230.0" minWidth="10.0" prefWidth="196.0" />
+  </columnConstraints>
+  <padding>
+    <Insets bottom="2.0" left="15.0" right="15.0" top="15.0" />
+  </padding>
+  <rowConstraints>
+    <RowConstraints maxHeight="293.0" minHeight="6.0" prefHeight="22.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="293.0" minHeight="10.0" prefHeight="284.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+</GridPane>
