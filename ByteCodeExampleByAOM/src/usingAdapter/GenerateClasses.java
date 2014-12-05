@@ -18,6 +18,7 @@ import static org.objectweb.asm.Opcodes.PUTFIELD;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IProperty;
+import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -32,17 +33,20 @@ public class GenerateClasses {
 
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
-		createClassAndConstructor(cw);
+		createClassAndConstructor(cw, entity);
 
-		String className = entity.getEntityType().getName() + "BeanAdapter";
+		String className = entity.getEntityType().getName() + "AOMBeanAdapter";
 		
 		//className and properties are OK !
 		//System.out.println("className " + className);
 		//System.out.println("Properties " + entity.getProperties().toString());
 		
 		for(IProperty p : entity.getProperties()){
-			
-			createGetter(className, cw, p.getName(), (Class<?>) p.getPropertyType().getType());
+			Class<?> type = Object.class;
+			if(p.getPropertyType() != null){
+				type = (Class<?>) p.getPropertyType().getType();
+			}
+			createGetter(className, cw, p.getName(), type);
 		  //createGetter(String classname, ClassWriter cw, String prop, Class<?> propertyClass)
 			
 			createSetter(p.getName(), cw, p.getName());
@@ -63,7 +67,7 @@ public class GenerateClasses {
 
 	}
 
-	protected void createClassAndConstructor(ClassWriter cw) {
+	protected void createClassAndConstructor(ClassWriter cw, IEntity entity) throws EsfingeAOMException {
 
 		/*
 		cw.visit(52, ACC_PUBLIC + ACC_SUPER, name, null, "java/lang/Object",
@@ -87,7 +91,7 @@ public class GenerateClasses {
 		mv.visitEnd();
 	*/
 		
-		cw.visit(52, ACC_PUBLIC + ACC_SUPER, "usingAdapter/FuncionarioBeanAdapter", null, "java/lang/Object", null);
+		cw.visit(51, ACC_PUBLIC + ACC_SUPER, entity.getEntityType().getName() + "AOMBeanAdapter", null, "java/lang/Object", null);
 		
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null,
 				null);
@@ -111,7 +115,7 @@ public class GenerateClasses {
 //		mv.visitLineNumber(12, l1);
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitVarInsn(ALOAD, 1);
-		mv.visitFieldInsn(PUTFIELD, "usingAdapter/FuncionarioBeanAdapter", "entity", "Lorg/esfinge/aom/api/model/IEntity;");
+		mv.visitFieldInsn(PUTFIELD, entity.getEntityType().getName() + "AOMBeanAdapter", "entity", "Lorg/esfinge/aom/api/model/IEntity;");
 //		Label l2 = new Label();
 //		mv.visitLabel(l2);
 //		mv.visitLineNumber(13, l2);

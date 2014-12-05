@@ -22,14 +22,14 @@ public class TestGenerateBean {
 		GenerateClasses gc = new GenerateClasses();
 		
 		// uncomment next line
-	  //Object generatedAdapter = gc.generate(entity);
+	    Object generatedAdapter = gc.generate(entity);
 		
 		Object handMadeAdapter = new FuncionarioBeanAdapter(entity); 
 		
 		System.out.println("----------------------Hand Made");
 		printClass(handMadeAdapter);
 		System.out.println("----------------------Generated");
-	  //printClass(generatedAdapter);
+	    printClass(generatedAdapter);
 		
 		
 //		System.out.println("\n");
