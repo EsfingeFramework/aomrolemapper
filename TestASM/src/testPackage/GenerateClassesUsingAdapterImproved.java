@@ -16,7 +16,7 @@ public class GenerateClassesUsingAdapterImproved {
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
 		String name = entity.getEntityType().getName() + "AOMBeanAdapter";
-		
+
 		createPrivateAttribute(null, cw);
 		createClassAndConstructor(name, cw);
 
@@ -26,24 +26,26 @@ public class GenerateClassesUsingAdapterImproved {
 				type = (Class<?>) p.getPropertyType().getType();
 			}
 
+
+			
 			createGetter(name, cw, p.getName());
 			// createGetter(String classname, ClassWriter cw, String prop)
 
 			createSetter(name, cw, p.getName());
 			// createSetter(String name, ClassWriter cw, String prop)
-			// }
+			
 
 		}
 
 		DynamicClassLoader cl = new DynamicClassLoader();
 		Class clazz = cl.defineClass(name, cw.toByteArray());
-		
+
 		Object obj = clazz.getConstructor(IEntity.class).newInstance(entity);
 
 		return obj;
 
 	}
-	
+
 	private void createPrivateAttribute(String property, ClassWriter cw) {
 
 		FieldVisitor fv = cw.visitField(ACC_PRIVATE, "entity",
@@ -51,50 +53,54 @@ public class GenerateClassesUsingAdapterImproved {
 		fv.visitEnd();
 
 	}
-	
+
 	protected void createClassAndConstructor(String name, ClassWriter cw) {
 
-		cw.visit(52, ACC_PUBLIC + ACC_SUPER, name, null, "java/lang/Object", null);
+		cw.visit(52, ACC_PUBLIC + ACC_SUPER, name, null, "java/lang/Object",
+				null);
 
 		cw.visitSource("TestClassBeanAdapter.java", null);
-		
-		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(Lorg/esfinge/aom/api/model/IEntity;)V", null, null);
+
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>",
+				"(Lorg/esfinge/aom/api/model/IEntity;)V", null, null);
 		mv.visitCode();
-		
+
 		mv.visitVarInsn(ALOAD, 0);
-		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-		
+		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V",
+				false);
+
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitVarInsn(ALOAD, 1);
-		mv.visitFieldInsn(PUTFIELD, name, "entity", "Lorg/esfinge/aom/api/model/IEntity;");
-		
+		mv.visitFieldInsn(PUTFIELD, name, "entity",
+				"Lorg/esfinge/aom/api/model/IEntity;");
+
 		mv.visitInsn(RETURN);
-				
+
 		mv.visitMaxs(2, 2);
 		mv.visitEnd();
-		//---------Empty Constructor
+		// -------------------Empty Constructor
 		mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
 		mv.visitCode();
-		
+
 		mv.visitVarInsn(ALOAD, 0);
-		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-		
+		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V",
+				false);
+
 		mv.visitInsn(RETURN);
-				
+
 		mv.visitMaxs(1, 1);
 		mv.visitEnd();
-		
-	}
 
-	
+	}
 
 	private void createGetter(String name, ClassWriter cw, String prop) {
 
 		String propCaptalized = prop.substring(0, 1).toUpperCase()
 				+ prop.substring(1);
-
+		
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + propCaptalized,
 				"()Ljava/lang/Object;", null, null);
+		
 		mv.visitCode();
 
 		mv.visitVarInsn(ALOAD, 0);
@@ -108,7 +114,7 @@ public class GenerateClassesUsingAdapterImproved {
 		mv.visitMethodInsn(INVOKEINTERFACE,
 				"org/esfinge/aom/api/model/IProperty", "getValue",
 				"()Ljava/lang/Object;", true);
-
+		
 		mv.visitInsn(ARETURN);
 
 		mv.visitVarInsn(ASTORE, 1);
@@ -174,7 +180,6 @@ public class GenerateClassesUsingAdapterImproved {
 		mv.visitMaxs(3, 3);
 		mv.visitEnd();
 
-		
 	}
 
 }

@@ -10,7 +10,13 @@ public class SimpleClass {
 	public void setProperty(Object property) {
 		this.property = property;
 	}
-
+	
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return super.toString();
+	}
 }
 
 

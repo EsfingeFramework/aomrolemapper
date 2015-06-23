@@ -11,7 +11,7 @@ import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.model.impl.GenericEntityType;
 import org.esfinge.aom.model.impl.GenericPropertyType;
 
-public class TestGenerateBean {
+public class CopyOfTestGenerateBean {
 
 	public static void main(String[] args) throws Exception {
 
@@ -28,16 +28,12 @@ public class TestGenerateBean {
 		entity.setProperty("height", 1.8);
 		entity.setProperty("name", "João");
 		
-		GenerateClassesUsingAdapterImprovedV3 gc = new GenerateClassesUsingAdapterImprovedV3();
+		BeanFactory gc = new BeanFactory();
 		
 		Object obj = gc.generate(entity, true);
 
 		System.out.println("----------------------Generated");
 		printClass(obj);
-
-		System.out.println("----------------------HandMade");
-		Object handMadeAdapter = new TestClassBeanAdapter(entity);
-		printClass2(handMadeAdapter);
 
 	}
 
