@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import testPackage.BeanFactory;
 import testPackage.GenerateClassesUsingAdapterImprovedV2;
-import testPackage.GenerateClassesUsingAdapterImprovedV3;
+import testPackage.AdapterFactory;
 import testPackage.TestClass;
 
 public class CopyOfComparingObjects {

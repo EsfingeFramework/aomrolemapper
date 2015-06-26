@@ -26,9 +26,9 @@ public class TestGenerateBean {
 		IEntity entity = entityType.createNewEntity();
 		entity.setProperty("number", 27);
 		entity.setProperty("height", 1.8);
-		entity.setProperty("name", "João");
+		entity.setProperty("name", "Joï¿½o");
 		
-		GenerateClassesUsingAdapterImprovedV3 gc = new GenerateClassesUsingAdapterImprovedV3();
+		AdapterFactory gc = new AdapterFactory();
 		
 		Object obj = gc.generate(entity, true);
 

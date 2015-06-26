@@ -13,7 +13,7 @@ import org.esfinge.comparison.difference.Difference;
 import org.junit.Test;
 
 import testPackage.GenerateClassesUsingAdapterImprovedV2;
-import testPackage.GenerateClassesUsingAdapterImprovedV3;
+import testPackage.AdapterFactory;
 import testPackage.TestClass;
 
 public class ComparingObjects {
@@ -39,7 +39,7 @@ public class ComparingObjects {
 		entityA.setProperty("yearOfManufacturing", 1980);
 		entityA.setProperty("color", "yellow");
 
-		GenerateClassesUsingAdapterImprovedV3 gc = new GenerateClassesUsingAdapterImprovedV3();
+		AdapterFactory gc = new AdapterFactory();
 		Object objA = gc.generate(entityA);
 		
 		

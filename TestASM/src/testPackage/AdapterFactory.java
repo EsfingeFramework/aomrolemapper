@@ -26,12 +26,12 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
-public class GenerateClassesUsingAdapterImprovedV3 {
+public class AdapterFactory {
 
 	private static HashMap<String, Class> storedClasses = new HashMap<>();
 	
 	
-	public GenerateClassesUsingAdapterImprovedV3() {
+	public AdapterFactory() {
 		storedClasses.clear();
 	}
 	
