@@ -12,10 +12,10 @@ import org.esfinge.comparison.ComparisonComponent;
 import org.esfinge.comparison.difference.Difference;
 import org.junit.Test;
 
-import testPackage.BeanFactory;
-import testPackage.GenerateClassesUsingAdapterImprovedV2;
-import testPackage.AdapterFactory;
-import testPackage.TestClass;
+import br.inpe.dga.beans.TestClass;
+import br.inpe.dga.factory.AdapterFactory;
+import br.inpe.dga.factory.BeanFactory;
+import br.inpe.dga.old.factory.GenerateClassesUsingAdapterImprovedV2;
 
 public class CopyOfComparingObjects {
 	

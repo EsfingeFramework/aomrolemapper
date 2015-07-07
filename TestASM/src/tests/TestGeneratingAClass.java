@@ -11,7 +11,7 @@ import org.esfinge.aom.model.impl.GenericEntityType;
 import org.esfinge.aom.model.impl.GenericPropertyType;
 import org.junit.Test;
 
-import testPackage.AdapterFactory;
+import br.inpe.dga.factory.AdapterFactory;
 
 public class TestGeneratingAClass {
 	
@@ -45,8 +45,8 @@ public class TestGeneratingAClass {
 		entity.setProperty("internalSpace", 3.8);
 		entity.setProperty("inStock", true);
 
-		AdapterFactory gc = new AdapterFactory();
-		Object obj = gc.generate(entity, false);
+		AdapterFactory af = AdapterFactory.getInstance();;
+		Object obj = af.generate(entity, false);
 
 		assertEquals(5, entity.getProperties().size());
 

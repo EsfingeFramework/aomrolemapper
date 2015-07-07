@@ -12,9 +12,9 @@ import org.esfinge.comparison.ComparisonComponent;
 import org.esfinge.comparison.difference.Difference;
 import org.junit.Test;
 
-import testPackage.GenerateClassesUsingAdapterImprovedV2;
-import testPackage.AdapterFactory;
-import testPackage.TestClass;
+import br.inpe.dga.beans.TestClass;
+import br.inpe.dga.factory.AdapterFactory;
+import br.inpe.dga.old.factory.GenerateClassesUsingAdapterImprovedV2;
 
 public class ComparingObjects {
 	
@@ -39,8 +39,8 @@ public class ComparingObjects {
 		entityA.setProperty("yearOfManufacturing", 1980);
 		entityA.setProperty("color", "yellow");
 
-		AdapterFactory gc = new AdapterFactory();
-		Object objA = gc.generate(entityA);
+		AdapterFactory af = AdapterFactory.getInstance();;
+		Object objA = af.generate(entityA);
 		
 		
 		entityTypeB = new GenericEntityType("Car");
@@ -57,7 +57,7 @@ public class ComparingObjects {
 		entityB.setProperty("yearOfManufacturing", 1979);
 		entityB.setProperty("color", "yellow");
 
-		Object objB = gc.generate(entityB);
+		Object objB = af.generate(entityB);
 				
 		System.out
 				.println("**********************************************objA");

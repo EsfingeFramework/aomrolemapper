@@ -2,7 +2,7 @@ package tests;
 
 import static org.junit.Assert.assertEquals;
 
-import org.esfinge.aom.api.model.IEntity;
+import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.impl.GenericEntityType;
@@ -14,7 +14,7 @@ public class TestAddingPropertiesToAnEntitty {
 	@Test	
 	public void testAddingPropertiesToAnEntitty() throws EsfingeAOMException {
 		IEntityType entityType;
-		IEntity entity;
+		HasProperties entity;
 
 		entityType = new GenericEntityType("Car");
 
