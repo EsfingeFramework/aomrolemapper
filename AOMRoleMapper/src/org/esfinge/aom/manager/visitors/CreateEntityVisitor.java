@@ -1,6 +1,7 @@
 package org.esfinge.aom.manager.visitors;
 
 import org.esfinge.aom.api.manager.visitors.IEntityVisitor;
+import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
@@ -39,7 +40,7 @@ public class CreateEntityVisitor implements IEntityVisitor {
 	@Override
 	public void visitRelationship(String propertyName, String entityTypeId, String entityId) throws EsfingeAOMException {
 		IEntityType entityType = manager.getEntityType(entityTypeId);
-		IEntity relatedEntity = manager.getEntity(entityType, entityId);
+		HasProperties relatedEntity = manager.getEntity(entityType, entityId);
 		entity.setProperty(propertyName, relatedEntity);
 	}
 

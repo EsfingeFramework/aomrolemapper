@@ -4,12 +4,15 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.manager.fake.FakeModelRetriever;
 import org.esfinge.aom.model.impl.GenericEntityType;
 import org.esfinge.aom.model.impl.GenericPropertyType;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ModelManagerTest {
@@ -24,20 +27,27 @@ public class ModelManagerTest {
 		modelRetriever = (FakeModelRetriever)manager.getModelRetriever();
 	}
 	
+	@After
+	public void cleanModelManagerTest()
+	{
+		modelRetriever.resetAttributes();
+		manager.resetAttributes();
+	}
+	
 	@Test
 	public void testLoadModel() throws Exception 
 	{
-		modelRetriever.resetAttributes();
-		IEntityType entityType1 = new GenericEntityType("entityType1");
-		IEntityType entityType2 = new GenericEntityType("entityType2");
-		IEntityType entityType3 = new GenericEntityType("entityType3");
+		GenericEntityType entityType1 = new GenericEntityType("entityType1");
+		GenericEntityType entityType2 = new GenericEntityType("entityType2");
+		GenericEntityType entityType3 = new GenericEntityType("entityType3");
+
 		modelRetriever.save(entityType1);
 		modelRetriever.save(entityType2);
 		modelRetriever.save(entityType3);
 		
 		List<IEntityType> model = manager.loadModel();
 		Assert.assertEquals(3, model.size());
-		Assert.assertTrue(model.contains(entityType1));
+		Assert.assertTrue(model.contains(entityType1));	
 		Assert.assertTrue(model.contains(entityType2));
 		Assert.assertTrue(model.contains(entityType3));
 	}
@@ -45,7 +55,6 @@ public class ModelManagerTest {
 	@Test
 	public void testGetEntitiesForType() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityType1 = new GenericEntityType("entityType1");
 		entityType1.addPropertyType(new GenericPropertyType("id", Object.class));
 		IEntityType entityType2 = new GenericEntityType("entityType2");
@@ -73,7 +82,6 @@ public class ModelManagerTest {
 	@Test
 	public void testSave_EntityType() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityType1 = new GenericEntityType("entityType1");
 		
 		manager.save(entityType1);
@@ -85,7 +93,6 @@ public class ModelManagerTest {
 	@Test
 	public void testSave_Entity() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityType1 = new GenericEntityType("entityType1");
 		entityType1.addPropertyType(new GenericPropertyType("id", Object.class));
 		IEntity entity1 = entityType1.createNewEntity();
@@ -100,7 +107,6 @@ public class ModelManagerTest {
 	@Test
 	public void testRemove_EntityType() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityType = new GenericEntityType("entityType1");
 		IEntityType entityType2 = new GenericEntityType("entityType2");
 		modelRetriever.save(entityType);
@@ -121,7 +127,6 @@ public class ModelManagerTest {
 	@Test
 	public void testRemove_EntityTypeWithAssociatedEntities() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityType = new GenericEntityType("entityType1");
 		entityType.addPropertyType(new GenericPropertyType("id", Object.class));
 		IEntityType entityType2 = new GenericEntityType("entityType2");
@@ -150,7 +155,6 @@ public class ModelManagerTest {
 	@Test
 	public void testRemove_EntityById() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityType1 = new GenericEntityType("entityType1");
 		entityType1.addPropertyType(new GenericPropertyType("id", Object.class));
 		IEntity entity1 = entityType1.createNewEntity();
@@ -167,7 +171,6 @@ public class ModelManagerTest {
 	@Test
 	public void testRemove_Entity() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityType1 = new GenericEntityType("entityType1");
 		entityType1.addPropertyType(new GenericPropertyType("id", Object.class));
 		IEntity entity1 = entityType1.createNewEntity();
@@ -184,7 +187,6 @@ public class ModelManagerTest {
 	@Test
 	public void testSave_EntityWithoutId() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityType1 = new GenericEntityType("entityType1");
 		entityType1.addPropertyType(new GenericPropertyType("id", Object.class));
 		IEntity entity1 = entityType1.createNewEntity();
@@ -198,7 +200,6 @@ public class ModelManagerTest {
 	@Test
 	public void testGetEntityType_EntityTypeInObjectMap() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityTypeResult = new GenericEntityType("entityType1InObjectMap");
 		modelRetriever.save(entityTypeResult);
 		modelRetriever.setReturnCopy(true);
@@ -218,7 +219,6 @@ public class ModelManagerTest {
 	@Test
 	public void testGetEntityType_EntityTypeNotInObjectMap() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityTypeResult = new GenericEntityType("entityType1NotInObjectMap");
 		modelRetriever.save(entityTypeResult);
 		modelRetriever.setReturnCopy(true);
@@ -230,7 +230,6 @@ public class ModelManagerTest {
 	@Test
 	public void testGetEntity_EntityInObjectMap() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityTypeResult = new GenericEntityType("entityType1InObjectMap");
 		entityTypeResult.addPropertyType(new GenericPropertyType("id", Object.class));
 		IEntity entityResult = entityTypeResult.createNewEntity();
@@ -239,12 +238,12 @@ public class ModelManagerTest {
 		modelRetriever.setReturnCopy(true);
 		
 		// First time loaded
-		IEntity entity = manager.getEntity(entityTypeResult, 100);
+		HasProperties entity = manager.getEntity(entityTypeResult, 100);
 		Assert.assertTrue(modelRetriever.isEnteredInGetEntity());
 		modelRetriever.resetEnteredInGetEntity();
 		
 		// Second time - should not get from database
-		IEntity entity2 = manager.getEntity(entityTypeResult, 100);
+		HasProperties entity2 = manager.getEntity(entityTypeResult, 100);
 		Assert.assertFalse(modelRetriever.isEnteredInGetEntity());
 		
 		Assert.assertSame(entity, entity2);
@@ -253,17 +252,15 @@ public class ModelManagerTest {
 	@Test
 	public void testGetEntity_notFound() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityType = new GenericEntityType("package", "entityType1");
 		
-		IEntity entity = manager.getEntity(entityType, 1);		
+		HasProperties entity = manager.getEntity(entityType, 1);		
 		Assert.assertNull(entity);
 	}
 	
 	@Test
 	public void testGetEntityType_usingPackageAndName() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityType = new GenericEntityType("package", "entityType1");
 		modelRetriever.save(entityType);
 		
@@ -274,7 +271,6 @@ public class ModelManagerTest {
 	@Test
 	public void testGetEntityType_notFound() throws Exception 
 	{
-		modelRetriever.resetAttributes();
 		IEntityType entityType = new GenericEntityType("package", "entityType1");
 		modelRetriever.save(entityType);
 		

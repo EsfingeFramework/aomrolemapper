@@ -38,7 +38,7 @@ public class PropertyAnnotationReader implements IAOMMetadataReader {
 		
 		List<FieldDescriptor> propertyNameDesc = fieldAnnotationReader.getDescriptor(c, Name.class);
 				
-		if (!propertyValueDesc.isEmpty())
+		if (!propertyNameDesc.isEmpty())
 		{
 			propertyDescriptor.setNameDescriptor(propertyNameDesc.get(0));
 		}

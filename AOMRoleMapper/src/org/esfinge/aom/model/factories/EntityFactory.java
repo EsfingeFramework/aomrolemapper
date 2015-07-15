@@ -1,5 +1,6 @@
 package org.esfinge.aom.model.factories;
 
+import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
@@ -7,7 +8,7 @@ import org.esfinge.aom.model.rolemapper.core.AdapterEntity;
 
 public class EntityFactory {
 
-	public static IEntity createEntity(IEntityType entityType, Object dsObject) throws EsfingeAOMException
+	public static HasProperties createEntity(IEntityType entityType, Object dsObject) throws EsfingeAOMException
 	{
 		return AdapterEntity.getAdapter(entityType, dsObject);
 	}

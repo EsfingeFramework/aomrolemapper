@@ -2,6 +2,7 @@ package org.esfinge.aom.model.rolemapper.core;
 
 import junit.framework.Assert;
 
+import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
@@ -60,7 +61,7 @@ public class AdapterEntityTypeTest {
 		accountType.addPropertyTypes(accountPropertyType);
 		
 		AdapterEntityType entityType = AdapterEntityType.getAdapter(accountType);
-		IEntity entity = entityType.createNewEntity();
+		HasProperties entity = entityType.createNewEntity();
 		Assert.assertEquals(0, entity.getProperty("numberType").getValue());
 	}
 	
@@ -74,7 +75,7 @@ public class AdapterEntityTypeTest {
 		accountType.addPropertyTypes(accountPropertyType);
 		
 		AdapterEntityType entityType = AdapterEntityType.getAdapter(accountType);
-		IEntity entity = entityType.createNewEntity();
+		HasProperties entity = entityType.createNewEntity();
 		Assert.assertEquals((char)0, entity.getProperty("charType").getValue());
 	}
 	
@@ -88,7 +89,7 @@ public class AdapterEntityTypeTest {
 		accountType.addPropertyTypes(accountPropertyType);
 		
 		AdapterEntityType entityType = AdapterEntityType.getAdapter(accountType);
-		IEntity entity = entityType.createNewEntity();
+		HasProperties entity = entityType.createNewEntity();
 		Assert.assertFalse((Boolean)entity.getProperty("booleanType").getValue());
 	}
 	
@@ -102,7 +103,7 @@ public class AdapterEntityTypeTest {
 		accountType.addPropertyTypes(accountPropertyType);
 		
 		AdapterEntityType entityType = AdapterEntityType.getAdapter(accountType);
-		IEntity entity = entityType.createNewEntity();
+		HasProperties entity = entityType.createNewEntity();
 		Assert.assertEquals(null, entity.getProperty("objectType").getValue());
 	}
 	
@@ -116,7 +117,7 @@ public class AdapterEntityTypeTest {
 		accountType.addPropertyTypes(accountPropertyType);
 		
 		AdapterEntityType entityType = AdapterEntityType.getAdapter(accountType);
-		IEntity entity = entityType.createNewEntity();
+		HasProperties entity = entityType.createNewEntity();
 		Assert.assertEquals(null, entity.getProperty("relationshipType").getValue());
 	}
 	

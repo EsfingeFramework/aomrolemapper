@@ -2,6 +2,7 @@ package org.esfinge.aom.manager;
 
 import org.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
 import org.esfinge.aom.api.manager.visitors.IEntityVisitor;
+import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
@@ -56,7 +57,9 @@ public class ModelManager {
 	{
 		List<String> entityTypesIds = modelRetriever.getAllEntityTypeIds();
 		List<IEntityType> entityTypes = new ArrayList<IEntityType>();
-
+		
+		//testando
+		IEntityType entityType2 = getEntityType("2");
 		for (String entityTypeId : entityTypesIds)
 		{
 			IEntityType entityType = getEntityType(entityTypeId);
@@ -156,7 +159,7 @@ public class ModelManager {
      * @param entity
      * @return The fresh Entity
      */
-    public synchronized IEntity getFreshEntity(IEntity entity) throws EsfingeAOMException {
+    public synchronized HasProperties getFreshEntity(IEntity entity) throws EsfingeAOMException {
         Object id = entity.getProperty(ENTITY_ID_PROPERTY_NAME).getValue();
         loadedEntitiesMap.remove(id);
         return getEntity(entity.getEntityType(), id);
@@ -258,6 +261,11 @@ public class ModelManager {
 	public IModelRetriever getModelRetriever ()
 	{
 		return modelRetriever;
+	}
+	
+	public void resetAttributes() {
+		loadedEntitiesMap = new WeakHashMap<Object,IEntity>();
+		loadedEntityTypesMap = new WeakHashMap<String, IEntityType>();	
 	}
 	
 	private void insertIDPropertyType(IEntityType entityType) throws EsfingeAOMException {
