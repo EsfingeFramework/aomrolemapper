@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperties;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
 
 @Entity
@@ -14,10 +14,10 @@ public class Account {
 	@EntityType
 	private AccountType accountType;
 
-	@EntityProperty
+	@FixedEntityProperty
 	private int accountNumber;
 	
-	@EntityProperties
+	@EntityProperty
 	private List<AccountProperty> properties = new ArrayList<AccountProperty>();
 
 	public AccountType getAccountType() {

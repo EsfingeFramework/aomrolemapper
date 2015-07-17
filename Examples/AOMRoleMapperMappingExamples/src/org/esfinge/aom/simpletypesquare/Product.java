@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperties;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
 
 @Entity
@@ -14,10 +14,10 @@ public class Product {
 	@EntityType
 	private ProductType type;
 	
-	@EntityProperty
+	@FixedEntityProperty
 	private String productName;
 	
-	@EntityProperties
+	@EntityProperty
 	private List<Information> informations = new ArrayList<>();
 
 	public ProductType getType() {

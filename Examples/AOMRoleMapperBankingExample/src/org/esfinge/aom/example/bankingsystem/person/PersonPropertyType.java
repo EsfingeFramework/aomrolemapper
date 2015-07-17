@@ -3,7 +3,7 @@ package org.esfinge.aom.example.bankingsystem.person;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperties;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyTypeType;
@@ -11,7 +11,7 @@ import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyTypeType;
 @PropertyType
 public class PersonPropertyType {
 
-	@EntityProperties
+	@EntityProperty
 	private Set<PersonProperty> properties = new HashSet<PersonProperty>();
 
 	@Name

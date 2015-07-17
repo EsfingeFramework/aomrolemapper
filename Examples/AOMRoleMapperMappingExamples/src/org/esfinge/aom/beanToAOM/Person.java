@@ -3,21 +3,21 @@ package org.esfinge.aom.beanToAOM;
 import java.util.Date;
 
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 
 @Entity
 public class Person {
 
-	@EntityProperty
+	@FixedEntityProperty
 	private String name;
 	
-	@EntityProperty
+	@FixedEntityProperty
 	private String lastName;
 	
-	@EntityProperty
+	@FixedEntityProperty
 	private int age;
 	
-	@EntityProperty
+	@FixedEntityProperty
 	private Date bithday;
 	
 	public String getName() {

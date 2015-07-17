@@ -1,7 +1,7 @@
 package org.esfinge.aom.onlyTypeObject;
 
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
 import org.esfinge.aom.simpletypesquare.ProductType;
 
@@ -11,13 +11,13 @@ public class Person {
 	@EntityType
 	private PersonType type;
 	
-	@EntityProperty
+	@FixedEntityProperty
 	private String name;
 	
-	@EntityProperty
+	@FixedEntityProperty
 	private String lastName;
 	
-	@EntityProperty
+	@FixedEntityProperty
 	private int age;
 
 	public PersonType getType() {

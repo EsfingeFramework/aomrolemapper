@@ -5,8 +5,8 @@ import java.util.List;
 import org.esfinge.aom.api.model.rolemapper.metadata.reader.IAOMMetadataReader;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperties;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.FieldDescriptor;
@@ -27,7 +27,7 @@ public class EntityAnnotationReader implements IAOMMetadataReader {
 			entityDescriptor.setEntityTypeDescriptor(entityTypeDesc.get(0));
 		}
 		
-		List<FieldDescriptor> propertiesDesc = fieldAnnotationReader.getDescriptor(c, EntityProperties.class);
+		List<FieldDescriptor> propertiesDesc = fieldAnnotationReader.getDescriptor(c, EntityProperty.class);
 		
 		if (!propertiesDesc.isEmpty())
 		{
@@ -35,7 +35,7 @@ public class EntityAnnotationReader implements IAOMMetadataReader {
 			entityDescriptor.setDynamicPropertiesDescriptor(propertiesDesc.get(0));
 		}
 		
-		List<FieldDescriptor> propertyDesc = fieldAnnotationReader.getDescriptor(c, EntityProperty.class);
+		List<FieldDescriptor> propertyDesc = fieldAnnotationReader.getDescriptor(c, FixedEntityProperty.class);
 		
 		entityDescriptor.setFixedPropertiesDescriptor(propertyDesc);
 		

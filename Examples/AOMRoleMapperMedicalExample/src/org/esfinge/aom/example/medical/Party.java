@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperties;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
 
 @Entity
@@ -15,13 +15,13 @@ public class Party {
 	@EntityType
 	private PartyType partyType;
 
-	@EntityProperty
+	@FixedEntityProperty
 	private String name;
 	
-	@EntityProperty
+	@FixedEntityProperty
 	private Date recordDate;
 	
-	@EntityProperties
+	@EntityProperty
 	private List<Observation> observations = new ArrayList<Observation>();
 
 	public PartyType getPartyType() {

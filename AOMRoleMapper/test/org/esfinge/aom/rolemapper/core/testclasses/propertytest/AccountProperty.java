@@ -1,10 +1,10 @@
 package org.esfinge.aom.rolemapper.core.testclasses.propertytest;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperties;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyValue;
 
-@EntityProperties
+@EntityProperty
 public class AccountProperty {
 
 	@PropertyType

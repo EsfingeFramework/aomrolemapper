@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.esfinge.aom.api.model.rolemapper.metadata.reader.IAOMMetadataReader;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperties;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyTypeType;
@@ -19,7 +19,7 @@ public class PropertyTypeAnnotationReader implements IAOMMetadataReader {
 	{
 		PropertyTypeDescriptor propertyDescriptor = new PropertyTypeDescriptor();
 		
-		List<FieldDescriptor> propertiesDesc = fieldAnnotationReader.getDescriptor(c, EntityProperties.class);
+		List<FieldDescriptor> propertiesDesc = fieldAnnotationReader.getDescriptor(c, EntityProperty.class);
 		
 		if (!propertiesDesc.isEmpty())
 		{

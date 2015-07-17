@@ -1,12 +1,12 @@
 package org.esfinge.aom.onlyPropertyList;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperties;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyValue;
 import org.esfinge.aom.simpletypesquare.InformationType;
 
-@EntityProperties
+@EntityProperty
 public class FuncionarioInfo {
 
 	public FuncionarioInfo(String name, Object info) {

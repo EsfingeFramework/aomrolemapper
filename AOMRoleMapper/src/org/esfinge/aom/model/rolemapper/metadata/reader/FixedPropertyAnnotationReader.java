@@ -10,7 +10,7 @@ import java.util.Set;
 import org.esfinge.aom.api.model.rolemapper.metadata.reader.IFixedPropertyReader;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.FixedPropertyDescriptor;
 import org.scannotation.AnnotationDB;
@@ -32,7 +32,7 @@ public class FixedPropertyAnnotationReader implements IFixedPropertyReader {
 			db.setScanParameterAnnotations(false);			
 			db.scanArchives(urls);
 			Map<String, Set<String>> annotations = db.getAnnotationIndex();
-			for (String clazz : annotations.get(EntityProperty.class.getName()))
+			for (String clazz : annotations.get(FixedEntityProperty.class.getName()))
 			{
 				Class<?> c = Class.forName(clazz);				
 				if (c.isAnnotationPresent(Entity.class))
@@ -45,7 +45,7 @@ public class FixedPropertyAnnotationReader implements IFixedPropertyReader {
 						{
 							type = f.getType();
 						}
-						else if (f.isAnnotationPresent(EntityProperty.class))
+						else if (f.isAnnotationPresent(FixedEntityProperty.class))
 						{
 							fixedProperties.add(f);
 						}

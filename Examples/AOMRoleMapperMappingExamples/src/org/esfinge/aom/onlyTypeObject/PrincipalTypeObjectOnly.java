@@ -15,6 +15,7 @@ public class PrincipalTypeObjectOnly {
 		IEntityType et = AdapterEntityType.getAdapter(pt);
 		
 		Person p = new Person();
+		p.setType(pt);
 		p.setName("Maria");
 		p.setLastName("Guerra");
 		p.setAge(8);
