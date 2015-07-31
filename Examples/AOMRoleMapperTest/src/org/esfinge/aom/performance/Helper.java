@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
@@ -32,6 +33,8 @@ public class Helper {
 
 			return entityType;
 
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);		
 		} catch (EsfingeAOMException e) {
 			throw new RuntimeException(e);
 		}
@@ -109,12 +112,12 @@ public class Helper {
 			Map<String, List<String>> result) throws EsfingeAOMException {
 
 		List<IEntity> entities = manager.getEntitiesForType(entityType);
-		for (IEntity entity : entities) {
+		for (HasProperties entity : entities) {
 			populateLine(result, entity);
 		}
 	}
 
-	private void populateLine(Map<String, List<String>> result, IEntity entity)
+	private void populateLine(Map<String, List<String>> result, HasProperties entity)
 			throws EsfingeAOMException {
 		
 		for (IProperty property : entity.getProperties()) {

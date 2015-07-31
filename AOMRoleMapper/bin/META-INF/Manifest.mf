@@ -1,5 +1,1 @@
-<<<<<<< Updated upstream
 Manifest-Version: 1.0
-=======
-Manifest-Version: 1.0
->>>>>>> Stashed changes

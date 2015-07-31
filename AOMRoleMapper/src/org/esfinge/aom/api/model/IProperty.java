@@ -5,7 +5,7 @@ import org.esfinge.aom.exceptions.EsfingeAOMException;
 /**
  * Interface that defines the Property in the common AOM core structure
  */
-public interface IProperty {
+public interface IProperty{
 
 	/**
 	 * Gets the Property Type of this Property

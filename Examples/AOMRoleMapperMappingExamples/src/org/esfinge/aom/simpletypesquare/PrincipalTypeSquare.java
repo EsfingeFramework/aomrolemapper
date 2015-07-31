@@ -1,5 +1,6 @@
 package org.esfinge.aom.simpletypesquare;
 
+import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
@@ -44,7 +45,7 @@ public class PrincipalTypeSquare {
 		p.getInformations().add(new Information(author,"Filipe Melo"));
 		p.getInformations().add(new Information(year,2003));
 		
-		IEntity entity = AdapterEntity.getAdapter(null, p);
+		HasProperties entity = AdapterEntity.getAdapter(null, p);
 		
 		for(IProperty ip : entity.getProperties()){
 			System.out.println(ip.getPropertyType().getName()+" = "+ ip.getValue());

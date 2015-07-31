@@ -3,6 +3,7 @@ package org.esfinge.aom.model.rolemapper.core;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -31,6 +32,8 @@ public class AdapterEntity implements IEntity {
 	private IEntityType entityType;
 	
 	private Class<?> dsPropertiesClass;
+	
+	private Class<?> dsMapPropertiesClass;
 	
 	private static Map<Object, AdapterEntity> objectMap = new WeakHashMap<Object, AdapterEntity>();
 	
@@ -68,6 +71,11 @@ public class AdapterEntity implements IEntity {
 			
 			if(propertiesDescriptor != null)
 				dsPropertiesClass = propertiesDescriptor.getInnerFieldClass();
+			
+			FieldDescriptor mapPropertiesDescriptor = entityDescriptor.getMapPropertiesDescriptor();
+			
+			if(mapPropertiesDescriptor != null)
+				dsMapPropertiesClass = mapPropertiesDescriptor.getInnerFieldClass();
 						
 			Map<String, FieldDescriptor> fixedPropertyDescriptorMap = entityDescriptor.getFixedPropertiesDescriptors();
 			for (String fieldName : fixedPropertyDescriptorMap.keySet())
@@ -133,12 +141,14 @@ public class AdapterEntity implements IEntity {
 	}
 	
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<IProperty> getProperties() throws EsfingeAOMException {
 		try 
 		{
 			List<IPropertyType> validPropertyTypes = getEntityType().getPropertyTypes();
 			List<IProperty> properties = new ArrayList<IProperty>();
 			
+			// Dynamic properties
 			if(entityDescriptor.getDynamicPropertiesDescriptor() != null){
 				Method getPropertiesMethod = entityDescriptor.getDynamicPropertiesDescriptor().getGetFieldMethod();		
 				//TODO We consider that the ds class initializes the collection objects properly
@@ -151,6 +161,20 @@ public class AdapterEntity implements IEntity {
 					{
 						properties.add(adapterProperty);
 					}
+				}
+			}
+			
+			// Map properties
+			if(entityDescriptor.getMapPropertiesDescriptor() != null){
+				Method getPropertiesMethod = entityDescriptor.getMapPropertiesDescriptor().getGetFieldMethod();				
+				//TODO We consider that the ds class initializes the collection objects properly
+				Map dsMapProperties = (Map<String,?>) getPropertiesMethod.invoke(dsObject);				
+				Iterator iterator = dsMapProperties.entrySet().iterator();				
+				while(iterator.hasNext()){
+					Map.Entry pair = (Map.Entry) iterator.next();	
+					IProperty adapterPropertyMap = AdapterPropertyMap.getAdapter(pair.getKey(), 
+												dsMapProperties.get(pair.getKey()));					
+					properties.add(adapterPropertyMap);
 				}
 			}
 			
@@ -181,16 +205,18 @@ public class AdapterEntity implements IEntity {
 	}
 		
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void setProperty(String propertyName, Object propertyValue) throws EsfingeAOMException {		
 		
 		try 
-		{
-			
+		{			
 			IPropertyType propertyType = getPropertyType(propertyName);
 
 			if (propertyType == null){
-				if(entityDescriptor.getPropertyDescriptor().getPropertyTypeDescriptor() != null){
-					throw new EsfingeAOMException("Tried to get a property that does not exist in Entity Type");
+				if(entityDescriptor.getDynamicPropertiesDescriptor() != null){
+					if(entityDescriptor.getPropertyDescriptor().getPropertyTypeDescriptor() != null){
+						throw new EsfingeAOMException("Tried to get a property that does not exist in Entity Type");
+					}
 				}
 			}
 			
@@ -198,6 +224,12 @@ public class AdapterEntity implements IEntity {
 			{
 				if (property.getName().equals(propertyName))
 				{
+					if(entityDescriptor.getMapPropertiesDescriptor() != null){
+						Method getPropertiesMethod = entityDescriptor.getMapPropertiesDescriptor().getGetFieldMethod();
+						Map dsMapProperties = (Map<String,?>) getPropertiesMethod.invoke(dsObject);					
+						dsMapProperties.replace(propertyName, propertyValue);
+						return;
+					}
 					property.setValue(propertyValue);
 					return;
 				}
@@ -208,17 +240,24 @@ public class AdapterEntity implements IEntity {
 				IProperty property = PropertyFactory.createProperty(propertyType, propertyValue);				
 				relationshipProperties.put(propertyName, property);
 			}
-
-			Method getPropertiesMethod = entityDescriptor.getDynamicPropertiesDescriptor().getGetFieldMethod();				
-			Collection dsProperties = (Collection<?>) getPropertiesMethod.invoke(dsObject);
-			AdapterProperty property = new AdapterProperty(dsPropertiesClass.getName());
-			if(propertyType == null){
-				property.setName(propertyName);
+			
+			if(entityDescriptor.getDynamicPropertiesDescriptor() != null){
+				Method getPropertiesMethod = entityDescriptor.getDynamicPropertiesDescriptor().getGetFieldMethod();				
+				Collection dsProperties = (Collection<?>) getPropertiesMethod.invoke(dsObject);
+				AdapterProperty property = new AdapterProperty(dsPropertiesClass.getName());
+				if(propertyType == null){
+					property.setName(propertyName);
+				}else{
+					property.setPropertyType(propertyType);
+				}
+				property.setValue(propertyValue);
+				dsProperties.add(property.getAssociatedObject());	
 			}else{
-				property.setPropertyType(propertyType);
-			}
-			property.setValue(propertyValue);
-			dsProperties.add(property.getAssociatedObject());	
+				Method getPropertiesMethod = entityDescriptor.getMapPropertiesDescriptor().getGetFieldMethod();
+				Map dsMapProperties = (Map<String,?>) getPropertiesMethod.invoke(dsObject);
+				AdapterPropertyMap mapProperty = AdapterPropertyMap.getAdapter(propertyName, propertyValue);			
+				dsMapProperties.put(propertyName, mapProperty.getAssociatedObject());
+			}			
 		}
 		catch (Exception e)
 		{

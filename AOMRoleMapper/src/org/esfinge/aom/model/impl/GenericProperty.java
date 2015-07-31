@@ -1,10 +1,11 @@
 package org.esfinge.aom.model.impl;
 
+import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 
-public class GenericProperty implements IProperty {
+public class GenericProperty extends ThingWithProperties implements IProperty {
 
 	private IPropertyType propertyType;
 	
@@ -76,5 +77,9 @@ public class GenericProperty implements IProperty {
 		}
 		
 	}
-	
+
+	@Override
+	public IEntityType getEntityType() {
+		return null;
+	}
 }

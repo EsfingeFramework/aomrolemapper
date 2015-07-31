@@ -93,19 +93,21 @@ public class AdapterEntityType implements IEntityType {
 	public List<IPropertyType> getPropertyTypes() throws EsfingeAOMException {
 		List<IPropertyType> propertyTypes = new ArrayList<IPropertyType>();
 		try {
-			Method getPropertyTypesMethod = entityTypeDescriptor
-					.getPropertyTypesDescriptor().getGetFieldMethod();
-			Collection<?> dsPropertyTypes = (Collection<?>) getPropertyTypesMethod
-					.invoke(dsObject);
-			for (Object dsPropertyType : dsPropertyTypes) {
-				propertyTypes.add(AdapterPropertyType
-						.getAdapter(dsPropertyType));
+			if(entityTypeDescriptor.getPropertyTypesDescriptor()!= null){
+				Method getPropertyTypesMethod = entityTypeDescriptor
+						.getPropertyTypesDescriptor().getGetFieldMethod();
+				Collection<?> dsPropertyTypes = (Collection<?>) getPropertyTypesMethod
+						.invoke(dsObject);
+				for (Object dsPropertyType : dsPropertyTypes) {
+					propertyTypes.add(AdapterPropertyType
+							.getAdapter(dsPropertyType));
+				}
 			}
-
+			
 			// Adding the fixed property types
 			for (IPropertyType propertyType : fixedPropertyTypes.values())
 				propertyTypes.add(propertyType);
-
+			
 			return propertyTypes;
 		} catch (Exception e) {
 			throw new EsfingeAOMException(e);

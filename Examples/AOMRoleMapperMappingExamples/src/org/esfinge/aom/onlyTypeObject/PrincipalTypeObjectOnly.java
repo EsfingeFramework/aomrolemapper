@@ -22,8 +22,7 @@ public class PrincipalTypeObjectOnly {
 		
 		IEntity e = AdapterEntity.getAdapter(et, p);
 		System.out.println(e.getEntityType().getName());
-		System.out.println(e.getEntityType().getPropertyTypes().size());
-		
+		System.out.println(e.getEntityType().getPropertyTypes().size());		
 
 	}
 

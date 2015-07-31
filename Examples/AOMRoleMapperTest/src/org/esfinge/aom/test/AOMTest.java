@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Scanner;
 
+import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
@@ -333,7 +334,7 @@ public class AOMTest {
 		try
 		{
 			List<IEntity> entities = manager.getEntitiesForType(entityType);
-			for (IEntity entity : entities)
+			for (HasProperties entity : entities)
 			{
 				showEntity(entity);
 			}
@@ -462,7 +463,7 @@ public class AOMTest {
 		}
 	}
 	
-	private void showEntity (IEntity entity)
+	private void showEntity (HasProperties entity)
 	{
 		try
 		{

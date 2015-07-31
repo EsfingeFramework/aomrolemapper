@@ -6,6 +6,7 @@ import org.esfinge.aom.api.model.rolemapper.metadata.reader.IAOMMetadataReader;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityPropertyMap;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityDescriptor;
@@ -33,6 +34,14 @@ public class EntityAnnotationReader implements IAOMMetadataReader {
 		{
 			// We consider that only one field is annotated with @EntityProperties
 			entityDescriptor.setDynamicPropertiesDescriptor(propertiesDesc.get(0));
+		}
+		
+		List<FieldDescriptor> propertyMapDesc = fieldAnnotationReader.getDescriptor(c, EntityPropertyMap.class);
+		
+		if (!propertyMapDesc.isEmpty())
+		{
+			// We consider that only one field is annotated with @EntityPropertyMap
+			entityDescriptor.setMapPropertiesDescriptor(propertyMapDesc.get(0));
 		}
 		
 		List<FieldDescriptor> propertyDesc = fieldAnnotationReader.getDescriptor(c, FixedEntityProperty.class);

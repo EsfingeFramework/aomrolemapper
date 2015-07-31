@@ -7,7 +7,7 @@ import org.esfinge.aom.exceptions.EsfingeAOMException;
 /**
  * Interface that defines the Entity Type in the common AOM core structure
  */
-public interface IEntityType {
+public interface IEntityType{
 
 	/**
 	 * Gets the package name for the Entity Type

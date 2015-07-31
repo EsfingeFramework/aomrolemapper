@@ -11,7 +11,7 @@ import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 
 
-public class GenericEntityType implements IEntityType {
+public class GenericEntityType extends ThingWithProperties implements IEntityType {
 
 	private Map<String, IPropertyType> propertyTypes = new WeakHashMap<String, IPropertyType>();
 	
@@ -92,5 +92,10 @@ public class GenericEntityType implements IEntityType {
 	@Override
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
+	}
+
+	@Override
+	public IEntityType getEntityType() {
+		return null;
 	}
 }

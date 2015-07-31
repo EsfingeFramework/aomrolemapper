@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyMap;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityPropertyMap;
 
 @Entity
 public class Funcionario {
 	
-	@PropertyMap
+	@EntityPropertyMap
 	private Map<String, Object> informations = new HashMap<>();
 
 	public Map<String, Object> getInformations() {

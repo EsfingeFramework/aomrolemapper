@@ -1,6 +1,6 @@
 package org.esfinge.aom.onlyPropertyList;
 
-import org.esfinge.aom.api.model.IEntity;
+import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
@@ -12,7 +12,7 @@ public class PrincipalOnlyPropertyList {
 		Funcionario f = new Funcionario();
 		f.getInformations().add(new FuncionarioInfo("cargo", "gerente"));
 		
-		IEntity entity = AdapterEntity.getAdapter(null, f);
+		HasProperties entity = AdapterEntity.getAdapter(null, f);
 		for(IProperty p : entity.getProperties()){
 			System.out.println(p.getName() + " = "+ p.getValue());
 		}
@@ -24,8 +24,6 @@ public class PrincipalOnlyPropertyList {
 		
 		for(FuncionarioInfo fi : f.getInformations()){
 			System.out.println(fi.getName() + " = " + fi.getInfo());
-		}
-		
+		}		
 	}
-
 }

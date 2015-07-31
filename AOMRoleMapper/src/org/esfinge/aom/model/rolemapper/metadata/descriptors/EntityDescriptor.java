@@ -15,6 +15,8 @@ public class EntityDescriptor {
 	
 	private Map<String, FieldDescriptor> fixedPropertiesDescriptors = new HashMap<String, FieldDescriptor>();
 
+	private FieldDescriptor mapPropertiesDescriptor;
+
 	public FieldDescriptor getEntityTypeDescriptor() {
 		return entityTypeDescriptor;
 	}
@@ -29,6 +31,14 @@ public class EntityDescriptor {
 
 	public void setDynamicPropertiesDescriptor(FieldDescriptor dynamicPropertiesDescriptor) {
 		this.dynamicPropertiesDescriptor = dynamicPropertiesDescriptor;
+	}
+	
+	public FieldDescriptor getMapPropertiesDescriptor() {
+		return this.mapPropertiesDescriptor;		
+	}
+
+	public void setMapPropertiesDescriptor(FieldDescriptor fieldDescriptor) {
+		this.mapPropertiesDescriptor = fieldDescriptor;		
 	}
 
 	public final Map<String, FieldDescriptor> getFixedPropertiesDescriptors() {
@@ -64,5 +74,4 @@ public class EntityDescriptor {
 		Class<?> propertyClass = getDynamicPropertiesDescriptor().getInnerFieldClass();
 		return (PropertyDescriptor) PropertyMetadataRepository.getInstance().getMetadata(propertyClass);
 	}
-	
 }

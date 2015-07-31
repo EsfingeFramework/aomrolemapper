@@ -24,8 +24,6 @@ public class PrincipalOnlyPropertyMap {
 		
 		for(String propName : f.getInformations().keySet()){
 			System.out.println(propName + " = " + f.getInformations().get(propName));
-		}
-		
+		}		
 	}
-
 }

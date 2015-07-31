@@ -49,9 +49,8 @@ public class AdapterProperty implements IProperty {
 			throw new EsfingeAOMException(e);
 		}
 	}
-
 	
-	public static AdapterProperty getAdapter (Object dsProperty) throws EsfingeAOMException
+	public static AdapterProperty getAdapter(Object dsProperty) throws EsfingeAOMException
 	{
 		if (dsProperty != null)
 		{
@@ -64,7 +63,7 @@ public class AdapterProperty implements IProperty {
 
 	@Override
 	public Object getValue() throws EsfingeAOMException {
-		try {
+		try {			
 			Method getValueMethod = propertyDescriptor.getValueDescriptor().getGetFieldMethod();
 			Object dsValue = getValueMethod.invoke(dsObject);
 			if (dsValue != null)
@@ -84,8 +83,10 @@ public class AdapterProperty implements IProperty {
 	public IPropertyType getPropertyType() throws EsfingeAOMException {
 		
 		try {
-			if(propertyDescriptor.getPropertyTypeDescriptor() == null){
-				return null;
+			if(propertyDescriptor != null){
+				if(propertyDescriptor.getPropertyTypeDescriptor() == null){
+					return null;
+				}
 			}
 			Method getPropertyTypeMethod = propertyDescriptor.getPropertyTypeDescriptor().getGetFieldMethod();
 			return AdapterPropertyType.getAdapter(getPropertyTypeMethod.invoke(dsObject));
@@ -114,7 +115,7 @@ public class AdapterProperty implements IProperty {
 		{
 			throw new EsfingeAOMException("The given value " + value + " is not valid for type " + propertyType.getName());
 		}
-		
+				
 		try {
 			Object valueToSet = value;
 			
@@ -127,7 +128,7 @@ public class AdapterProperty implements IProperty {
 			setValueMethod.invoke(dsObject, valueToSet);
 		} catch (Exception e) {
 			throw new EsfingeAOMException(e);
-		}		
+		}	
 	}
 	
 	@Override
@@ -137,7 +138,7 @@ public class AdapterProperty implements IProperty {
 
 	@Override
 	public String getName() throws EsfingeAOMException {
-		try {
+		try {			
 			IPropertyType pt = getPropertyType();
 			if(pt != null)
 				return pt.getName();

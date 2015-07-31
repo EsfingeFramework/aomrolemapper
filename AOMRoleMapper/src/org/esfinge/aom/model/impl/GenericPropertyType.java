@@ -6,7 +6,7 @@ import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.utils.Utils;
 
-public class GenericPropertyType implements IPropertyType {
+public class GenericPropertyType extends ThingWithProperties implements IPropertyType {
 
 	protected String name;
 	protected Object type;
@@ -115,5 +115,10 @@ public class GenericPropertyType implements IPropertyType {
 		IEntity entity = (IEntity)value;
 		
 		return entity.getEntityType().equals(entityType);
+	}
+
+	@Override
+	public IEntityType getEntityType() {
+		return null;
 	}
 }
