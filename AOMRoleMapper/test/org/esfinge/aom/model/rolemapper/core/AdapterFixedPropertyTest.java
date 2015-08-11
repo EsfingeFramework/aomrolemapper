@@ -9,7 +9,7 @@ import org.esfinge.aom.rolemapper.core.testclasses.entitytest.AccountWithFixedPr
 import org.junit.Test;
 
 public class AdapterFixedPropertyTest {
-
+	
 	@Test
 	public void testSetValue() throws Exception 
 	{	

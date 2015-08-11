@@ -1,6 +1,7 @@
 package org.esfinge.aom.model.rolemapper.core;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
@@ -77,5 +78,31 @@ public class AdapterFixedProperty implements IProperty {
 	@Override
 	public void setName(String value) throws EsfingeAOMException {
 		throw new EsfingeAOMException("The name of a fixed property cannot be changed");
+	}
+
+	@Override
+	public List<IProperty> getProperties() throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setProperty(String propertyName, Object propertyValue)
+			throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeProperty(String propertyName) throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IProperty getProperty(String propertyName)
+			throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

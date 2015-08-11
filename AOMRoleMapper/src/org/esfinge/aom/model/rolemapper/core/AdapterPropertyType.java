@@ -1,15 +1,25 @@
 package org.esfinge.aom.model.rolemapper.core;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
+import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
+import org.esfinge.aom.model.impl.GenericPropertyType;
+import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityDescriptor;
+import org.esfinge.aom.model.rolemapper.metadata.descriptors.FieldDescriptor;
+import org.esfinge.aom.model.rolemapper.metadata.descriptors.FixedPropertyDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.PropertyTypeDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.repository.EntityTypeMetadataRepository;
+import org.esfinge.aom.model.rolemapper.metadata.repository.FixedPropertyMetadataRepository;
 import org.esfinge.aom.model.rolemapper.metadata.repository.PropertyTypeMetadataRepository;
 import org.esfinge.aom.utils.Utils;
 
@@ -18,6 +28,8 @@ public class AdapterPropertyType implements IPropertyType {
 	private Object dsObject;
 
 	private PropertyTypeDescriptor propertyTypeDescriptor;
+	
+	private Map<String, AdapterFixedProperty> fixedMetadataPerName = new WeakHashMap<String, AdapterFixedProperty>();
 	
 	private static Map<Object, AdapterPropertyType> objectMap = new WeakHashMap<Object, AdapterPropertyType>();
 	
@@ -42,6 +54,15 @@ public class AdapterPropertyType implements IPropertyType {
 			}
 			this.dsObject = dsObj;
 			objectMap.put(dsObj, this);
+			
+			List<FieldDescriptor> fixedMetadataDescriptor = propertyTypeDescriptor.getFixedMetadataDescriptor();
+			for (FieldDescriptor fixedMetadata : fixedMetadataDescriptor)
+			{
+				Class proptype = fixedMetadata.getFieldClass();
+				IPropertyType propertyType = new GenericPropertyType(fixedMetadata.getFieldName(), proptype);
+				AdapterFixedProperty property = new AdapterFixedProperty(dsObj, propertyType);
+				fixedMetadataPerName.put(fixedMetadata.getFieldName(), property);				
+			}	
 				
 		}
 		catch (Exception e)
@@ -177,5 +198,58 @@ public class AdapterPropertyType implements IPropertyType {
 		IEntity entity = (IEntity)value;
 		IEntityType valueEntityType = entity.getEntityType();
 		return valueEntityType.equals(entityType);
+	}
+
+	@Override
+	public List<IProperty> getProperties() throws EsfingeAOMException {
+		List<IProperty> result = new ArrayList<IProperty>();
+		if (propertyTypeDescriptor.getFixedMetadataDescriptor()!= null || 
+			propertyTypeDescriptor.getMetadataDescriptor() != null) {
+			try {
+				// Metadatas
+				List<FieldDescriptor> metadatas = propertyTypeDescriptor
+						.getMetadataDescriptor();
+	
+				for (FieldDescriptor metadaDescription : metadatas) {
+					Method getMetadadaMethod = metadaDescription
+							.getGetFieldMethod();
+					Object type = getMetadadaMethod.invoke(dsObject);
+					IProperty adapterProperty = AdapterProperty.getAdapter(type);
+					result.add(adapterProperty);			
+				}
+	
+				// Fixed metadatas
+				for (IProperty metadata : fixedMetadataPerName.values()) {
+					result.add(metadata);
+				}
+			} catch (Exception e) {
+				throw new EsfingeAOMException(e);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public void setProperty(String propertyName, Object propertyValue)
+			throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeProperty(String propertyName) throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IProperty getProperty(String metadataName)
+			throws EsfingeAOMException {
+		for (IProperty metadata : getProperties())
+		{
+			if (metadata.getName().equals(metadataName))
+				return metadata;
+		}
+		return null;
 	}
 }

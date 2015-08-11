@@ -215,7 +215,8 @@ public class AdapterEntity implements IEntity {
 			if (propertyType == null){
 				if(entityDescriptor.getDynamicPropertiesDescriptor() != null){
 					if(entityDescriptor.getPropertyDescriptor().getPropertyTypeDescriptor() != null){
-						throw new EsfingeAOMException("Tried to get a property that does not exist in Entity Type");
+						if(entityDescriptor.getMapPropertiesDescriptor() == null)
+							throw new EsfingeAOMException("Tried to get a property that does not exist in Entity Type");
 					}
 				}
 			}
@@ -228,7 +229,6 @@ public class AdapterEntity implements IEntity {
 						Method getPropertiesMethod = entityDescriptor.getMapPropertiesDescriptor().getGetFieldMethod();
 						Map dsMapProperties = (Map<String,?>) getPropertiesMethod.invoke(dsObject);					
 						dsMapProperties.replace(propertyName, propertyValue);
-						return;
 					}
 					property.setValue(propertyValue);
 					return;
@@ -276,16 +276,23 @@ public class AdapterEntity implements IEntity {
 		IPropertyType propertyType = getPropertyType(propertyName);
 		
 		try 
-		{				
+		{	
 			for (IProperty property : getProperties())
 			{
-				if (property.getPropertyType().equals(propertyType))
+				if(entityDescriptor.getMapPropertiesDescriptor()!= null && property.getName().equals(propertyName)){
+					Method getPropertiesMethod = entityDescriptor.getMapPropertiesDescriptor().getGetFieldMethod();				
+					Map dsMapProperties = (Map<String,?>)  getPropertiesMethod.invoke(dsObject);
+					dsMapProperties.keySet().remove(property.getName());					
+					return;
+				}
+				
+				if (property.getPropertyType()!= null && property.getPropertyType().equals(propertyType))
 				{
 					if (property instanceof AdapterProperty)
 					{
 						Method getPropertiesMethod = entityDescriptor.getDynamicPropertiesDescriptor().getGetFieldMethod();				
 						Collection dsProperties = (Collection<?>) getPropertiesMethod.invoke(dsObject);
-						dsProperties.remove(property.getAssociatedObject());
+						dsProperties.remove(property.getAssociatedObject());					
 					}
 					else if (relationshipProperties.containsKey(propertyType.getName()))
 					{
@@ -308,7 +315,6 @@ public class AdapterEntity implements IEntity {
 			if (property.getName().equals(propertyName))
 				return property;
 		}
-		
 		return null;
 	}
 	
@@ -321,5 +327,10 @@ public class AdapterEntity implements IEntity {
 	public Object getAssociatedObject() {
 		return dsObject;
 	}
-	
+
+	public static void resetAdapters() {
+		objectMap = new WeakHashMap<Object, AdapterEntity>();		
+		Class<?> dsPropertiesClass = null;
+		Class<?> dsMapPropertiesClass = null;
+	}	
 }

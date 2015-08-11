@@ -2,6 +2,7 @@ package org.esfinge.aom.model.rolemapper.core;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -158,5 +159,31 @@ public class AdapterProperty implements IProperty {
 			throw new EsfingeAOMException(e);
 		}
 		
+	}
+
+	@Override
+	public List<IProperty> getProperties() throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setProperty(String propertyName, Object propertyValue)
+			throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeProperty(String propertyName) throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IProperty getProperty(String propertyName)
+			throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

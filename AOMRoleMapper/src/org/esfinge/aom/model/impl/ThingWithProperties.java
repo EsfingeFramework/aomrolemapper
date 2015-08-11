@@ -26,36 +26,28 @@ public abstract class ThingWithProperties implements HasProperties{
 	public List<IProperty> getProperties() throws EsfingeAOMException {
 		
 		ArrayList<IProperty> result = new ArrayList<IProperty>();
-		
-		if(getEntityType() == null){
-			//Esse é a maneira de como criar um novo entity type ele não exista
-			/*if(entityType != null || entityDescriptor.getEntityTypeDescriptor() != null){
-				setEntityType(entityType);
-			}else{
-				setEntityType(new GenericEntityType(clazz.getPackage().getName(), clazz.getSimpleName()));
-			}*/			
-		}
-		
-		List<IPropertyType> validPropertyTypes = getEntityType().getPropertyTypes();
-		List<IPropertyType> invaliPropertyTypes = new ArrayList<IPropertyType>();
 	
-		for (IProperty property : properties.values())
-		{
-			IPropertyType propertyType = property.getPropertyType();
-			if (validPropertyTypes.contains(propertyType))
-			{
+		if(getEntityType() != null){
+			List<IPropertyType> validPropertyTypes = getEntityType().getPropertyTypes();
+			List<IPropertyType> invalidPropertyTypes = new ArrayList<IPropertyType>();
+			for (IProperty property : properties.values()){
+				IPropertyType propertyType = property.getPropertyType();
+				if (validPropertyTypes.contains(propertyType)){
+					result.add(property);
+				}
+				else{
+					invalidPropertyTypes.add(propertyType);
+				}
+			}
+			
+			for (IPropertyType propertyType : invalidPropertyTypes){
+				properties.remove(propertyType);
+			}			
+		}else{
+			for (IProperty property : properties.values()){
 				result.add(property);
 			}
-			else
-			{
-				invaliPropertyTypes.add(propertyType);
-			}
-		}
-		
-		for (IPropertyType propertyType : invaliPropertyTypes)
-		{
-			properties.remove(propertyType);
-		}
+		}		
 		
 		return result;
 	}

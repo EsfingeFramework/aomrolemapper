@@ -1,5 +1,6 @@
 package org.esfinge.aom.model.rolemapper.core;
 
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -43,8 +44,13 @@ public class AdapterPropertyMap implements IProperty {
 		try{
 			if (dsPropertyKey != null && dsProperty != null)
 			{
-				if (objectMap.containsKey(dsPropertyKey))
-					return objectMap.get(dsPropertyKey);
+				if (objectMap.containsKey(dsPropertyKey)){
+					AdapterPropertyMap apm = objectMap.get(dsPropertyKey);
+					if(apm.getValue() != dsProperty){
+						apm.setValue(dsProperty);
+					}
+					return apm;
+				}
 				return new AdapterPropertyMap(dsProperty.getClass().getName(), dsPropertyKey, dsProperty);
 			}
 			return null;
@@ -108,5 +114,35 @@ public class AdapterPropertyMap implements IProperty {
 	@Override
 	public void setName(String value) throws EsfingeAOMException {
 		dsObjectKey = value;
+	}
+	
+	public void removePropertyMap(String name) throws EsfingeAOMException {
+		objectMap.remove(name);
+	}
+
+	@Override
+	public List<IProperty> getProperties() throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setProperty(String propertyName, Object propertyValue)
+			throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeProperty(String propertyName) throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IProperty getProperty(String propertyName)
+			throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

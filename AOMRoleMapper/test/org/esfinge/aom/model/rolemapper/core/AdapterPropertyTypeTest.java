@@ -20,16 +20,14 @@ public class AdapterPropertyTypeTest {
 	}	
 	
 	@Test
-	public void testConstructor_FromDsObject() throws Exception 
-	{	
+	public void testConstructor_FromDsObject() throws Exception{	
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
 		AdapterPropertyType propertyType = AdapterPropertyType.getAdapter(accountPropertyType);
 		Assert.assertEquals(accountPropertyType, propertyType.getAssociatedObject());
 	}
 	
 	@Test
-	public void testGetName() throws Exception 
-	{
+	public void testGetName() throws Exception{
 		String propertyName = "Owner";
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
 		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
@@ -38,8 +36,7 @@ public class AdapterPropertyTypeTest {
 	}		
 	
 	@Test
-	public void testSetName() throws Exception 
-	{
+	public void testSetName() throws Exception{
 		String propertyName = "Owner";
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
 		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
@@ -48,8 +45,7 @@ public class AdapterPropertyTypeTest {
 	}	
 	
 	@Test
-	public void testGetType() throws Exception 
-	{
+	public void testGetType() throws Exception{
 		Class<?> propertyType = String.class;
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
 		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
@@ -58,8 +54,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testGetType_relationship() throws Exception 
-	{
+	public void testGetType_relationship() throws Exception{
 		AccountType accountType = new AccountType();
 		AdapterEntityType relationshipType = AdapterEntityType.getAdapter(accountType);
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
@@ -71,8 +66,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testGetType_invalidType() throws Exception 
-	{
+	public void testGetType_invalidType() throws Exception{
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
 		accountPropertyType.setPropertyType("invalidType");
 		
@@ -90,8 +84,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testGetTypeAsString() throws Exception 
-	{
+	public void testGetTypeAsString() throws Exception{
 		Class<?> propertyType = String.class;
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
 		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
@@ -100,8 +93,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testGetTypeAsString_relationship() throws Exception 
-	{
+	public void testGetTypeAsString_relationship() throws Exception{
 		AccountType accountType = new AccountType();
 		accountType.setName("accountType");
 		
@@ -115,8 +107,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testSetType() throws Exception 
-	{
+	public void testSetType() throws Exception{
 		Class<?> propertyType = String.class;
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
 		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
@@ -125,8 +116,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testSetType_relationship() throws Exception 
-	{
+	public void testSetType_relationship() throws Exception{
 		AccountType accountType = new AccountType();
 		AdapterEntityType relationshipType = AdapterEntityType.getAdapter(accountType);
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
@@ -137,8 +127,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testSetType_invalidType() throws Exception 
-	{
+	public void testSetType_invalidType() throws Exception	{
 		AccountPropertyType accountPropertyType = new AccountPropertyType();			
 		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
 		try
@@ -153,8 +142,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testIsValidValue_validValuePrimitiveType() throws Exception 
-	{
+	public void testIsValidValue_validValuePrimitiveType() throws Exception{
 		Class<?> propertyType = double.class;
 		double value = 100;
 		Double notPrimitiveValue = new Double(100);
@@ -167,8 +155,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testIsValidValue_validValueNotPrimitiveType() throws Exception 
-	{
+	public void testIsValidValue_validValueNotPrimitiveType() throws Exception{
 		Class<?> propertyType = Double.class;
 		double value = 100;
 		Double notPrimitiveValue = new Double(100);
@@ -181,8 +168,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testIsValidValue_validValueNullValue() throws Exception 
-	{
+	public void testIsValidValue_validValueNullValue() throws Exception{
 		Class<?> propertyType = Double.class;
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
 		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
@@ -191,8 +177,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testIsValidValue_validValueNumberAssign() throws Exception 
-	{
+	public void testIsValidValue_validValueNumberAssign() throws Exception{
 		Class<?> propertyType = double.class;
 		int value = 100;
 		Integer notPrimitiveValue = new Integer(100);
@@ -205,8 +190,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testIsValidValue_relationship() throws Exception 
-	{
+	public void testIsValidValue_relationship() throws Exception{
 		AccountType accountType = new AccountType();
 		AdapterEntityType relationshipType = AdapterEntityType.getAdapter(accountType);
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
@@ -222,8 +206,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testIsValidValue_relationshipInvalidValue() throws Exception 
-	{
+	public void testIsValidValue_relationshipInvalidValue() throws Exception{
 		AccountType accountType = new AccountType();
 		AdapterEntityType relationshipType = AdapterEntityType.getAdapter(accountType);
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
@@ -241,8 +224,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testIsRelationshipProperty() throws Exception 
-	{
+	public void testIsRelationshipProperty() throws Exception{
 		AccountType accountType = new AccountType();
 		AdapterEntityType relationshipType = AdapterEntityType.getAdapter(accountType);
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
@@ -254,8 +236,7 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testIsRelationshipProperty_notARelationship() throws Exception 
-	{
+	public void testIsRelationshipProperty_notARelationship() throws Exception{
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
 		
 		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
@@ -264,4 +245,17 @@ public class AdapterPropertyTypeTest {
 		Assert.assertFalse(adapterPropertyType.isRelationshipProperty());
 	}
 	
+	@Test
+	public void testGetMetadata_getFixedMetadata() throws Exception{
+		AccountPropertyType accountPropertyType = new AccountPropertyType();
+		
+		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
+		Assert.assertEquals(true, adapterPropertyType.getProperty("persist").getValue());
+		Assert.assertEquals("account_property", adapterPropertyType.getProperty("description").getValue());
+	}
+	
+	@Test
+	public void testGetMetadata_objectMetadata() throws Exception{
+		
+	}
 }

@@ -9,6 +9,9 @@ import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.CreateEntityMethod;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedMetadata;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.Metadata;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityTypeDescriptor;
@@ -37,6 +40,12 @@ public class EntityTypeAnnotationReader implements IAOMMetadataReader {
 			// We consider that only one field is annotated with @Entity
 			entityTypeDescriptor.setEntitiesDescriptor(entitiesDesc.get(0));
 		}
+		
+		List<FieldDescriptor> metaDesc = fieldAnnotationReader.getDescriptor(c, Metadata.class);
+		entityTypeDescriptor.setMetadataDescriptor(metaDesc);
+		
+	    List<FieldDescriptor> fixedMetaDesc = fieldAnnotationReader.getDescriptor(c, FixedMetadata.class);
+	    entityTypeDescriptor.setFixedMetadataDescriptor(fixedMetaDesc);
 
 		// We consider that the properties attribute will always be a collection
 		List<FieldDescriptor> propertyTypesDesc = fieldAnnotationReader.getDescriptor(c, PropertyType.class);
@@ -64,6 +73,5 @@ public class EntityTypeAnnotationReader implements IAOMMetadataReader {
 	@Override
 	public boolean isReaderApplicable(Class<?> c) {		
 		return (c.getAnnotation(EntityType.class) != null);		
-	}
-	
+	}	
 }

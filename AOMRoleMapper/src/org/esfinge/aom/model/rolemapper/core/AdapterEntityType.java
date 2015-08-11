@@ -11,6 +11,7 @@ import java.util.WeakHashMap;
 
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
+import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.impl.GenericProperty;
@@ -279,5 +280,31 @@ public class AdapterEntityType implements IEntityType {
 	@Override
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
+	}
+
+	@Override
+	public List<IProperty> getProperties() throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setProperty(String propertyName, Object propertyValue)
+			throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeProperty(String propertyName) throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IProperty getProperty(String propertyName)
+			throws EsfingeAOMException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

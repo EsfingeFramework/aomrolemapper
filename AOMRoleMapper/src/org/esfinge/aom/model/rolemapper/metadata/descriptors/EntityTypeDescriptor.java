@@ -1,8 +1,9 @@
 package org.esfinge.aom.model.rolemapper.metadata.descriptors;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
-public class EntityTypeDescriptor {
+public class EntityTypeDescriptor extends MetadataDescriptor{
 
 	private FieldDescriptor entitiesDescriptor;
 	
@@ -44,5 +45,4 @@ public class EntityTypeDescriptor {
 	public void setNameDescriptor(FieldDescriptor nameDescriptor) {
 		this.nameDescriptor = nameDescriptor;
 	}
-	
 }

@@ -1,14 +1,16 @@
 package org.esfinge.aom.model.rolemapper.metadata.descriptors;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class PropertyTypeDescriptor {
+public class PropertyTypeDescriptor extends MetadataDescriptor{
 
 	private FieldDescriptor nameDescriptor;
 	
 	private FieldDescriptor typeDescriptor;
 	
 	private FieldDescriptor propertiesDescriptor;
-
+	
 	public FieldDescriptor getNameDescriptor() {
 		return nameDescriptor;
 	}
@@ -31,5 +33,5 @@ public class PropertyTypeDescriptor {
 
 	public void setTypeDescriptor(FieldDescriptor typeDescriptor) {
 		this.typeDescriptor = typeDescriptor;
-	}
+	}	
 }

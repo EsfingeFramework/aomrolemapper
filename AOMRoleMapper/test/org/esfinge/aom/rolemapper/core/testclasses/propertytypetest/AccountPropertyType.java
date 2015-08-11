@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedMetadata;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.Metadata;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyTypeType;
@@ -19,6 +21,12 @@ public class AccountPropertyType {
 	
 	@PropertyTypeType
 	private Object propertyType;
+	
+	@FixedMetadata
+	private boolean persist = true;
+	
+	@FixedMetadata
+	private String description = "account_property";
 	
 	public boolean validate(Object value)
 	{
@@ -60,4 +68,24 @@ public class AccountPropertyType {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public void setName(){
+		
+	}
+
+	public boolean isPersist() {
+		return persist;
+	}
+
+	public void setPersist(boolean persist) {
+		this.persist = persist;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}	
 }

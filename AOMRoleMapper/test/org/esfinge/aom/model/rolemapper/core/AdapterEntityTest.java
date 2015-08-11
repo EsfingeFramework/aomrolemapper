@@ -70,8 +70,9 @@ public class AdapterEntityTest {
 		double value = 100000.25;
 		AdapterEntityType entityType = AdapterEntityType.getAdapter(accountType);
 		AdapterEntity entity = AdapterEntity.getAdapter(entityType, account);
-		entity.setProperty("Balance", value);		
+		entity.setProperty("Balance", value);
 		
+		Assert.assertEquals(value, entity.getProperty("Balance").getValue());		
 	}
 	
 	@Test

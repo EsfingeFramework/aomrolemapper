@@ -65,6 +65,19 @@ public class AdapterPropertyTest {
 	}
 	
 	@Test
+	public void testSetValue() throws Exception 
+	{	
+		AccountProperty accountProperty = new AccountProperty();
+		AccountPropertyType accountPropertyType = new AccountPropertyType();
+		accountPropertyType.setPropertyType(double.class);
+		accountProperty.setPropertyType(accountPropertyType);
+		accountProperty.setValue(25.3);
+		AdapterProperty property = AdapterProperty.getAdapter(accountProperty);
+		property.setValue(30);
+		Assert.assertEquals(property.getValue(), accountProperty.getValue());
+	}
+	
+	@Test
 	public void testSetValue_valueIsValid() throws Exception 
 	{	
 		AccountProperty accountProperty = new AccountProperty();
