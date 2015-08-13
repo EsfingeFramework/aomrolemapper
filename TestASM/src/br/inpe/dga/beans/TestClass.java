@@ -1,7 +1,6 @@
 package br.inpe.dga.beans;
 
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperties;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
 
 @Entity

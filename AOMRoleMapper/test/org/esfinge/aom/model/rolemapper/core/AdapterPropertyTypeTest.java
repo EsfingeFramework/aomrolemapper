@@ -6,6 +6,7 @@ import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.Account;
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.AccountPropertyType;
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.AccountType;
+import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.MetadatasAccountPropertyType;
 import org.junit.Test;
 
 public class AdapterPropertyTypeTest {
@@ -246,9 +247,15 @@ public class AdapterPropertyTypeTest {
 	}
 	
 	@Test
-	public void testGetMetadata_getFixedMetadata() throws Exception{
+	public void testGetMetadata_getNullMetadata() throws Exception{
 		AccountPropertyType accountPropertyType = new AccountPropertyType();
-		
+		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
+		Assert.assertEquals(null, adapterPropertyType.getProperty(""));
+	}
+	
+	@Test
+	public void testGetMetadata_getFixedMetadata() throws Exception{
+		AccountPropertyType accountPropertyType = new AccountPropertyType();		
 		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
 		Assert.assertEquals(true, adapterPropertyType.getProperty("persist").getValue());
 		Assert.assertEquals("account_property", adapterPropertyType.getProperty("description").getValue());
@@ -256,6 +263,14 @@ public class AdapterPropertyTypeTest {
 	
 	@Test
 	public void testGetMetadata_objectMetadata() throws Exception{
+		AccountPropertyType accountPropertyType = new AccountPropertyType();
 		
+		accountPropertyType.getMetadatas().add(new MetadatasAccountPropertyType("configuration1", new Integer(10)));
+		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
+		Assert.assertEquals(10, adapterPropertyType.getProperty("configuration1").getValue());
+
+		accountPropertyType.getMetadatas().add(new MetadatasAccountPropertyType("configuration2", new Boolean(true)));
+		AdapterPropertyType adapterPropertyType2 = AdapterPropertyType.getAdapter(accountPropertyType);		
+		Assert.assertEquals(true, adapterPropertyType2.getProperty("configuration2").getValue());
 	}
 }

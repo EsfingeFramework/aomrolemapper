@@ -29,6 +29,8 @@ public class AdapterEntityType implements IEntityType {
 	private String packageName;
 
 	private EntityTypeDescriptor entityTypeDescriptor;
+	
+	private Map<String, AdapterFixedProperty> fixedMetadataPerName = new WeakHashMap<String, AdapterFixedProperty>();
 
 	private static Map<Object, AdapterEntityType> objectMap = new WeakHashMap<Object, AdapterEntityType>();
 
@@ -75,6 +77,16 @@ public class AdapterEntityType implements IEntityType {
 					fixedPropertyTypes.put(fixedPropertyType.getName(),fixedPropertyType);
 				}
 			}
+			
+
+			List<FieldDescriptor> fixedMetadataDescriptor = entityTypeDescriptor.getFixedMetadataDescriptor();
+			for (FieldDescriptor fixedMetadata : fixedMetadataDescriptor)
+			{
+				Class proptype = fixedMetadata.getFieldClass();
+				IPropertyType propertyType = new GenericPropertyType(fixedMetadata.getFieldName(), proptype);
+				AdapterFixedProperty property = new AdapterFixedProperty(dsObj, propertyType);
+				fixedMetadataPerName.put(fixedMetadata.getFieldName(), property);				
+			}	
 		} catch (Exception e) {
 			throw new EsfingeAOMException(e);
 		}
@@ -284,8 +296,32 @@ public class AdapterEntityType implements IEntityType {
 
 	@Override
 	public List<IProperty> getProperties() throws EsfingeAOMException {
-		// TODO Auto-generated method stub
-		return null;
+		List<IProperty> result = new ArrayList<IProperty>();
+		try {
+			// Metadatas
+			if(entityTypeDescriptor.getMetadataDescriptor() != null){
+				Method getMetadadaMethod = entityTypeDescriptor.getMetadataDescriptor().getGetFieldMethod();		
+				//TODO We consider that the ds class initializes the collection objects properly
+				Collection<?> dsProperties = (Collection<?>) getMetadadaMethod.invoke(dsObject);
+			
+				for (Object property : dsProperties)
+				{
+					IProperty adapterProperty = AdapterProperty.getAdapter(property);						
+					result.add(adapterProperty);
+				}
+			}	
+			
+			if(entityTypeDescriptor.getFixedMetadataDescriptor() != null){
+				// Fixed metadatas
+				for (IProperty metadata : fixedMetadataPerName.values()) {
+					result.add(metadata);
+				}
+			}
+			
+		} catch (Exception e) {
+			throw new EsfingeAOMException(e);
+		}		
+		return result;
 	}
 
 	@Override
@@ -302,9 +338,12 @@ public class AdapterEntityType implements IEntityType {
 	}
 
 	@Override
-	public IProperty getProperty(String propertyName)
-			throws EsfingeAOMException {
-		// TODO Auto-generated method stub
+	public IProperty getProperty(String metadataName) throws EsfingeAOMException {
+		for (IProperty metadata : getProperties())
+		{
+			if (metadata.getName().equals(metadataName))
+				return metadata;
+		}
 		return null;
 	}
 }

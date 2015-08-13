@@ -3,6 +3,7 @@ package org.esfinge.aom.model.rolemapper.core;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -62,8 +63,7 @@ public class AdapterPropertyType implements IPropertyType {
 				IPropertyType propertyType = new GenericPropertyType(fixedMetadata.getFieldName(), proptype);
 				AdapterFixedProperty property = new AdapterFixedProperty(dsObj, propertyType);
 				fixedMetadataPerName.put(fixedMetadata.getFieldName(), property);				
-			}	
-				
+			}
 		}
 		catch (Exception e)
 		{
@@ -202,30 +202,30 @@ public class AdapterPropertyType implements IPropertyType {
 
 	@Override
 	public List<IProperty> getProperties() throws EsfingeAOMException {
-		List<IProperty> result = new ArrayList<IProperty>();
-		if (propertyTypeDescriptor.getFixedMetadataDescriptor()!= null || 
-			propertyTypeDescriptor.getMetadataDescriptor() != null) {
-			try {
-				// Metadatas
-				List<FieldDescriptor> metadatas = propertyTypeDescriptor
-						.getMetadataDescriptor();
-	
-				for (FieldDescriptor metadaDescription : metadatas) {
-					Method getMetadadaMethod = metadaDescription
-							.getGetFieldMethod();
-					Object type = getMetadadaMethod.invoke(dsObject);
-					IProperty adapterProperty = AdapterProperty.getAdapter(type);
-					result.add(adapterProperty);			
+		List<IProperty> result = new ArrayList<IProperty>();		
+		try {
+			// Metadatas
+			if(propertyTypeDescriptor.getMetadataDescriptor() != null){
+				Method getMetadadaMethod = propertyTypeDescriptor.getMetadataDescriptor().getGetFieldMethod();		
+				//TODO We consider that the ds class initializes the collection objects properly
+				Collection<?> dsProperties = (Collection<?>) getMetadadaMethod.invoke(dsObject);
+			
+				for (Object property : dsProperties)
+				{
+					IProperty adapterProperty = AdapterProperty.getAdapter(property);						
+					result.add(adapterProperty);
 				}
-	
+			}	
+			
+			if(propertyTypeDescriptor.getFixedMetadataDescriptor()!= null){
 				// Fixed metadatas
 				for (IProperty metadata : fixedMetadataPerName.values()) {
 					result.add(metadata);
 				}
-			} catch (Exception e) {
-				throw new EsfingeAOMException(e);
 			}
-		}
+		} catch (Exception e) {
+			throw new EsfingeAOMException(e);
+		}		
 		return result;
 	}
 

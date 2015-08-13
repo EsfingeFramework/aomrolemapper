@@ -45,8 +45,13 @@ public class PropertyTypeAnnotationReader implements IAOMMetadataReader {
 			propertyDescriptor.setTypeDescriptor(typeDesc.get(0));
 		}
 		
+		// We consider that the properties attribute will always be a collection
 		List<FieldDescriptor> metaDesc = fieldAnnotationReader.getDescriptor(c, Metadata.class);
-		propertyDescriptor.setMetadataDescriptor(metaDesc);
+		if (!metaDesc.isEmpty())
+		{
+			// We consider that only one field is annotated with @Metadata
+			propertyDescriptor.setMetadataDescriptor(metaDesc.get(0));
+		}
 		
 	    List<FieldDescriptor> fixedMetaDesc = fieldAnnotationReader.getDescriptor(c, FixedMetadata.class);
 	    propertyDescriptor.setFixedMetadataDescriptor(fixedMetaDesc);

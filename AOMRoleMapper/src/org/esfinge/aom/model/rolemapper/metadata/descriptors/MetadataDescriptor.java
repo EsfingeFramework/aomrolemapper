@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 public class MetadataDescriptor {
-	private List<FieldDescriptor> metadataDescriptor = new ArrayList<FieldDescriptor>();
+	private FieldDescriptor metadataDescriptor;
 	private List<FieldDescriptor> fixedMetadataDescriptor = new ArrayList<FieldDescriptor>();
 	
-	public void setMetadataDescriptor(List<FieldDescriptor> metadataDescriptor) {
+	public void setMetadataDescriptor(FieldDescriptor metadataDescriptor) {
 		this.metadataDescriptor = metadataDescriptor;
 	}
 	
-	public List<FieldDescriptor> getMetadataDescriptor() {
+	public FieldDescriptor getMetadataDescriptor() {
 		return metadataDescriptor;
 	}
 	

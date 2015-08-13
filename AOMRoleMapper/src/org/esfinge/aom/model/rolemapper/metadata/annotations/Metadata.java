@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value={ElementType.FIELD})
+@Target(value={ElementType.TYPE, ElementType.FIELD})
 public @interface Metadata {
 
 }
