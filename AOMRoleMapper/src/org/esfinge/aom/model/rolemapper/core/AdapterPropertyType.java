@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -217,10 +218,23 @@ public class AdapterPropertyType implements IPropertyType {
 				}
 			}	
 			
+			// Fixed metadatas
 			if(propertyTypeDescriptor.getFixedMetadataDescriptor()!= null){
-				// Fixed metadatas
 				for (IProperty metadata : fixedMetadataPerName.values()) {
 					result.add(metadata);
+				}
+			}
+			
+			// Map properties
+			if(propertyTypeDescriptor.getMapMetadataDescriptor() != null){
+				Method getMetadataMapMethod = propertyTypeDescriptor.getMapMetadataDescriptor().getGetFieldMethod();				
+				Map dsMapMetadata = (Map<String, Object>) getMetadataMapMethod.invoke(dsObject);				
+				Iterator iterator = dsMapMetadata.entrySet().iterator();				
+				while(iterator.hasNext()){
+					Map.Entry pair = (Map.Entry) iterator.next();	
+					IProperty adapterPropertyMap = AdapterPropertyMap.getAdapter(pair.getKey(), 
+							dsMapMetadata.get(pair.getKey()));					
+					result.add(adapterPropertyMap);
 				}
 			}
 		} catch (Exception e) {

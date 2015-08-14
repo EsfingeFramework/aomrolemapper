@@ -7,6 +7,7 @@ import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedMetadata;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Metadata;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.MetadataMap;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyTypeType;
@@ -19,14 +20,14 @@ public class PropertyTypeAnnotationReader implements IAOMMetadataReader {
 	
 	public PropertyTypeDescriptor getDescriptor (Class<?> c) throws EsfingeAOMException
 	{
-		PropertyTypeDescriptor propertyDescriptor = new PropertyTypeDescriptor();
+		PropertyTypeDescriptor propertyTypeDescriptor = new PropertyTypeDescriptor();
 		
 		List<FieldDescriptor> propertiesDesc = fieldAnnotationReader.getDescriptor(c, EntityProperty.class);
 		
 		if (!propertiesDesc.isEmpty())
 		{
 			// We consider that only one field is annotated with @EntityProperty
-			propertyDescriptor.setPropertiesDescriptor(propertiesDesc.get(0));
+			propertyTypeDescriptor.setPropertiesDescriptor(propertiesDesc.get(0));
 		}
 		
 		List<FieldDescriptor> nameDesc = fieldAnnotationReader.getDescriptor(c, Name.class);
@@ -34,7 +35,7 @@ public class PropertyTypeAnnotationReader implements IAOMMetadataReader {
 		if (!nameDesc.isEmpty())
 		{
 			// We consider that only one field is annotated with @PropertyTypeName
-			propertyDescriptor.setNameDescriptor(nameDesc.get(0));
+			propertyTypeDescriptor.setNameDescriptor(nameDesc.get(0));
 		}
 		
 		List<FieldDescriptor> typeDesc = fieldAnnotationReader.getDescriptor(c, PropertyTypeType.class);
@@ -42,7 +43,7 @@ public class PropertyTypeAnnotationReader implements IAOMMetadataReader {
 		if (!typeDesc.isEmpty())
 		{
 			// We consider that only one field is annotated with @PropertyTypeType
-			propertyDescriptor.setTypeDescriptor(typeDesc.get(0));
+			propertyTypeDescriptor.setTypeDescriptor(typeDesc.get(0));
 		}
 		
 		// We consider that the properties attribute will always be a collection
@@ -50,13 +51,21 @@ public class PropertyTypeAnnotationReader implements IAOMMetadataReader {
 		if (!metaDesc.isEmpty())
 		{
 			// We consider that only one field is annotated with @Metadata
-			propertyDescriptor.setMetadataDescriptor(metaDesc.get(0));
+			propertyTypeDescriptor.setMetadataDescriptor(metaDesc.get(0));
 		}
 		
 	    List<FieldDescriptor> fixedMetaDesc = fieldAnnotationReader.getDescriptor(c, FixedMetadata.class);
-	    propertyDescriptor.setFixedMetadataDescriptor(fixedMetaDesc);
+	    propertyTypeDescriptor.setFixedMetadataDescriptor(fixedMetaDesc);
+	    
+	    // We consider that the properties attribute will always be a List
+	    List<FieldDescriptor> mapMetaDesc = fieldAnnotationReader.getDescriptor(c, MetadataMap.class);
+		if (!mapMetaDesc.isEmpty())
+		{
+			// We consider that only one field is annotated with @MetadataMap
+			propertyTypeDescriptor.setMapMetadataDescriptor(mapMetaDesc.get(0));
+		}
 		
-		return propertyDescriptor;
+		return propertyTypeDescriptor;
 	}
 
 	@Override

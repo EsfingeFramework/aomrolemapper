@@ -2,9 +2,11 @@ package org.esfinge.aom.model.rolemapper.core;
 
 import junit.framework.Assert;
 
+import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.Account;
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.AccountPropertyType;
+import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.AccountPropertyTypeWithMetadataMap;
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.AccountType;
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.MetadatasAccountPropertyType;
 import org.junit.Test;
@@ -272,5 +274,14 @@ public class AdapterPropertyTypeTest {
 		accountPropertyType.getMetadatas().add(new MetadatasAccountPropertyType("configuration2", new Boolean(true)));
 		AdapterPropertyType adapterPropertyType2 = AdapterPropertyType.getAdapter(accountPropertyType);		
 		Assert.assertEquals(true, adapterPropertyType2.getProperty("configuration2").getValue());
+	}
+	
+	@Test
+	public void testGetMetadata_MetadataMap() throws Exception{
+		AccountPropertyTypeWithMetadataMap accountPropertyType = new AccountPropertyTypeWithMetadataMap();
+		
+		accountPropertyType.getMetadatas().put("configuration1", new Integer(10));
+		AdapterPropertyType adapterPropertyType = AdapterPropertyType.getAdapter(accountPropertyType);
+		Assert.assertEquals(10, adapterPropertyType.getProperty("configuration1").getValue());
 	}
 }

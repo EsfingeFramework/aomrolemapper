@@ -2,6 +2,8 @@ package br.inpe.dga.adapter;
 
 import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
+import org.esfinge.comparison.annotation.IgnoreInComparison;
+import org.esfinge.comparison.annotation.Tolerance;
 
 public class TestClassBeanAdapterV2 {
 
@@ -14,6 +16,8 @@ public class TestClassBeanAdapterV2 {
 		
 	}
 	
+	@IgnoreInComparison
+	@Tolerance(0.01)
 	public Object getExtraProperty() {
 		try {
 			return entity.getProperty("extraProperty").getValue();

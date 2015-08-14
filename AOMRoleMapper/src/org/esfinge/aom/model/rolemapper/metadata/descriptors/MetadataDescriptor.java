@@ -7,6 +7,7 @@ import java.util.Map;
 public class MetadataDescriptor {
 	private FieldDescriptor metadataDescriptor;
 	private List<FieldDescriptor> fixedMetadataDescriptor = new ArrayList<FieldDescriptor>();
+	private FieldDescriptor mapMetadataDescriptor; 
 	
 	public void setMetadataDescriptor(FieldDescriptor metadataDescriptor) {
 		this.metadataDescriptor = metadataDescriptor;
@@ -22,5 +23,13 @@ public class MetadataDescriptor {
 	
 	public List<FieldDescriptor> getFixedMetadataDescriptor(){
 		return this.fixedMetadataDescriptor;
+	}
+
+	public FieldDescriptor getMapMetadataDescriptor() {
+		return mapMetadataDescriptor;
+	}
+
+	public void setMapMetadataDescriptor(FieldDescriptor mapMetadataDescriptor) {
+		this.mapMetadataDescriptor = mapMetadataDescriptor;
 	}
 }

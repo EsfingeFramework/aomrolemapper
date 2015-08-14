@@ -11,9 +11,12 @@ import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.Account;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.AccountPropertyType;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.AccountType;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.AccountTypeFixedProperties;
+import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.AccountTypeWithMetadataMap;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.AccountTypeWithoutAnnotations;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.IAccountType;
+import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.MetadatasAccountType;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.SimpleAccountType;
+import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.AccountPropertyTypeWithMetadataMap;
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.MetadatasAccountPropertyType;
 import org.junit.Test;
 
@@ -366,21 +369,30 @@ public class AdapterEntityTypeTest {
 	@Test
 	public void testGetMetadata_getFixedMetadata() throws Exception{
 		AccountType accountType = new AccountType();
-		AdapterEntityType adapterType = AdapterEntityType.getAdapter(accountType);
-		Assert.assertEquals(false, adapterType.getProperty("persist").getValue());
-		Assert.assertEquals("account_type", adapterType.getProperty("description").getValue());
+		AdapterEntityType adapterAccountType = AdapterEntityType.getAdapter(accountType);
+		Assert.assertEquals(false, adapterAccountType.getProperty("persist").getValue());
+		Assert.assertEquals("account_type", adapterAccountType.getProperty("description").getValue());
 	}	
 	
 	@Test
 	public void testGetMetadata_objectMetadata() throws Exception{
 		AccountType accountType = new AccountType();
 		
-		accountType.getMetadatas().add(new MetadatasAccountPropertyType("configuration1", new Integer(10)));
-		AdapterEntityType adapterType = AdapterEntityType.getAdapter(accountType);
-		Assert.assertEquals(10, adapterType.getProperty("configuration1").getValue());
+		accountType.getMetadatas().add(new MetadatasAccountType("configuration1", new Integer(10)));
+		AdapterEntityType adapterAccountType = AdapterEntityType.getAdapter(accountType);
+		Assert.assertEquals(10, adapterAccountType.getProperty("configuration1").getValue());
 
-		accountType.getMetadatas().add(new MetadatasAccountPropertyType("configuration2", new Boolean(true)));
-		AdapterEntityType adapterType2 = AdapterEntityType.getAdapter(accountType);		
-		Assert.assertEquals(true, adapterType2.getProperty("configuration2").getValue());
+		accountType.getMetadatas().add(new MetadatasAccountType("configuration2", new Boolean(true)));
+		AdapterEntityType adapterAccountType2 = AdapterEntityType.getAdapter(accountType);		
+		Assert.assertEquals(true, adapterAccountType2.getProperty("configuration2").getValue());
+	}
+	
+	@Test
+	public void testGetMetadata_MetadataMap() throws Exception{
+		AccountTypeWithMetadataMap accountType = new AccountTypeWithMetadataMap();
+		
+		accountType.getMetadatas().put("configuration1", new Integer(10));
+		AdapterPropertyType adapterAccountType = AdapterPropertyType.getAdapter(accountType);
+		Assert.assertEquals(10, adapterAccountType.getProperty("configuration1").getValue());
 	}
 }

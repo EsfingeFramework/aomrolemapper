@@ -8,10 +8,12 @@ import org.esfinge.aom.api.model.rolemapper.metadata.reader.IAOMMetadataReader;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.CreateEntityMethod;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityPropertyMap;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedMetadata;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Metadata;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.MetadataMap;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityTypeDescriptor;
@@ -51,6 +53,14 @@ public class EntityTypeAnnotationReader implements IAOMMetadataReader {
 		
 	    List<FieldDescriptor> fixedMetaDesc = fieldAnnotationReader.getDescriptor(c, FixedMetadata.class);
 	    entityTypeDescriptor.setFixedMetadataDescriptor(fixedMetaDesc);
+	    
+		// We consider that the properties attribute will always be a List
+	    List<FieldDescriptor> mapMetaDesc = fieldAnnotationReader.getDescriptor(c, MetadataMap.class);
+		if (!mapMetaDesc.isEmpty())
+		{
+			// We consider that only one field is annotated with @MetadataMap
+			entityTypeDescriptor.setMapMetadataDescriptor(mapMetaDesc.get(0));
+		}
 
 		// We consider that the properties attribute will always be a collection
 		List<FieldDescriptor> propertyTypesDesc = fieldAnnotationReader.getDescriptor(c, PropertyType.class);

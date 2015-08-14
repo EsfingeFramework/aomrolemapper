@@ -30,7 +30,7 @@ public class AccountType implements IAccountType {
 	private String description = "account_type";
 	
 	@Metadata
-	private List<MetadatasAccountPropertyType> metadatas = new ArrayList<MetadatasAccountPropertyType>();
+	private List<MetadatasAccountType> metadatas = new ArrayList<MetadatasAccountType>();
 	
 	@CreateEntityMethod
 	public Account createAccount()
@@ -91,12 +91,11 @@ public class AccountType implements IAccountType {
 		this.description = description;
 	}
 
-	public List<MetadatasAccountPropertyType> getMetadatas() {
+	public List<MetadatasAccountType> getMetadatas() {
 		return metadatas;
 	}
 
-	public void setMetadatas(List<MetadatasAccountPropertyType> metadatas) {
+	public void setMetadatas(List<MetadatasAccountType> metadatas) {
 		this.metadatas = metadatas;
 	}
-
 }
