@@ -40,8 +40,19 @@ public class ClassConstructor{
 			Map.Entry<String, Object> mapEntry = (Map.Entry) iterator.next();
 			String parameter = (String) mapEntry.getKey();
 		    Object value = mapEntry.getValue();
-		    if(parameter != null){
-		    	av.visit(parameter, value);
+		    if(parameter != null){		    	
+		    	if(value instanceof Enum){
+		    		
+		    		if (parameter.equals("fetch")) {		    					    		
+		    			av.visitEnum(parameter, "L" + value.getClass().getName().replace(".", "/") + ";", value.toString());
+		    		}else{	    	
+		    			AnnotationVisitor av1 = av.visitArray(parameter);
+		    			av1.visitEnum(null, "L" + value.getClass().getName().replace(".", "/") + ";", value.toString());
+		    			av1.visitEnd();
+		    		}
+		    	}else{
+		    		av.visit(parameter, value);
+		    	}
 		    }
 		}
 	}

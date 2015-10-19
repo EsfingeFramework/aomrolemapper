@@ -28,11 +28,15 @@
    
   "oneToOne":[
     {"target":"method"},
-	{"annotationPath":"javax.persistence.OneToOne"}	
+	{"annotationPath":"javax.persistence.OneToOne"},
+	{"parameter_1": "mappedBy"},
+	{"parameter_2": "cascade"},
+	{"parameter_3": "fetch"}	
    ],
    
-   "primaryKeyJoinColumn":[
+   "joinColumn":[
     {"target":"method"},
-	{"annotationPath":"javax.persistence.PrimaryKeyJoinColumn"}
+	{"annotationPath":"javax.persistence.JoinColumn"},
+	{"parameter_1": "name"}
    ]
 }

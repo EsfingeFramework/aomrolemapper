@@ -12,7 +12,7 @@ public class DAO {
 					setProperty("hibernate.dialect","org.hibernate.dialect.HSQLDialect").
 					setProperty("hibernate.connection.driver_class","org.hsqldb.jdbcDriver").
 					//setProperty("hibernate.connection.url","jdbc:hsqldb:file:C:/bancos/person_db;hsqldb.lock_file=false").
-					setProperty("hibernate.connection.url","jdbc:hsqldb:file:" + dbPathName).
+					setProperty("hibernate.connection.url","jdbc:hsqldb:file:" + dbPathName + ";readonly=false").
 					setProperty("hibernate.connection.username",user).
 					setProperty("hibernate.connection.password",name).				
 					setProperty("hibernate.show_sql","true").

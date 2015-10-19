@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.Persistence;
 
@@ -29,85 +30,98 @@ import br.inpe.jpateste.utils.ObjectPrinter;
 
 public class GeraClientes {
 	public static void main(String[] args) throws EsfingeAOMException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException{
-		Object person = createAOMEntityToPersist();
+		Object client = createAOMEntityToPersist();
 		
 		//troca o ClassLoader padrão pelo ClassLoader do adapter. 
 		//Assim quando o Hibernate for buscar as classe usando Class.forName ele irá encontrar a class dinâmica.
 		//Isso ocorre pois foi necessário usa o método defineClass do ClassLoader, e para iso é preciso extender essa classe,
 		//criando uma nova.
-		Thread.currentThread().setContextClassLoader(person.getClass().getClassLoader());
-		
+		Thread.currentThread().setContextClassLoader(client.getClass().getClassLoader());
+				
 		//Passando o endereço com o nome do banco para a opção hsqldb, o db será criado nele
-		DAO dao = DAO.getInstance("hsqldb", "C:/data/clientes", "aom_user", "aom_user");
-		dao.addAnnotedClassToConnection(person.getClass());
-		dao.addAnnotedClassToConnection(person.getClass().getMethod("getMainContact").invoke(person).getClass()); 
+		DAO dao = DAO.getInstance("hsqldb", "C:/data/clientes8", "aom_user", "aom_user");
+		dao.addAnnotedClassToConnection(client.getClass());
+		dao.addAnnotedClassToConnection(client.getClass().getMethod("getMainContact").invoke(client).getClass()); 
 		Session session = dao.getSession(); 
 	    session.getTransaction().begin();
 		session.clear();
-		session.save(person);
+		session.merge(client);
 		session.getTransaction().commit();
 		session.close();
 	}
 	
 	public static Object createAOMEntityToPersist() throws EsfingeAOMException{
 		IEntityType contact = createContactEntity();
-		IEntity home = contact.createNewEntity();	
-		home.setProperty("id", 6L);
-		home.setProperty("phone", "1232312312");
-		home.setProperty("type", "work");
 		
 		//cria o objeto
-		IEntity person = createPersonEntity(contact).createNewEntity();
-		person.setProperty("id", 26L);
-		person.setProperty("name", "Guerra");
-		person.setProperty("weight", 110.55);
-		person.setProperty("mainContact", home);
-
+		IEntity client = createClientEntity(contact).createNewEntity();
+		client.setProperty("id", 55L);
+		client.setProperty("name", "Guerra");
+		client.setProperty("weight", 110.55);
+		
+		//Necessário configurar o PropertyType cliente de contact depois de adiona-lo a entity cliente		
+		IPropertyType clientPropertyType = new GenericPropertyType("client", client.getEntityType());
+		//annotations da propriedade type		
+		Map<String, Object> clientParamtersOneToOne = new HashMap<String, Object>();
+		clientPropertyType.setProperty("oneToOne", clientParamtersOneToOne);
+		Map<String, Object> contactParamters = new HashMap<String, Object>();
+		contactParamters.put("name", "fk_contato");
+		clientPropertyType.setProperty("joinColumn", contactParamters);
+		contact.addPropertyType(clientPropertyType);
+		
+		IEntity home = contact.createNewEntity();	
+		home.setProperty("id", 100L);
+		home.setProperty("phone", "1232312312");
+		home.setProperty("type", "work");
+		home.setProperty("client", client);
+		
+		client.setProperty("mainContact", home);
+		
 		AdapterFactory af = AdapterFactory.getInstance("AnnotationMapping.json");		
-		Object personBean = null;		
+		Object clientBean = null;		
 		Object homeBean = null;
 		try {
 			//tenho que criar as dependencias da entity composta antes para poder jogar no class path
 			//jogar isso dentro do AdapterFactory, no if que verifica se é uma propriedade composta
-			homeBean = af.generate((IEntity)person.getProperty("mainContact").getValue());
+			homeBean = af.generate((IEntity)client.getProperty("mainContact").getValue());
 			ObjectPrinter.printClass(homeBean);
-			personBean = af.generate(person);
+			clientBean = af.generate(client);
 			System.out.println("-----------------------------");
-			//ObjectPrinter.printClass(personBean);
-			//ObjectPrinter.printClass(homeBean);
-			return personBean;
+			ObjectPrinter.printClass(clientBean);
+			ObjectPrinter.printClass(homeBean);
+			return clientBean;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	public static IEntityType createPersonEntity(IEntityType contact) throws EsfingeAOMException {
-		IEntityType personType = new GenericEntityType("Person");		
+	public static IEntityType createClientEntity(IEntityType contact) throws EsfingeAOMException {
+		IEntityType clientType = new GenericEntityType("Client");		
 		
 		//coloca as propriedades
 		IPropertyType idPropertyType = new GenericPropertyType("id", Long.class);
-		personType.addPropertyType(idPropertyType);
+		clientType.addPropertyType(idPropertyType);
 		IPropertyType namePropertyType = new GenericPropertyType("name", String.class);
-		personType.addPropertyType(namePropertyType);		
+		clientType.addPropertyType(namePropertyType);		
 		IPropertyType weightPropertyType = new GenericPropertyType("weight", Double.class);
-		personType.addPropertyType(weightPropertyType);
+		clientType.addPropertyType(weightPropertyType);
 		IPropertyType contactPropertyType = new GenericPropertyType("mainContact", contact);
-		personType.addPropertyType(contactPropertyType);
+		clientType.addPropertyType(contactPropertyType);
 			
 		//parametros das annotations de person
 		Map<String, Object> parametersPerson = new HashMap<String, Object>();
-		parametersPerson.put("name", "tb_pessoas");
+		parametersPerson.put("name", "tb_clientes");
 		//annotations da classe person
-		personType.setProperty("table", parametersPerson);
-		personType.setProperty("entity", true);
+		clientType.setProperty("table", parametersPerson);
+		clientType.setProperty("entity", true);
 		
 		//annotations da propriedade id
 		idPropertyType.setProperty("id", true);
 		
 		//parametros das annotations de name
 		Map<String, Object> nameParamters = new HashMap<String, Object>();
-		nameParamters.put("name", "nome_pessoa");
+		nameParamters.put("name", "nome_cliente");
 		nameParamters.put("nullable", false);
 		//annotations da propriedade de name
 		namePropertyType.setProperty("column", nameParamters);
@@ -120,13 +134,15 @@ public class GeraClientes {
 		weightPropertyType.setProperty("column", weightParamters);
 		
 		//parametros das annotations de contact
-		Map<String, Object> contactParamters = new HashMap<String, Object>();
-		//contactParamters.put("cascade", CascadeType.ALL.ordinal());
-		//annotations da propriedade de weight
-		contactPropertyType.setProperty("oneToOne", contactParamters);
-		contactPropertyType.setProperty("primaryKeyJoinColumn", true);
 		
-		return personType;
+		//annotations da propriedade contact
+		Map<String, Object> clientParamters = new HashMap<String, Object>();
+		clientParamters.put("cascade", CascadeType.ALL);
+		clientParamters.put("fetch", FetchType.EAGER);
+		clientParamters.put("mappedBy", "client");
+		contactPropertyType.setProperty("oneToOne", clientParamters);
+		
+		return clientType;
 	}
 
 	public static IEntityType createContactEntity() throws EsfingeAOMException {
@@ -136,8 +152,12 @@ public class GeraClientes {
 		contactType.addPropertyType(idPropertyType);
 		IPropertyType phonePropertyType = new GenericPropertyType("phone", String.class);
 		contactType.addPropertyType(phonePropertyType);
-		IPropertyType typePropertyType = new GenericPropertyType("type",	String.class);
+		IPropertyType typePropertyType = new GenericPropertyType("type", String.class);
 		contactType.addPropertyType(typePropertyType);
+		
+		//IEntityType clientType = new GenericEntityType("Client");
+		//IPropertyType clientPropertyType = new GenericPropertyType("client", clientType);
+		//contactType.addPropertyType(clientPropertyType);
 		
 		//parametros das annotations de contact
 		Map<String, Object> parametersPerson = new HashMap<String, Object>();
@@ -162,6 +182,9 @@ public class GeraClientes {
 		typeParamters.put("nullable", false);
 		//annotations da propriedade type
 		typePropertyType.setProperty("column", typeParamters);		
+		
+		//annotations da propriedade type
+		//clientPropertyType.setProperty("oneToOne", true);	
 		
 		return contactType;		
 	}	

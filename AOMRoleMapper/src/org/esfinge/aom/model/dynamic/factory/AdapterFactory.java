@@ -53,6 +53,7 @@ public class AdapterFactory {
 						.getInstance(metadataFileName);
 				IEntityType entityType = entity.getEntityType();
 				String name = entityType.getName() + suffixAdapterClassName;
+				addStoredClass(entity, null);
 
 				ClassConstructor.createClassAndConstructor(name, cw);
 				Map<String, Object> annotationClassParameters = new HashMap<String, Object>();
@@ -61,19 +62,17 @@ public class AdapterFactory {
 				ClassConstructor.createPrivateAttribute(null, cw);
 
 				for (IProperty p : entity.getProperties()) {
-					MethodVisitor mv;
+					MethodVisitor mv = null;
 					if (!pr.isPropertyTarget(p.getName(), "class")) {
 						if (IEntityType.class.isAssignableFrom(p
 								.getPropertyType().getType().getClass())) {
-							//Gera um adapter aqui apenas para criar a classe do adapter no ClassPath
-							//para o get funcionar
-							this.getInstance(metadataFileName).generate((IEntity)p.getValue());
-							String propertyType = ((IEntity) p.getValue()).getEntityType().getName()
-									+ suffixAdapterClassName;
-							mv = ClassConstructor.createComplexPropertyGetter(
-									name, cw, p.getName(), propertyType);
-							ClassConstructor.createComplexPropertySetter(name,
-									cw, p.getName(), propertyType);
+							String propertyType = ((IEntity) p.getValue()).getEntityType().getName() + suffixAdapterClassName;
+							if(!storedClasses.containsKey(name)){
+								//Gera um adapter aqui apenas para criar a classe do adapter da composição no ClassPath para o get funcionar
+								this.getInstance(metadataFileName).generate((IEntity)p.getValue());								
+								mv = ClassConstructor.createComplexPropertyGetter(name, cw, p.getName(), propertyType);
+								ClassConstructor.createComplexPropertySetter(name,cw, p.getName(), propertyType);
+							}
 						} else if (!p.getPropertyType().getType().toString()
 								.substring(6).equals("java.lang.Object")) {
 							String propertyType = p.getPropertyType().getType()
@@ -89,7 +88,8 @@ public class AdapterFactory {
 							ClassConstructor
 									.createSetter(name, cw, p.getName());
 						}
-						annotateMethod(pr, entityType, p, mv);
+						
+						if(mv !=null) annotateMethod(pr, entityType, p, mv);
 					}
 				}
 
@@ -101,7 +101,7 @@ public class AdapterFactory {
 				return clazz.getConstructor(IEntity.class).newInstance(entity);
 			}
 
-			return getInstanceFromStoredClasses(entity);
+			return existInStoredClassesWithoutClazz(entity) ? null : getInstanceFromStoredClasses(entity);
 		} catch (IllegalAccessException | IllegalArgumentException
 				| InstantiationException | NoSuchMethodException
 				| InvocationTargetException ex) {
@@ -158,30 +158,24 @@ public class AdapterFactory {
 			IEntityType entityType, IProperty p, MethodVisitor mv)
 			throws EsfingeAOMException {
 		Map<String, Object> annotationParameters = new HashMap<String, Object>();
-		for (IProperty metadataPropertyType : entityType.getPropertyType(
-				p.getName()).getProperties()) {
-			String annotationClassPath = pr.readProperty(metadataPropertyType
-					.getName());
-			if (annotationClassPath != null
-					&& annotationClassPath.length() != 0) {
-				String[] metadataParameters = pr
-						.readPropertyParameters(metadataPropertyType.getName());
+		for (IProperty metadataPropertyType : entityType.getPropertyType(p.getName()).getProperties()) {
+			String annotationClassPath = pr.readProperty(metadataPropertyType.getName());
+			if (annotationClassPath != null	&& annotationClassPath.length() != 0) {
+				String[] metadataParameters = pr.readPropertyParameters(metadataPropertyType.getName());
 				if (metadataParameters != null) {
 					for (String metadataParameter : metadataParameters) {
 						Map<String, Object> parameters = null;
 						try {
-							parameters = (Map<String, Object>) metadataPropertyType
-									.getValue();
+							parameters = (Map<String, Object>) metadataPropertyType.getValue();
 						} catch (ClassCastException e) {
-							annotationParameters.put(metadataParameter,
-									metadataPropertyType.getValue());
+							annotationParameters.put(metadataParameter,	metadataPropertyType.getValue());
 							break;
 						}
-						annotationParameters.put(metadataParameter,
-								parameters.get(metadataParameter));
+						if(parameters.get(metadataParameter) != null)
+							annotationParameters.put(metadataParameter,	parameters.get(metadataParameter));
+						
 					}
-					ClassConstructor.createAnnotationMethod(
-							annotationClassPath, annotationParameters, mv);
+					ClassConstructor.createAnnotationMethod(annotationClassPath, annotationParameters, mv);
 				}
 			}
 		}
@@ -236,6 +230,11 @@ public class AdapterFactory {
 	private boolean existInStoredClasses(IEntity entity)
 			throws EsfingeAOMException {
 		return storedClasses.containsKey(entity.getEntityType().getName());
+	}
+	
+	private boolean existInStoredClassesWithoutClazz(IEntity entity)
+			throws EsfingeAOMException {
+		return storedClasses.get(entity.getEntityType().getName()) == null;
 	}
 
 	private Class getStoredClass(IEntity entity) throws EsfingeAOMException {
