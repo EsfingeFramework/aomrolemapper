@@ -1,0 +1,19 @@
+{"persistence":[
+	{"annotationPath":"org.esfinge.aom.model.rolemapper.metadata.annotations.Entity"}
+  ],
+  
+  "ignore":[
+	{"annotationPath":"org.esfinge.comparison.annotation.IgnoreInComparison"}
+  ],
+    
+  "tolerance":[
+	{"annotationPath":"org.esfinge.comparison.annotation.Tolerance"},
+	{"parameter_1": "value"}
+   ],
+   
+   "substring":[
+ 	{"annotationPath":"org.esfinge.comparison.annotation.CompareSubstring"},
+	{"parameter_1": "begin"},
+    {"parameter_2": "end"}
+   ]
+}

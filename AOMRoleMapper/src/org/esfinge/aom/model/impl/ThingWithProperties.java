@@ -54,33 +54,25 @@ public abstract class ThingWithProperties implements HasProperties{
 
 	@Override
 	public void setProperty(String propertyName, Object propertyValue)
-			throws EsfingeAOMException {
-				
-		if (properties.containsKey(propertyName))
-		{
+			throws EsfingeAOMException {				
+		if (properties.containsKey(propertyName)){
 			properties.get(propertyName).setValue(propertyValue);
-		}
-		else
-		{
-			IPropertyType propertyType = getEntityType().getPropertyType(propertyName);
+		}else{
+			IPropertyType propertyType =  findPropertyType(propertyName);
+			propertyType.setType(propertyValue.getClass());
 			properties.put(propertyType, new GenericProperty(propertyType, propertyValue));
 		}	
 	}
 
 	@Override
-	public void removeProperty(String propertyName) throws EsfingeAOMException {
-		
-		IPropertyType propertyType = getEntityType().getPropertyType(propertyName);
-		
-		if (propertyType != null)
-		{
-			properties.remove(propertyType);
-		}
+	public void removeProperty(String propertyName) throws EsfingeAOMException {		
+		IPropertyType propertyType = findPropertyType(propertyName);
+		properties.remove(propertyType);
 	}
 
 	@Override
 	public IProperty getProperty(String propertyName) throws EsfingeAOMException {
-		IPropertyType propertyType = getEntityType().getPropertyType(propertyName);
+		IPropertyType propertyType = findPropertyType(propertyName);
 		
 		if (propertyType != null)
 		{
@@ -89,5 +81,23 @@ public abstract class ThingWithProperties implements HasProperties{
 		
 		return null;
 	}
+	
+	private IPropertyType findPropertyType(String propertyName) throws EsfingeAOMException{
+		
+		IPropertyType propertyType = getPropertyTypeFromEntityType(propertyName);
 
+		if(propertyType == null){
+			propertyType = new GenericPropertyType(propertyName, null);
+		}
+		
+		return propertyType;
+	}
+	
+	private IPropertyType getPropertyTypeFromEntityType(String propertyName) throws EsfingeAOMException{
+		if(getEntityType() != null){
+			return getEntityType().getPropertyType(propertyName);
+		}
+		
+		return null;
+	}	
 }

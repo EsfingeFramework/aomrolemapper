@@ -1,5 +1,7 @@
 package br.inpe.dga.main;
 
+import java.lang.reflect.Method;
+
 import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
@@ -36,18 +38,21 @@ public class TestCompositeEntity {
 		home.setProperty("phone", "1232312312");
 		home.setProperty("type", "work");
 		joao.setProperty("mainContact", home);
-		
-		//dá pau!
-		//AdapterFactory g = new AdapterFactory();
-		//g.generate(joao);
-		
+			
 		TemplateAdapter ta = new TemplateAdapter(joao);
 		
 		Object contactBean = ta.getMainContact();
-		Class<?> contactBeanClass = contactBean.getClass();
 		
-		System.out.println(contactBean.getClass());
-		System.out.println(contactBeanClass.getMethod("getPhone").invoke(contactBean));
+		System.out.println(contactBean.getClass().getMethod("getPhone").invoke(contactBean));
+
+		HasProperties home2 = contact.createNewEntity();
+		home2.setProperty("phone", "4444444");
+		home2.setProperty("type", "home");
+		ta.setMainContact(home2);
+		contactBean = ta.getMainContact();
+		
+		System.out.println(contactBean.getClass().getMethod("getPhone").invoke(contactBean));
+		System.out.println(ta.getClass().getMethod("getMainContact").invoke(ta));
 		
 		System.out.println("OK");
 	}

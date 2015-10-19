@@ -51,7 +51,7 @@ public class GenericProperty extends ThingWithProperties implements IProperty {
 
 	@Override
 	public void setValue(Object value) throws EsfingeAOMException {
-		if (!propertyType.isValidValue(value))
+		if (propertyType != null && !propertyType.isValidValue(value))
 		{
 			throw new EsfingeAOMException("The given value " + value + " is not valid for type " + propertyType.getName());
 		}

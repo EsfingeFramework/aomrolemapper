@@ -7,6 +7,7 @@ import java.util.WeakHashMap;
 
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
+import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 
@@ -98,4 +99,40 @@ public class GenericEntityType extends ThingWithProperties implements IEntityTyp
 	public IEntityType getEntityType() {
 		return null;
 	}
+	
+	@Override
+	public IProperty getProperty(String propertyName) throws EsfingeAOMException {
+		IPropertyType propertyType = getPropertyType(propertyName);
+		
+		if (propertyType != null)
+		{
+			return properties.get(propertyType);
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public void setProperty(String propertyName, Object propertyValue)
+			throws EsfingeAOMException {				
+		if (properties.containsKey(propertyName))
+		{
+			properties.get(propertyName).setValue(propertyValue);
+		}
+		
+		IPropertyType propertyType = getPropertyType(propertyName);
+		
+		if(propertyType == null){
+			addPropertyType(new GenericPropertyType(propertyName, propertyValue.getClass()));
+			propertyType = getPropertyType(propertyName);
+		}
+		
+		properties.put(propertyType, new GenericProperty(propertyType, propertyValue));
+	}
+
+	@Override
+	public void removeProperty(String propertyName) throws EsfingeAOMException {		
+		IPropertyType propertyType = getPropertyType(propertyName);
+		properties.remove(propertyType);
+	}	
 }

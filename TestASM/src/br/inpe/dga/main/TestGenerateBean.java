@@ -15,6 +15,7 @@ import org.esfinge.aom.model.impl.GenericPropertyType;
 import br.inpe.dga.adapter.TemplateAdapter;
 import br.inpe.dga.factory.AdapterFactory;
 import br.inpe.dga.old.adapter.TestClassBeanAdapter;
+import br.inpe.dga.utils.AnnotationMapFileName;
 import br.inpe.dga.utils.ObjectPrinter;
 
 public class TestGenerateBean {
@@ -46,7 +47,7 @@ public class TestGenerateBean {
 		entity.setProperty("name", "João");	
 		entity.setProperty("mainContact", entityComplex);
 		
-		AdapterFactory af = AdapterFactory.getInstance();;
+		AdapterFactory af = AdapterFactory.getInstance(AnnotationMapFileName.NAME.getName());
 		
 		Object obj = af.generate(entity, true);
 

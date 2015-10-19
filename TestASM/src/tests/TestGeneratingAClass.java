@@ -12,6 +12,7 @@ import org.esfinge.aom.model.impl.GenericPropertyType;
 import org.junit.Test;
 
 import br.inpe.dga.factory.AdapterFactory;
+import br.inpe.dga.utils.AnnotationMapFileName;
 
 public class TestGeneratingAClass {
 	
@@ -45,7 +46,7 @@ public class TestGeneratingAClass {
 		entity.setProperty("internalSpace", 3.8);
 		entity.setProperty("inStock", true);
 
-		AdapterFactory af = AdapterFactory.getInstance();;
+		AdapterFactory af = AdapterFactory.getInstance(AnnotationMapFileName.NAME.getName());
 		Object obj = af.generate(entity, false);
 
 		assertEquals(5, entity.getProperties().size());

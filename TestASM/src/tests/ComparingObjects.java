@@ -24,7 +24,6 @@ public class ComparingObjects {
 	@Test
 	public void comparingObjects() throws Exception {
 		
-		
 		entityTypeA = new GenericEntityType("Car");
 
 		entityTypeA.addPropertyType(new GenericPropertyType("plateNumber",
@@ -39,7 +38,7 @@ public class ComparingObjects {
 		entityA.setProperty("yearOfManufacturing", 1980);
 		entityA.setProperty("color", "yellow");
 
-		AdapterFactory af = AdapterFactory.getInstance();;
+		AdapterFactory af = AdapterFactory.getInstance("AnnotationMapping.json");
 		Object objA = af.generate(entityA);
 		
 		

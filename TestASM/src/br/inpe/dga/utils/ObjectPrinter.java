@@ -3,10 +3,18 @@ package br.inpe.dga.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.annotation.*;
 
 public class ObjectPrinter {
 	public static void printClass(Object obj) {
+		for (Annotation annotation : obj.getClass().getAnnotations()) {
+			System.out.println(annotation);
+		}
+		
 		for (Method m : obj.getClass().getMethods()) {
+			for (Annotation annotation : m.getAnnotations()) {
+				System.out.println(annotation);
+			}
 			if (m.getName().startsWith("get")) {
 				System.out.print(m + "   => ");
 				try {

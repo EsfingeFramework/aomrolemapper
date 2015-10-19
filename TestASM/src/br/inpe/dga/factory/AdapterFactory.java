@@ -21,7 +21,10 @@ import static org.objectweb.asm.Opcodes.PUTFIELD;
 import static org.objectweb.asm.Opcodes.RETURN;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
@@ -36,54 +39,82 @@ import org.objectweb.asm.Opcodes;
 
 import br.inpe.dga.utils.DynamicClassLoader;
 import br.inpe.dga.utils.ObjectPrinter;
+import br.inpe.dga.utils.PropertiesReaderJsonPattern;
 
 public class AdapterFactory {
-
 	private static HashMap<String, Class> storedClasses = new HashMap<>();
 	private static AdapterFactory adapterFactory;
+	private final String metadataFileName;
 	
-	public static AdapterFactory getInstance(){
+	public static AdapterFactory getInstance(String annotationMapFileName){
 		if(adapterFactory == null){
-			adapterFactory = new AdapterFactory();			
+			adapterFactory = new AdapterFactory(annotationMapFileName);			
 		}
-		
 		return adapterFactory;
 	}
 	
-	private AdapterFactory() {
+	private AdapterFactory(String annotationMapFileName) {
 		storedClasses.clear();
+		metadataFileName = annotationMapFileName;
 	}
 	
 	public Object generate(IEntity entity) throws Exception {		
 		if (!existInStoredClasses(entity)) {
 			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-			String name = entity.getEntityType().getName() + "AOMBeanAdapter";
-			createClassAndConstructor(name, cw);
-			createPrivateAttribute(null, cw);
-
+			PropertiesReaderJsonPattern pr = PropertiesReaderJsonPattern.getInstance(metadataFileName);
+			IEntityType entityType = entity.getEntityType();
+			String name = entityType.getName() + "AOMBeanAdapter";
+			ClassConstructor.createClassAndConstructor(name, cw);
+			ClassConstructor.createPrivateAttribute(null, cw);
+			
+			//Verifica proprietades do entityType, busca propriedades no arquivo e anota a classe
+			for(IProperty metadataEntity : entityType.getProperties()){
+				String annotationClassPath = pr.readProperty(metadataEntity.getName());
+				if(annotationClassPath != null){
+					ClassConstructor.createAnnotationClass(annotationClassPath, cw);
+				}
+			}
+			
 			for (IProperty p : entity.getProperties()) {
-				if(IEntityType.class.isAssignableFrom(p.getPropertyType().getType().getClass())){					
-					String propertyType = IEntityType.class.toString();
-					createComplexPropertyGetter(name, cw, p.getName(),
-							propertyType);				
+				List<String> annotationClassPaths = new ArrayList<String>();
+				Map<String, Object> annotationParameters = new HashMap<String, Object>();
+				//Verifica propriedades da propertyType, busca propiedades no arquivo, e anota o get
+				for(IProperty metadataPropertyType : entityType.getPropertyType(p.getName()).getProperties()){
+					String annotationClassPath = pr.readProperty(metadataPropertyType.getName());					
+						if(annotationClassPath != null && annotationClassPath.length() != 0){
+							annotationClassPaths.add(annotationClassPath);
+							//Considera somente um parâmetro por anotação
+							String[] metadataParameters = pr.readPropertyParameters(metadataPropertyType.getName());
+							if(metadataParameters!= null){
+								for(String metadataParameter : metadataParameters){
+									Map<String, Object> parameters = null;
+									try{
+										parameters = (Map<String, Object>)metadataPropertyType.getValue();
+									}catch(ClassCastException e){
+										annotationParameters.put(metadataParameter, metadataPropertyType.getValue());
+										break;
+									}									
+									annotationParameters.put(metadataParameter, parameters.get(metadataParameter));
+								}
+							}
+							//annotationParameters.put(pr.readPropertyParameter(metadataPropertyType.getName()), metadataPropertyType.getValue());
+						}
 				}
 				
-				else if (!p.getPropertyType().getType().toString().substring(6)
+				if(IEntityType.class.isAssignableFrom(p.getPropertyType().getType().getClass())){					
+					String propertyType = IEntityType.class.toString();
+					ClassConstructor.createComplexPropertyGetter(name, cw, p.getName(), propertyType, annotationClassPaths, annotationParameters);				
+				} else if (!p.getPropertyType().getType().toString().substring(6)
 						.equals("java.lang.Object")) {
 					String propertyType = p.getPropertyType().getType()
 							.toString().substring(6);
-					createGetterWithSpecificProperty(name, cw, p.getName(),
-							propertyType);
-					createSetterWithSpecificProperty(name, cw, p.getName(),
-							propertyType);
-				}
-				else{
-					createGetter(name, cw, p.getName());
-					createSetter(name, cw, p.getName());
+					ClassConstructor.createGetterWithSpecificProperty(name, cw, p.getName(), propertyType, annotationClassPaths, annotationParameters);
+				}else{
+					ClassConstructor.createGetter(name, cw, p.getName(), annotationClassPaths, annotationParameters);
 				}
 			}
 
-			DynamicClassLoader cl = new DynamicClassLoader();
+			DynamicClassLoader cl = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
 			
 			Class<?> clazz = cl.defineClass(name, cw.toByteArray());
 			addStoredClass(entity, clazz);			
@@ -93,63 +124,6 @@ public class AdapterFactory {
 		return getInstanceFromStoredClasses(entity);
 	}
 	
-	private void createComplexPropertyGetter(String name, ClassWriter cw,
-			String propName, String propertyType) {
-			
-		String propCaptalized = propName.substring(0, 1).toUpperCase()
-				+ propName.substring(1);
-		propertyType = propertyType.replace("interface", "");
-		propertyType = propertyType.replaceAll(" ", "");
-		String specificPropType = "()L" + propertyType.replace(".", "/") + ";";
-		
-		
-		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + propCaptalized,
-				specificPropType, null, null);
-		mv.visitCode();
-		Label l0 = new Label();
-		Label l1 = new Label();
-		Label l2 = new Label();
-		mv.visitTryCatchBlock(l0, l1, l2, "java/lang/Exception");
-		mv.visitLabel(l0);
-		mv.visitLineNumber(17, l0);
-		mv.visitVarInsn(ALOAD, 0);
-		mv.visitFieldInsn(GETFIELD, name, "entity", "Lorg/esfinge/aom/api/model/IEntity;");
-		mv.visitLdcInsn(propName);
-		mv.visitMethodInsn(INVOKEINTERFACE, "org/esfinge/aom/api/model/IEntity", "getProperty", "(Ljava/lang/String;)Lorg/esfinge/aom/api/model/IProperty;", true);
-		mv.visitMethodInsn(INVOKEINTERFACE, "org/esfinge/aom/api/model/IProperty", "getValue", "()Ljava/lang/Object;", true);
-		mv.visitTypeInsn(CHECKCAST, "org/esfinge/aom/api/model/IEntity");
-		mv.visitVarInsn(ASTORE, 1);
-		Label l3 = new Label();
-		mv.visitLabel(l3);
-		mv.visitLineNumber(18, l3);
-		mv.visitMethodInsn(INVOKESTATIC, "br/inpe/dga/factory/AdapterFactory", "getInstance", "()Lbr/inpe/dga/factory/AdapterFactory;", false);
-		mv.visitVarInsn(ALOAD, 1);
-		mv.visitMethodInsn(INVOKEVIRTUAL, "br/inpe/dga/factory/AdapterFactory", "generate", "(Lorg/esfinge/aom/api/model/IEntity;)Ljava/lang/Object;", false);
-		mv.visitLabel(l1);
-		mv.visitInsn(ARETURN);
-		mv.visitLabel(l2);
-		mv.visitLineNumber(19, l2);
-		mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] {"java/lang/Exception"});
-		mv.visitVarInsn(ASTORE, 1);
-		Label l4 = new Label();
-		mv.visitLabel(l4);
-		mv.visitLineNumber(20, l4);
-		Label l5 = new Label();
-		mv.visitLabel(l5);
-		mv.visitLineNumber(21, l5);
-		mv.visitTypeInsn(NEW, "java/lang/RuntimeException");
-		mv.visitInsn(DUP);
-		mv.visitVarInsn(ALOAD, 1);
-		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/RuntimeException", "<init>", "(Ljava/lang/Throwable;)V", false);
-		mv.visitInsn(ATHROW);
-		Label l6 = new Label();
-		mv.visitLabel(l6);
-		mv.visitLocalVariable("this", "Lbr/inpe/dga/adapter/TemplateAdapter;", null, l0, l6, 0);
-		mv.visitLocalVariable("entityProp", "Lorg/esfinge/aom/api/model/IEntity;", null, l3, l2, 1);
-		mv.visitLocalVariable("e", "Ljava/lang/Exception;", null, l4, l6, 1);
-		mv.visitMaxs(3, 2);
-		mv.visitEnd();
-	}
 
 	private Class addStoredClass(IEntity entity, Class clazz)
 			throws EsfingeAOMException {
@@ -182,7 +156,7 @@ public class AdapterFactory {
 		}
 		return generate(entity);
 	}
-
+	
 	private void createPrivateAttribute(String property, ClassWriter cw) {
 		FieldVisitor fv = cw.visitField(ACC_PRIVATE, "entity",
 				"Lorg/esfinge/aom/api/model/IEntity;", null, null);
@@ -412,5 +386,63 @@ public class AdapterFactory {
 		mv.visitMaxs(3, 3);
 		mv.visitEnd();
 	}
-
+	
+	
+	private void createComplexPropertyGetter(String name, ClassWriter cw,
+			String propName, String propertyType) {
+			
+		String propCaptalized = propName.substring(0, 1).toUpperCase()
+				+ propName.substring(1);
+		propertyType = propertyType.replace("interface", "");
+		propertyType = propertyType.replaceAll(" ", "");
+		String specificPropType = "()L" + propertyType.replace(".", "/") + ";";
+		
+		
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + propCaptalized,
+				specificPropType, null, null);
+		mv.visitCode();
+		Label l0 = new Label();
+		Label l1 = new Label();
+		Label l2 = new Label();
+		mv.visitTryCatchBlock(l0, l1, l2, "java/lang/Exception");
+		mv.visitLabel(l0);
+		mv.visitLineNumber(17, l0);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitFieldInsn(GETFIELD, name, "entity", "Lorg/esfinge/aom/api/model/IEntity;");
+		mv.visitLdcInsn(propName);
+		mv.visitMethodInsn(INVOKEINTERFACE, "org/esfinge/aom/api/model/IEntity", "getProperty", "(Ljava/lang/String;)Lorg/esfinge/aom/api/model/IProperty;", true);
+		mv.visitMethodInsn(INVOKEINTERFACE, "org/esfinge/aom/api/model/IProperty", "getValue", "()Ljava/lang/Object;", true);
+		mv.visitTypeInsn(CHECKCAST, "org/esfinge/aom/api/model/IEntity");
+		mv.visitVarInsn(ASTORE, 1);
+		Label l3 = new Label();
+		mv.visitLabel(l3);
+		mv.visitLineNumber(18, l3);
+		mv.visitMethodInsn(INVOKESTATIC, "br/inpe/dga/factory/AdapterFactory", "getInstance", "()Lbr/inpe/dga/factory/AdapterFactory;", false);
+		mv.visitVarInsn(ALOAD, 1);
+		mv.visitMethodInsn(INVOKEVIRTUAL, "br/inpe/dga/factory/AdapterFactory", "generate", "(Lorg/esfinge/aom/api/model/IEntity;)Ljava/lang/Object;", false);
+		mv.visitLabel(l1);
+		mv.visitInsn(ARETURN);
+		mv.visitLabel(l2);
+		mv.visitLineNumber(19, l2);
+		mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] {"java/lang/Exception"});
+		mv.visitVarInsn(ASTORE, 1);
+		Label l4 = new Label();
+		mv.visitLabel(l4);
+		mv.visitLineNumber(20, l4);
+		Label l5 = new Label();
+		mv.visitLabel(l5);
+		mv.visitLineNumber(21, l5);
+		mv.visitTypeInsn(NEW, "java/lang/RuntimeException");
+		mv.visitInsn(DUP);
+		mv.visitVarInsn(ALOAD, 1);
+		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/RuntimeException", "<init>", "(Ljava/lang/Throwable;)V", false);
+		mv.visitInsn(ATHROW);
+		Label l6 = new Label();
+		mv.visitLabel(l6);
+		mv.visitLocalVariable("this", "Lbr/inpe/dga/adapter/TemplateAdapter;", null, l0, l6, 0);
+		mv.visitLocalVariable("entityProp", "Lorg/esfinge/aom/api/model/IEntity;", null, l3, l2, 1);
+		mv.visitLocalVariable("e", "Ljava/lang/Exception;", null, l4, l6, 1);
+		mv.visitMaxs(3, 2);
+		mv.visitEnd();
+	}
 }

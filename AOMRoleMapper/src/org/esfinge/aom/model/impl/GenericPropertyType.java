@@ -97,22 +97,21 @@ public class GenericPropertyType extends ThingWithProperties implements IPropert
 	@Override
 	public boolean isValidValue(Object value) throws EsfingeAOMException {
 		//TODO
-		if (value == null)
-		{
+		if (value == null){
 			return true;
 		}
 		
 		Object type = getType();
-		if (type instanceof Class<?>)
-		{
+		if (type instanceof Class<?>){
 			if (type.equals(Object.class))
 				return true;
 			
 			Class<?> classType = (Class<?>)type;			
 			return Utils.valueIsAssignable(classType, value);
 		}
+		
 		IEntityType entityType = (IEntityType)type;
-		IEntity entity = (IEntity)value;
+		IEntity entity = (IEntity) value;
 		
 		return entity.getEntityType().equals(entityType);
 	}
