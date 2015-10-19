@@ -1,0 +1,38 @@
+{"entity":[
+    {"target":"class"},
+	{"annotationPath":"javax.persistence.Entity"}
+  ],
+  
+  "table":[
+    {"target":"class"},
+	{"annotationPath":"javax.persistence.Table"},
+	{"parameter_1": "name"}
+  ],
+  
+  "id":[
+    {"target":"method"},
+	{"annotationPath":"javax.persistence.Id"}
+  ],
+  
+  "generatedValue":[
+    {"target":"method"},
+	{"annotationPath":"javax.persistence.GeneratedValue"}
+  ],
+    
+  "column":[
+    {"target":"method"},
+	{"annotationPath":"javax.persistence.Column"},
+	{"parameter_1": "name"},
+	{"parameter_2": "nullable"}
+   ],
+   
+  "oneToOne":[
+    {"target":"method"},
+	{"annotationPath":"javax.persistence.OneToOne"}	
+   ],
+   
+   "primaryKeyJoinColumn":[
+    {"target":"method"},
+	{"annotationPath":"javax.persistence.PrimaryKeyJoinColumn"}
+   ]
+}
