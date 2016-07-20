@@ -18,7 +18,7 @@ import org.esfinge.aom.model.factories.PropertyTypeFactory;
 
 public class AOMTest {
 
-	private ModelManager manager = ModelManager.getInstance();
+	private ModelManager manager;
 	
 	private IEntity entity;
 	
@@ -32,7 +32,33 @@ public class AOMTest {
 	public static void main(String[] args) throws EsfingeAOMException {		
 		
 		AOMTest program = new AOMTest();
+		program.selectPersistenceFrameworkMenu();
 		program.showMainMenu();
+	}
+	
+	private void selectPersistenceFrameworkMenu() {
+		int option;
+		Scanner in = new Scanner(System.in);
+		do {
+			System.out.println("Select the persistence framework you want to use:");
+			System.out.println("1- Autoselect using ServiceLocator.");
+			System.out.println("2- Use MongoDB.");
+			System.out.println("3- Use CouchDB.");
+			option = Integer.parseInt(in.nextLine());
+			switch (option) {
+				case 1:
+					manager = ModelManager.getInstance();
+					break;
+				case 2:
+					manager = ModelManager.getInstance("org.esfinge.aom.persistence.mongodb.MongoAOM");
+					break;
+				case 3:
+					manager = ModelManager.getInstance("org.esfinge.aom.persistence.couchdb.CouchAOM");
+					break;
+				default:
+					System.out.println("Invalid choice.");
+			}
+		} while(option < 1 || option > 3);
 	}
 	
 	private void showMainMenu ()

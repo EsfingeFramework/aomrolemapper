@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/AOMRoleMapperBankingExample"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/AOMRoleMapperMedicalExample"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/AOMMongoPersistenceFramework"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/AOMCouchPersistenceFramework"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
