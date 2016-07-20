@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
 import org.esfinge.aom.api.manager.visitors.IEntityVisitor;
@@ -17,6 +18,9 @@ import org.lightcouch.CouchDbClient;
 import org.lightcouch.CouchDbProperties;
 import org.lightcouch.Document;
 import org.lightcouch.NoDocumentException;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public class CouchAOM implements IModelRetriever {
 
@@ -51,8 +55,8 @@ public class CouchAOM implements IModelRetriever {
 	}
 
 	private void loadDatabaseConfig() {
-		dbClientConfig = new CouchDbProperties().setCreateDbIfNotExist(true).setDbName("couchaom")
-				.setHost("localhost").setPort(5984).setProtocol("http");
+		dbClientConfig = new CouchDbProperties().setCreateDbIfNotExist(true).setDbName("couchaom").setHost("localhost")
+				.setPort(5984).setProtocol("http");
 	}
 
 	private void initDatabase() {
@@ -113,9 +117,14 @@ public class CouchAOM implements IModelRetriever {
 
 	@Override
 	public List<String> getAllEntityTypeIds() throws EsfingeAOMException {
-		List<String> allDocs = new ArrayList<>();
+		List<String> entityTypeIds = new ArrayList<>();
+		List<JsonObject> allDocs = dbEntityType.view("_all_docs").query(JsonObject.class);
 
-		return allDocs;
+		for (JsonObject d : allDocs) {
+			entityTypeIds.add(d.get("id").getAsString());
+		}
+
+		return entityTypeIds;
 	}
 
 	@Override
@@ -133,8 +142,48 @@ public class CouchAOM implements IModelRetriever {
 
 	@Override
 	public IEntityType getEntityType(String id, IEntityTypeVisitor entityTypeVisitor) throws EsfingeAOMException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			JsonObject jsonEntityType = dbEntityType.find(JsonObject.class, id);
+			String packageName = jsonEntityType.get(ENTITY_TYPE_PACKAGE).getAsString();
+			String name = jsonEntityType.get(ENTITY_TYPE_NAME).getAsString();
+			
+			if (jsonEntityType.has(ENTITY_TYPE_CLASS)) {
+				String dsClass = jsonEntityType.get(ENTITY_TYPE_CLASS).getAsString();
+				entityTypeVisitor.initVisit(packageName, name, dsClass);
+			} else {
+				entityTypeVisitor.initVisit(packageName, name);
+			}
+			
+			JsonObject propertyTypes = jsonEntityType.getAsJsonObject(ENTITY_TYPE_PROPERTY_TYPES);
+			for (Map.Entry<String, JsonElement> entry : propertyTypes.entrySet()) {
+				String propertyName = entry.getKey();
+				JsonObject propertyTypeFields = entry.getValue().getAsJsonObject();
+				Boolean isRelationship = propertyTypeFields.get(PROPERTY_TYPE_IS_RELATIONSHIP).getAsBoolean();
+				Object type = null; 
+				String dsClass = null;
+				
+				if (propertyTypeFields.has(PROPERTY_TYPE_CLASS)) {
+					dsClass = propertyTypeFields.get(PROPERTY_TYPE_CLASS).getAsString();
+				}
+				
+				if (!isRelationship)
+				{
+					String typeClass = propertyTypeFields.get(PROPERTY_TYPE_TYPE).getAsString();
+					type = getClass(typeClass);
+					entityTypeVisitor.visitPropertyType(propertyName, type, dsClass);
+				}
+				else
+				{
+					String entityTypeID = propertyTypeFields.get(PROPERTY_TYPE_TYPE).getAsString();
+					entityTypeVisitor.visitRelationship(propertyName, entityTypeID, dsClass);
+				}
+			}
+			return entityTypeVisitor.endVisit();
+		} catch (NoDocumentException e) {
+			return null;			
+		} catch (Exception e) {
+			throw new EsfingeAOMException(e);
+		}
 	}
 
 	@Override
@@ -191,7 +240,7 @@ public class CouchAOM implements IModelRetriever {
 			} else {
 				dbEntity.save(entityMap);
 			}
-			
+
 		} catch (Exception e) {
 			throw new EsfingeAOMException(e);
 		}
@@ -236,7 +285,7 @@ public class CouchAOM implements IModelRetriever {
 			if (associatedEntityType != null) {
 				entityTypeMap.put(ENTITY_TYPE_CLASS, associatedEntityType.getClass().getName());
 			}
-			
+
 			if (persistenceType != PersistenceType.Insert) {
 				try {
 					Document doc = dbEntityType.find(Document.class, id.toString());
@@ -262,4 +311,44 @@ public class CouchAOM implements IModelRetriever {
 		return packageName + "/" + name;
 	}
 
+	private Class<?> getClass(String className) throws ClassNotFoundException
+	{
+		if (Pattern.matches(".*\\..*", className))
+		{
+			return Class.forName(className);
+		}
+		if (className.equals("int"))
+		{
+			return int.class;
+		}
+		if (className.equals("long"))
+		{
+			return long.class;
+		}
+		if (className.equals("double"))
+		{
+			return double.class;
+		}
+		if (className.equals("float"))
+		{
+			return float.class;
+		}
+		if (className.equals("boolean"))
+		{
+			return boolean.class;
+		}
+		if (className.equals("char"))
+		{
+			return char.class;
+		}
+		if (className.equals("byte"))
+		{
+			return byte.class;
+		}
+		if (className.equals("short"))
+		{
+			return short.class;
+		}
+		return null;
+	}
 }
