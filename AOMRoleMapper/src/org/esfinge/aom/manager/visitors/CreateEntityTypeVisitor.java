@@ -48,7 +48,7 @@ public class CreateEntityTypeVisitor implements IEntityTypeVisitor {
 			}
 			entityType.addPropertyType(propertyType);
 		}
-		else
+		else if (!propertyType.getClass().getName().equals("org.esfinge.aom.model.rolemapper.core.AdapterFixedPropertyType"))
 		{
 			propertyType.setType(type);
 		}
