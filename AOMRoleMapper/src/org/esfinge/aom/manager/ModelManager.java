@@ -36,16 +36,21 @@ public class ModelManager {
 	
 	public static ModelManager getInstance()
 	{
+		return getInstance(null);
+	}
+	
+	public static ModelManager getInstance(String managerName)
+	{
 		if (instance == null)
 		{
-			instance = new ModelManager();
+			instance = new ModelManager(managerName);
 		}
 		return instance;
 	}
 	
-	private ModelManager()
+	private ModelManager(String managerName)
 	{
-		modelRetriever = ModelRetrieverFactory.getInstance().getEntityManager();
+		modelRetriever = ModelRetrieverFactory.getInstance().getEntityManager(managerName);
 	}
 	
 	/**

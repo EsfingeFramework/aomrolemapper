@@ -227,8 +227,10 @@ public class AdapterEntity implements IEntity {
 				{
 					if(entityDescriptor.getMapPropertiesDescriptor() != null){
 						Method getPropertiesMethod = entityDescriptor.getMapPropertiesDescriptor().getGetFieldMethod();
-						Map dsMapProperties = (Map<String,?>) getPropertiesMethod.invoke(dsObject);					
-						dsMapProperties.replace(propertyName, propertyValue);
+						Map dsMapProperties = (Map<String,?>) getPropertiesMethod.invoke(dsObject);
+						if (dsMapProperties.containsKey(propertyName)) {
+							dsMapProperties.put(propertyName, propertyValue);
+						}
 					}
 					property.setValue(propertyValue);
 					return;
