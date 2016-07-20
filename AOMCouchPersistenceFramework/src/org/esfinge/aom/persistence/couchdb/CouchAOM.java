@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
@@ -16,6 +17,7 @@ import org.esfinge.aom.api.modelretriever.IModelRetriever;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.lightcouch.CouchDbClient;
 import org.lightcouch.CouchDbProperties;
+import org.lightcouch.DesignDocument;
 import org.lightcouch.Document;
 import org.lightcouch.NoDocumentException;
 
@@ -39,7 +41,6 @@ public class CouchAOM implements IModelRetriever {
 	private static String ENTITY_TYPE_CLASS = "esfingeEntityTypeClass";
 	private static String PROPERTY_TYPE_TYPE = "esfingePropertyTypeType";
 	private static String PROPERTY_TYPE_CLASS = "esfingePropertyTypeClass";
-	private static String DEFAULT_COLLECTION_FOR_ENTITIES = "esfingeEntitiesCollection";
 
 	private CouchDbProperties dbClientConfig;
 	private CouchDbClient dbEntity;
@@ -65,6 +66,9 @@ public class CouchAOM implements IModelRetriever {
 		dbEntity = new CouchDbClient(dbClientConfig);
 		dbClientConfig.setDbName(dbNamePrefix + "-entity_type");
 		dbEntityType = new CouchDbClient(dbClientConfig);
+		
+		DesignDocument entityDesignDoc = dbEntity.design().getFromDesk("entity");
+		dbEntity.design().synchronizeWithDb(entityDesignDoc);
 	}
 
 	@Override
@@ -84,14 +88,13 @@ public class CouchAOM implements IModelRetriever {
 
 	@Override
 	public void removeEntity(Object id, IEntityType entityType) throws EsfingeAOMException {
-		// TODO Auto-generated method stub
-
+		Document doc = dbEntity.find(Document.class, id.toString());
+		dbEntity.remove(doc);
 	}
 
 	@Override
 	public void removeEntity(IEntity entity) throws EsfingeAOMException {
-		// TODO Auto-generated method stub
-
+		removeEntity(entity.getProperty("id").getValue(), entity.getEntityType());
 	}
 
 	@Override
@@ -111,8 +114,16 @@ public class CouchAOM implements IModelRetriever {
 
 	@Override
 	public void removeEntityType(IEntityType entityType) throws EsfingeAOMException {
-		// TODO Auto-generated method stub
-
+		String id = getEntityTypeId(entityType);
+		
+		Document docEntityType = dbEntityType.find(Document.class, id);
+		dbEntityType.remove(docEntityType);
+		
+		List<Object> entitiesOfType = getAllEntityIDsForType(entityType);
+		for (Object idObject : entitiesOfType) {
+			Document entityDoc = dbEntity.find(Document.class, (String)idObject);
+			dbEntity.remove(entityDoc);
+		}
 	}
 
 	@Override
@@ -129,15 +140,55 @@ public class CouchAOM implements IModelRetriever {
 
 	@Override
 	public List<Object> getAllEntityIDsForType(IEntityType entityType) throws EsfingeAOMException {
-		// TODO Auto-generated method stub
-		return null;
+		List<Object> entityIDs = new ArrayList<Object>();
+		String entityTypeId = getEntityTypeId(entityType);
+		
+		List<JsonObject> docs = dbEntity.view("entity/by_entityEntityTypeId")
+				.key(entityTypeId)
+				.query(JsonObject.class);
+		
+		for (JsonObject doc : docs) {
+			entityIDs.add(doc.get("id").getAsString());
+		}
+		
+		return entityIDs;
 	}
 
 	@Override
 	public IEntity getEntity(Object id, IEntityType entityType, IEntityVisitor entityVisitor)
 			throws EsfingeAOMException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		try {
+			JsonObject jsonEntity = dbEntity.find(JsonObject.class, (String)id);
+			
+			if (jsonEntity.has(ENTITY_CLASS)) {
+				String dsClass = jsonEntity.get(ENTITY_CLASS).getAsString();
+				entityVisitor.initVisit(id, entityType, dsClass);
+			} else {
+				entityVisitor.initVisit(id, entityType);
+			}
+			
+			JsonObject properties = jsonEntity.getAsJsonObject(ENTITY_PROPERTIES);
+			for (Map.Entry<String, JsonElement> entry : properties.entrySet()) {
+				String propertyName = entry.getKey();
+				JsonObject propertyFields = entry.getValue().getAsJsonObject();
+				Boolean isRelationshipProperty = propertyFields.get(PROPERTY_IS_RELATIONSHIP).getAsBoolean();
+				if (isRelationshipProperty) {
+					String entityTypeId = propertyFields.get(PROPERTY_ENTITY_TYPE).getAsString();
+					String entityId = propertyFields.get(PROPERTY_ENTITY_ID).getAsString();
+					entityVisitor.visitRelationship(propertyName, entityTypeId, entityId);
+				} else {
+					Object value = (Object)propertyFields.get(PROPERTY_VALUE).getAsString();
+					entityVisitor.visitProperty(propertyName, value);
+				}
+			}
+			return entityVisitor.endVisit();
+				
+		} catch (NoDocumentException e) {
+			return null;
+		} catch (Exception e) {
+			throw new EsfingeAOMException(e);
+		}
 	}
 
 	@Override
@@ -189,14 +240,13 @@ public class CouchAOM implements IModelRetriever {
 	@Override
 	public IEntityType getEntityType(String packageName, String name, IEntityTypeVisitor entityTypeVisitor)
 			throws EsfingeAOMException {
-		// TODO Auto-generated method stub
-		return null;
+		String id = getEntityTypeId(packageName, name);
+		return getEntityType(id, entityTypeVisitor);
 	}
 
 	@Override
 	public Object generateEntityId() throws EsfingeAOMException {
-		// TODO Auto-generated method stub
-		return null;
+		return UUID.randomUUID().toString();
 	}
 
 	private void persist(IEntity entity, PersistenceType persistenceType) throws EsfingeAOMException {
