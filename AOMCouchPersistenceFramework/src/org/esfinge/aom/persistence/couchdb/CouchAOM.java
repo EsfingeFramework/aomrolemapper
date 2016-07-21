@@ -16,9 +16,10 @@ public class CouchAOM extends BasePersistence implements IModelRetriever {
 	private EntityTypePersistence entityTypePersistence;
 	
 
-	public CouchAOM() {
-		entityPersistence = new EntityPersistence();
-		entityTypePersistence = new EntityTypePersistence();
+	public CouchAOM() throws EsfingeAOMException {
+		PersistenceConfig config = new PersistenceConfig();
+		entityPersistence = new EntityPersistence(config);
+		entityTypePersistence = new EntityTypePersistence(config);
 	}
 
 	@Override

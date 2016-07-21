@@ -1,0 +1,10 @@
+{
+	"dbPrefix": "aomtest",
+	"host": "localhost",
+	"port": 5984,
+	"protocol": "http",
+	"createDbIfNotExist": true,
+	"username": "",
+	"password": "",
+	"path": ""
+}

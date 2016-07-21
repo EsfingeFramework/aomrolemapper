@@ -20,8 +20,8 @@ import com.google.gson.JsonObject;
 public class EntityTypePersistence extends BasePersistence {
 	private CouchDbClient db;
 	
-	public EntityTypePersistence() {
-		initDatabase(loadDatabaseConfig());
+	public EntityTypePersistence(PersistenceConfig config) {
+		initDatabase(config.getEntityTypePersistenceConfig());
 	}
 	
 	public IEntityType get(String id, IEntityTypeVisitor entityTypeVisitor) throws EsfingeAOMException {
@@ -143,15 +143,6 @@ public class EntityTypePersistence extends BasePersistence {
 	
 	private void initDatabase(CouchDbProperties config) {
 		openEntityDatabase(config);
-	}
-	
-	private CouchDbProperties loadDatabaseConfig() {
-		return new CouchDbProperties()
-				.setDbName("couchaom-entity_type")
-				.setCreateDbIfNotExist(true)
-				.setHost("localhost")
-				.setPort(5984)
-				.setProtocol("http");
 	}
 	
 	private void openEntityDatabase(CouchDbProperties config) {

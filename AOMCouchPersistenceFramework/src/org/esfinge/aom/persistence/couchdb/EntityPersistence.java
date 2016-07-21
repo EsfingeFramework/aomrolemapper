@@ -23,8 +23,8 @@ import com.google.gson.JsonObject;
 public class EntityPersistence extends BasePersistence {
 	private CouchDbClient db;
 	
-	public EntityPersistence() {
-		initDatabase(loadDatabaseConfig());
+	public EntityPersistence(PersistenceConfig config) {
+		initDatabase(config.getEntityPersistenceConfig());
 	}
 	
 	public IEntity get(Object id, IEntityType entityType, IEntityVisitor entityVisitor)
@@ -141,15 +141,6 @@ public class EntityPersistence extends BasePersistence {
 	private void initDatabase(CouchDbProperties config) {
 		openEntityDatabase(config);
 		syncEntityDesignDocs();
-	}
-	
-	private CouchDbProperties loadDatabaseConfig() {
-		return new CouchDbProperties()
-				.setDbName("couchaom-entity")
-				.setCreateDbIfNotExist(true)
-				.setHost("localhost")
-				.setPort(5984)
-				.setProtocol("http");
 	}
 	
 	private void openEntityDatabase(CouchDbProperties config) {
