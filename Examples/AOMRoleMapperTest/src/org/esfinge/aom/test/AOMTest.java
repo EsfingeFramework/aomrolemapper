@@ -1,5 +1,6 @@
 package org.esfinge.aom.test;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -75,9 +76,8 @@ public class AOMTest {
 		
 		switch (option)
 		{
-			case 1:
-				System.out.println("Enter the path to the application configuration file: ");	
-				ModelConfiguration configuration = new ModelConfiguration(in.nextLine());
+			case 1:	
+				ModelConfiguration configuration = new ModelConfiguration(modelConfigPathMenu());
 				model = configuration.getModel();		
 				showMainMenu();
 				return;
@@ -118,6 +118,39 @@ public class AOMTest {
 				return;
 
 		}
+	}
+	
+	private String modelConfigPathMenu() {
+		String configPath = null;
+		int option;
+		Scanner in = new Scanner(System.in);
+		do {
+			System.out.println("Select the configuration file you want to use:");
+			System.out.println("1- src/Config/BankingModelConfiguration.xml");
+			System.out.println("2- src/Config/MedicalModelConfiguration.xml");
+			System.out.println("3- Enter configuration file path.");
+			option = Integer.parseInt(in.nextLine());
+			switch (option) {
+				case 1:
+					configPath = "src/Config/BankingModelConfiguration.xml"; 
+					break;
+				case 2:
+					configPath = "src/Config/MedicalModelConfiguration.xml"; 
+					break;
+				case 3:
+					configPath = in.nextLine();
+					File f = new File(configPath);
+					if (!f.exists() || f.isDirectory()) {
+						System.out.println("File not found: " + f.getAbsolutePath());
+						configPath = null;
+					}
+					break;
+				default:
+					System.out.println("Invalid  option.");
+			}
+			
+		} while(configPath == null);
+		return configPath;		
 	}
 	
 	private void manipulateSystem ()
