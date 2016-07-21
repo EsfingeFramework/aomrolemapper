@@ -3,6 +3,7 @@ package org.esfinge.aom.utils;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.InvalidParameterException;
+import java.util.HashMap;
 
 public class Utils {
 
@@ -169,6 +170,8 @@ public class Utils {
 					return true;
 				}
 				return false;
+			}else if (value.getClass().equals(HashMap.class)){
+				return true;
 			}
 			else
 			{
