@@ -45,14 +45,14 @@ utiliza 2 bancos de dados com os nomes _[dbPrefix]-entity_ e _[dbPrefix]-entity_
 
 ## Limitações e Desenvolvimento Futuro
 
-- ### EntityTypes e Entities em bancos de dados separados.
+- EntityTypes e Entities em bancos de dados separados.
 
 As EntityTypes e Entities são armazenadas em bancos de dados separados.
 Isso é feito pois o CouchDB não possui coleções e assim no caso de um
 único banco de dados poderia haver conflitos entre os IDs utilizados para
 Entities e EntityTypes.
 
-- ### IDs da Entities devem ser do tipo String.
+- IDs da Entities devem ser do tipo String.
 
 As chaves utilizadas para identificação nos documentos CouchDB são obrigatoriamente
 armazenadas como Strings, dessa forma todas as Entities armazenadas devem
