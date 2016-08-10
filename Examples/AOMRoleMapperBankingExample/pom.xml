@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.esfinge</groupId>
-	<artifactId>aomrolemapper-mapping-examples</artifactId>
+	<artifactId>aomrolemapper-banking-example</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Esfinge AOM RoleMapper Mapping Examples</name>
+	<name>Esfinge AOM RoleMapper Banking Example</name>
 	<url>http://esfinge.sourceforge.net/</url>
 	<description>The Esfinge AOM Role Mapper is a framework for mapping domain-specific AOM applications to a generic structure that can be used by generic AOM frameworks</description>
 
