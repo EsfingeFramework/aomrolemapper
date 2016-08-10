@@ -1,14 +1,11 @@
 package org.esfinge.aom.model.dynamic.factory;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.text.html.parser.Entity;
 
 import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;

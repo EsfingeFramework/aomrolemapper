@@ -1,18 +1,10 @@
 package org.esfinge.aom.model.dynamic.utils;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,7 +18,7 @@ public class PropertiesReaderJsonPattern {
 	
 	private PropertiesReaderJsonPattern(String propertiesFileName) throws ParseException, IOException{
 		JSONParser parser = new JSONParser();
-			URL url = PropertiesReaderJsonPattern.class.getClassLoader().getResource(propertiesFileName);
+			URL url = getClass().getClassLoader().getResource(propertiesFileName);
 			File file = new File(url.getPath());
 			jsonObject = (JSONObject) parser.parse(new FileReader(file));	
 	}
