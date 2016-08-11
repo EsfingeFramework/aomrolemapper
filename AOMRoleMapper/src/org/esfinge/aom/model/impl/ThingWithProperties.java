@@ -53,15 +53,7 @@ public abstract class ThingWithProperties implements HasProperties{
 		
 		return result;
 	}
-			
-	public void setProperties(String propertyName, Object propertyValue, String propertyName2, Object propertyValue2) 
-			throws EsfingeAOMException{		
-		Map<String, Object> atributosValor = new HashMap<String, Object>();
-		atributosValor.put(propertyName, propertyValue);
-		atributosValor.put(propertyName2, propertyValue2);
-		setProperty("range", atributosValor);		
-	}	
-
+		
 	@Override
 	public void setProperty(String propertyName, Object propertyValue)
 			throws EsfingeAOMException {	
