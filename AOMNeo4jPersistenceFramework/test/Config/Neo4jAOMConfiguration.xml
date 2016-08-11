@@ -1,8 +1,0 @@
-<Configuration>
-	<Host>localhost</Host>
-	<Database>mongoaomtest</Database>
- 	<EntityTypeCollectionName>EntityTypeCollection</EntityTypeCollectionName>
-	<EntityTypeToCollectionMap entityType=".*Account.*" collection="AccountType" />
-	<EntityTypeToCollectionMap entityType="ObservationType" collection="ObservationType" />
-	<EntityTypeToCollectionMap entityType=".*" collection="GenericType" />	
-</Configuration>

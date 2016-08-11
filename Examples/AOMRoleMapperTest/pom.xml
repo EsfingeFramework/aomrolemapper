@@ -32,7 +32,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/EsfingeFramework/aomrolemapper.git</connection>
 		<developerConnection>scm:git:ssh://github.com:EsfingeFramework/aomrolemapper.git</developerConnection>
-		<url>https://github.com/EsfingeFramework/aomrolemapper/tree/master/Examples/AOMRoleMapperMappingExamples</url>
+		<url>https://github.com/EsfingeFramework/aomrolemapper/tree/master/Examples/AOMRoleMapperTest</url>
 	</scm>
 
 	<properties>

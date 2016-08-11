@@ -1,0 +1,7 @@
+<Configuration>
+	<Database>neo4jaomtest</Database>
+ 	<EntityTypeNodeName>EntityTypeNode</EntityTypeNodeName>
+	<EntityTypeToNode entityType=".*Account.*" node="AccountType" />
+	<EntityTypeToNode entityType="ObservationType" node="ObservationType" />
+	<EntityTypeToNode entityType=".*" node="GenericType" />	
+</Configuration>
