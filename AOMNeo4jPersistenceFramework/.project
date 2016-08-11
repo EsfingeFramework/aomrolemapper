@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-  <name>aomrolemapper-neo4j-persistence</name>
+  <name>AOMNeo4JPersistenceFramework</name>
   <comment>Persistence framework for Esfinge AOM Role Mapper using Neo4J graph database as backend. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
   <projects/>
   <buildSpec>
