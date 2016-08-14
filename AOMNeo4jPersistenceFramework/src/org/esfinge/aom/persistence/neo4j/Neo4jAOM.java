@@ -3,6 +3,7 @@ package org.esfinge.aom.persistence.neo4j;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -20,6 +21,7 @@ import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
@@ -179,7 +181,7 @@ public class Neo4jAOM implements IModelRetriever {
 		 *  TODO removeThisEntityType
 		 */
 		
-		/*	
+	 /*	
 		entityPersistence.removeByEntityType(entityType);
 		query = new BasicDBObject();
 		query.put(ENTITY_ENTITY_TYPE_ID, id);
@@ -200,37 +202,49 @@ public class Neo4jAOM implements IModelRetriever {
 	@Override
 	public IEntity getEntity(Object id, IEntityType entityType, IEntityVisitor entityVisitor) throws EsfingeAOMException {		
 		
-		DBCollection collection = getCollectionForEntityType(entityType);
-		BasicDBObject query = new BasicDBObject();
-		query.put(ID_FIELD_NAME, id);
-		DBObject dbEntity = collection.findOne(query);
-
-		if (dbEntity != null) {
-			if (dbEntity.containsField(ENTITY_CLASS)) {
-				String dsClass = (String)dbEntity.get(ENTITY_CLASS);
-				entityVisitor.initVisit(id, entityType, dsClass);
+//		Index<Node> forNodes = graphdb.index().forNodes(entityType.getName());
+		
+		Transaction t = beginTx();
+		try {
+			
+			Node findNode = graphdb.findNode(DynamicLabel.label(entityType.getName()), ENTITY_ENTITY_TYPE_ID, id);
+			
+			if(findNode != null) {
+				
+				if(findNode.hasProperty(ENTITY_CLASS)) {
+					String dsClass = (String) findNode.getProperty(ENTITY_CLASS);
+					entityVisitor.initVisit(id, entityType, dsClass);
+				} else {
+					entityVisitor.initVisit(id, entityType);
+				}
+				
+//			DBObject properties = (DBObject) dbEntity.get(ENTITY_PROPERTIES);
+				Map<String, Object> properties = findNode.getAllProperties();
+				for (String propertyName : properties.keySet()) {
+					Node propertyFields = (Node) properties.get(propertyName);
+					Boolean isRelationshipProperty = (Boolean) propertyFields.getProperty(PROPERTY_IS_RELATIONSHIP);
+					if (isRelationshipProperty) {
+						String entityTypeId = (String) propertyFields.getProperty(PROPERTY_ENTITY_TYPE);
+						String entityId = (String) propertyFields.getProperty(PROPERTY_ENTITY_ID);
+						entityVisitor.visitRelationship(propertyName, entityTypeId, entityId);
+					} else {
+						Object value = propertyFields.getProperty(PROPERTY_VALUE);
+						entityVisitor.visitProperty(propertyName, value);
+					}
+				}
+				
+				successTx(t);
+				return entityVisitor.endVisit();
 			} else {
-				entityVisitor.initVisit(id, entityType);
+				successTx(t);
+				return null;
 			}
 			
-			DBObject properties = (DBObject) dbEntity.get(ENTITY_PROPERTIES);
-			for (String propertyName : properties.keySet()) {
-				DBObject propertyFields = (DBObject)properties.get(propertyName);
-				Boolean isRelationshipProperty = (Boolean)propertyFields.get(PROPERTY_IS_RELATIONSHIP);
-				if (isRelationshipProperty) {
-					String entityTypeId = (String)propertyFields.get(PROPERTY_ENTITY_TYPE);
-					String entityId = (String)propertyFields.get(PROPERTY_ENTITY_ID);
-					entityVisitor.visitRelationship(propertyName, entityTypeId, entityId);
-				} else {
-					Object value = propertyFields.get(PROPERTY_VALUE);
-					entityVisitor.visitProperty(propertyName, value);
-				}
-			}
-
-			return entityVisitor.endVisit();
-		} else {
-			return null;
+		} catch (Exception e) {
+			failureTx(t);
+			throw new EsfingeAOMException(e);
 		}
+		
 	}
 	
 	@Override
@@ -242,48 +256,53 @@ public class Neo4jAOM implements IModelRetriever {
 	@Override
 	public IEntityType getEntityType(String id, IEntityTypeVisitor entityTypeVisitor) throws EsfingeAOMException {
 
-		try {			
-			BasicDBObject query = new BasicDBObject();
-			query.put(ID_FIELD_NAME, id);
-			DBObject dbEntityType = entityTypeCollection.findOne(query);
+		Transaction t = beginTx();
+		try {
+			
+//			Node present = graphdb.getNodeById(Long.valueOf(id));
+			Node findNode = graphdb.findNode(null, ID_FIELD_NAME, id);
 
-			if (dbEntityType != null) {
-				String packageName = (String)dbEntityType.get(ENTITY_TYPE_PACKAGE);
-				String name = (String)dbEntityType.get(ENTITY_TYPE_NAME);
+			if (findNode != null) {
+				String packageName = (String) findNode.getProperty(ENTITY_TYPE_PACKAGE);
+				String name = (String)findNode.getProperty(ENTITY_TYPE_NAME);
 								
-				if (dbEntityType.containsField(ENTITY_TYPE_CLASS)) {
-					String dsClass = (String)dbEntityType.get(ENTITY_TYPE_CLASS);
+				if (findNode.hasProperty(ENTITY_TYPE_CLASS)) {
+					String dsClass = (String)findNode.getProperty(ENTITY_TYPE_CLASS);
 					entityTypeVisitor.initVisit(packageName, name, dsClass);
 				} else {
 					entityTypeVisitor.initVisit(packageName, name);
 				}
 
-				DBObject propertyTypes = (DBObject) dbEntityType.get(ENTITY_TYPE_PROPERTY_TYPES);
+//				Node propertyTypes = (Node) findNode.getProperty(ENTITY_TYPE_PROPERTY_TYPES);
+				Map<String, Object> propertyTypes = findNode.getAllProperties();
 				for (String propertyName : propertyTypes.keySet()) {
-					DBObject propertyTypeFields = (DBObject)propertyTypes.get(propertyName);
-					Boolean isRelationship = (Boolean) propertyTypeFields.get(PROPERTY_TYPE_IS_RELATIONSHIP);
+					Node propertyTypeFields = (Node) propertyTypes.get(propertyName);
+					Boolean isRelationship = (Boolean) propertyTypeFields.getProperty(PROPERTY_TYPE_IS_RELATIONSHIP);
 					Object type = null; 
 					String dsClass = null;
 					
-					if (propertyTypeFields.containsField(PROPERTY_TYPE_CLASS)) {
-						dsClass = (String)propertyTypeFields.get(PROPERTY_TYPE_CLASS);						
+					if (propertyTypeFields.hasProperty(PROPERTY_TYPE_CLASS)) {
+						dsClass = (String)propertyTypeFields.getProperty(PROPERTY_TYPE_CLASS);						
 					}
 					
 					if (!isRelationship) {
-						String typeClass = (String)propertyTypeFields.get(PROPERTY_TYPE_TYPE);
+						String typeClass = (String)propertyTypeFields.getProperty(PROPERTY_TYPE_TYPE);
 						type = getClass(typeClass);
 						entityTypeVisitor.visitPropertyType(propertyName, type, dsClass);
 					} else {
-						String entityTypeID = (String)propertyTypeFields.get(PROPERTY_TYPE_TYPE);
+						String entityTypeID = (String)propertyTypeFields.getProperty(PROPERTY_TYPE_TYPE);
 						entityTypeVisitor.visitRelationship(propertyName, entityTypeID, dsClass);
 					}
 					
 				}
+				successTx(t);
 				return entityTypeVisitor.endVisit();
 			} else {
+				successTx(t);
 				return null;
 			}
 		} catch (Exception e) {
+			failureTx(t);
 			throw new EsfingeAOMException(e);
 		}
 	}
@@ -291,29 +310,43 @@ public class Neo4jAOM implements IModelRetriever {
 	@Override
 	public List<String> getAllEntityTypeIds() throws EsfingeAOMException {
 		List<String> entityTypeIds = new ArrayList<String>();
-		DBCursor cursor = entityTypeCollection.find();
-		while (cursor.hasNext()) {
-			DBObject current = cursor.next();
-			String id = (String)current.get(ID_FIELD_NAME);
-			entityTypeIds.add(id);
+		
+		Transaction t = beginTx();
+		try {
+			Iterable<Node> allNodes = graphdb.getAllNodes();
+			for (Node node : allNodes) {
+				if(node.hasProperty(ENTITY_TYPE_PACKAGE)) {
+					String id = (String) node.getProperty(ID_FIELD_NAME);
+					entityTypeIds.add(id);
+				}
+			}
+			
+			successTx(t);
+			return entityTypeIds;
+		} catch (Exception e) {
+			failureTx(t);
+			throw new EsfingeAOMException(e);
 		}
-		return entityTypeIds;
 	}
 	
 	@Override
 	public List<Object> getAllEntityIDsForType(IEntityType entityType) throws EsfingeAOMException {
 		List<Object> entityIDs = new ArrayList<Object>();
-		String entityTypeId = getEntityTypeId(entityType);
-		DBCollection collection = getCollectionForEntityType(entityType);
-		BasicDBObject query = new BasicDBObject();
-		query.put(ENTITY_ENTITY_TYPE_ID, entityTypeId);
-		DBCursor cursor = collection.find(query);
-		while (cursor.hasNext()) {
-			DBObject current = cursor.next();
-			Object entityId = current.get(ID_FIELD_NAME);
-			entityIDs.add(entityId);
+		
+		Transaction t = beginTx();
+		try {
+			ResourceIterator<Node> findNodes = graphdb.findNodes(DynamicLabel.label(entityType.getName()));
+			findNodes.forEachRemaining((node) -> {
+				Object entityTypeID = node.getProperty(ID_FIELD_NAME);
+				entityIDs.add(entityTypeID);
+			});
+			
+			successTx(t);
+			return entityIDs;
+		} catch (Exception e) {
+			failureTx(t);
+			throw new EsfingeAOMException(e);
 		}
-		return entityIDs;
 	}
 	
 	private void persist(IEntity entity, PersistenceType persistenceType) throws EsfingeAOMException {
@@ -479,7 +512,8 @@ public class Neo4jAOM implements IModelRetriever {
 	private void persistRelatedEntities(Object entity, Node newNode, Node present, PersistenceType persistenceType) throws EsfingeAOMException {
 		for(Relationship relatedEntity : present.getRelationships()){
 			Object related = removeRelationshipIfExistsInIndex(entity, present, relatedEntity);
-			persistEachRelatedEntityRecursivily(newNode, relatedEntity, related, persistenceType);
+			if(related != null)
+				persistEachRelatedEntityRecursivily(newNode, relatedEntity, related, persistenceType);
 		}
 	}
 
@@ -510,16 +544,7 @@ public class Neo4jAOM implements IModelRetriever {
 //			}
 //		}
 //		return related;
-		return new Object();
-	}
-	
-	private DBCollection getCollectionForEntityType (IEntityType entityType) throws EsfingeAOMException {
-		String collectionName = neo4jAomConfig.getNodeForEntityType(entityType.getName(), entityType.getPackageName());
-		if (collectionName == null)
-		{
-			collectionName = DEFAULT_COLLECTION_FOR_ENTITIES;
-		}
-		return db.getCollection(collectionName);
+		return null;
 	}
 	
 	private Class<?> getClass(String className) throws ClassNotFoundException {
