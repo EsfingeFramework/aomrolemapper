@@ -45,6 +45,7 @@ public class AOMTest {
 			System.out.println("1- Autoselect using ServiceLocator.");
 			System.out.println("2- Use MongoDB.");
 			System.out.println("3- Use CouchDB.");
+			System.out.println("4- Use Neo4J.");
 			option = Integer.parseInt(in.nextLine());
 			switch (option) {
 				case 1:
@@ -56,10 +57,13 @@ public class AOMTest {
 				case 3:
 					manager = ModelManager.getInstance("org.esfinge.aom.persistence.couchdb.CouchAOM");
 					break;
+				case 4:
+					manager = ModelManager.getInstance("org.esfinge.aom.persistence.couchdb.Neo4jAOM");
+					break;
 				default:
 					System.out.println("Invalid choice.");
 			}
-		} while(option < 1 || option > 3);
+		} while(option < 1 || option > 4);
 	}
 	
 	private void showMainMenu ()
