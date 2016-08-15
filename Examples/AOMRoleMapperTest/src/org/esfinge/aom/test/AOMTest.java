@@ -58,7 +58,7 @@ public class AOMTest {
 					manager = ModelManager.getInstance("org.esfinge.aom.persistence.couchdb.CouchAOM");
 					break;
 				case 4:
-					manager = ModelManager.getInstance("org.esfinge.aom.persistence.couchdb.Neo4jAOM");
+					manager = ModelManager.getInstance("org.esfinge.aom.persistence.neo4j.Neo4jAOM");
 					break;
 				default:
 					System.out.println("Invalid choice.");
