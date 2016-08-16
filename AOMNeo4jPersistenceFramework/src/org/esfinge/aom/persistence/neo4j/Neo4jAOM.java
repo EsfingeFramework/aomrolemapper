@@ -20,6 +20,7 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
@@ -46,6 +47,8 @@ public class Neo4jAOM implements IModelRetriever {
 	private static String PROPERTY_TYPE_TYPE = "esfingePropertyTypeType";
 	private static String PROPERTY_TYPE_NAME = "esfingePropertyTypeName";
 	private static String PROPERTY_TYPE_CLASS = "esfingePropertyTypeClass";
+	
+	private static final Label LABEL_ENTITY_TYPE_CLASS = DynamicLabel.label(ENTITY_TYPE_CLASS);
 	
 	private static final DynamicRelationshipType RELATIONSHIP_ENTITY_TYPE_PROPERTY_TYPE =
 			DynamicRelationshipType.withName(ENTITY_TYPE_PROPERTY_TYPES);
@@ -262,7 +265,7 @@ public class Neo4jAOM implements IModelRetriever {
 		Transaction t = beginTx();
 		try {
 			
-			Node findEntityTypeNode = graphdb.findNode(DynamicLabel.label(ENTITY_TYPE_CLASS), ID_FIELD_NAME, id);
+			Node findEntityTypeNode = graphdb.findNode(LABEL_ENTITY_TYPE_CLASS, ID_FIELD_NAME, id);
 
 			if (findEntityTypeNode != null) {
 				String packageName = (String) findEntityTypeNode.getProperty(ENTITY_TYPE_PACKAGE);
@@ -316,13 +319,12 @@ public class Neo4jAOM implements IModelRetriever {
 		
 		Transaction t = beginTx();
 		try {
-			Iterable<Node> allNodes = graphdb.getAllNodes();
-			for (Node node : allNodes) {
-				if(node.hasProperty(ENTITY_TYPE_PACKAGE)) {
+			ResourceIterator<Node> entityTypeNodes = graphdb.findNodes(LABEL_ENTITY_TYPE_CLASS);
+			entityTypeNodes.forEachRemaining(
+				(node) -> {
 					String id = (String) node.getProperty(ID_FIELD_NAME);
 					entityTypeIds.add(id);
-				}
-			}
+				});
 			
 			successTx(t);
 			return entityTypeIds;
@@ -418,10 +420,9 @@ public class Neo4jAOM implements IModelRetriever {
 
 			String id = getEntityTypeId(entityType);
 
-			entityTypeGraphNode.setProperty(ID_FIELD_NAME, id);
-
 			entityTypeGraphNode = putAndRetrieveIfExistentNodeFromIndex(entityTypeName, entityTypeGraphNode, id);
 
+			entityTypeGraphNode.setProperty(ID_FIELD_NAME, id);
 			entityTypeGraphNode.setProperty(ENTITY_TYPE_NAME, entityTypeName);
 			entityTypeGraphNode.setProperty(ENTITY_TYPE_PACKAGE, entityType.getPackageName());
 			
@@ -514,8 +515,10 @@ public class Neo4jAOM implements IModelRetriever {
 
 	private Node putAndRetrieveIfExistentNodeFromIndex(String nodeNameIndex, Node graphNode, String id) throws EsfingeAOMException {
 		Node present = graphdb.index().forNodes(nodeNameIndex).putIfAbsent(graphNode, ID_FIELD_NAME, id);
-		if(present != null)
+		if(present != null) {
+			graphNode.delete();
 			graphNode = present;
+		}
 		return graphNode;
 	}
 	
