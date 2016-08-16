@@ -39,6 +39,7 @@ public class Neo4jAOM implements IModelRetriever {
 	private static String PROPERTY_ENTITY_TYPE = "propertyEntityType";
 	private static String PROPERTY_ENTITY_ID = "esfingePropertyEntityId";
 	private static String ENTITY_CLASS = "esfingeEntityClass";
+	private static String ENTITY_PROPERTY = "esfingeEntityProperty";
 	private static String ENTITY_ENTITY_TYPE_ID = "esfingeEntityEntityTypeID";
 	private static String ENTITY_TYPE_NAME = "esfingeEntityTypeName";
 	private static String ENTITY_TYPE_PACKAGE = "esfingeEntityTypePackage";
@@ -386,10 +387,9 @@ public class Neo4jAOM implements IModelRetriever {
 				graphdb.index().forNodes(entitySimpleName).add(entityGraphNode, propertyType.getName(), entityPropertiesGraphNode);
 				
 				// FIXME descobrir nome para essa DynamicRelationshipType
-				entityGraphNode.createRelationshipTo(entityPropertiesGraphNode, DynamicRelationshipType.withName("hasProperty"));
+				entityGraphNode.createRelationshipTo(entityPropertiesGraphNode, DynamicRelationshipType.withName(ENTITY_PROPERTY));
+				
 			}
-			
-//			entityGraphNode.setProperty(ENTITY_PROPERTIES, entityProperties);
 			
 			Object associatedEntityObj = entity.getAssociatedObject();
 			
@@ -397,7 +397,12 @@ public class Neo4jAOM implements IModelRetriever {
 				entityGraphNode.setProperty(ENTITY_CLASS, associatedEntityObj.getClass().getName());
 			}
 			
-			entityGraphNode.setProperty(ENTITY_ENTITY_TYPE_ID, getEntityTypeId(entity.getEntityType()));
+			IEntityType entityType = entity.getEntityType();
+			String entityTypeId = getEntityTypeId(entityType);
+			entityGraphNode.setProperty(ENTITY_ENTITY_TYPE_ID, entityTypeId);
+			
+			Node findEntityTypeNode = graphdb.findNode(LABEL_ENTITY_TYPE_CLASS, ID_FIELD_NAME, entityTypeId);
+			findEntityTypeNode.createRelationshipTo(entityGraphNode, DynamicRelationshipType.withName("hasProperty"));
 			
 			insertSaveOrUpdate(persistenceType, entityGraphNode, id.toString());
 			
