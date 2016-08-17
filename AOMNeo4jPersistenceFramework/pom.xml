@@ -118,11 +118,5 @@
 		    <version>${neo4j.version}</version>
 		    <type>test-jar</type>
 		</dependency>
-		<dependency>
-		    <groupId>org.neo4j</groupId>
-		    <artifactId>neo4j-cypher</artifactId>
-		    <version>${neo4j.version}</version>
-		</dependency>		
-		
   </dependencies>
 </project>

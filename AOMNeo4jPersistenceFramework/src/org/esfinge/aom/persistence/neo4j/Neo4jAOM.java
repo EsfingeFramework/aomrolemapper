@@ -224,19 +224,9 @@ public class Neo4jAOM implements IModelRetriever {
 		Transaction t = beginTx();
 		try {
 			
-			Map<String, Object> params = new HashMap<String, Object>();
-			String query = "MATCH (n:"
-					+ entityType.getName()
-					+ ")-[r:"
-					+ ENTITY_TYPE_OBJECT
-					+ "]-(e) WHERE e."
-					+ ID_FIELD_NAME
-					+ " = {id} RETURN e;";
-			params.put("id", id);
-			Result result = graphdb.execute(query, params);
-	        Iterator<Node> resultColumn = result.columnAs("e");
-	        if(resultColumn.hasNext()){
-	        	Node findNode = resultColumn.next();
+			Node findNode = findEntityByIDAndEntityType(id, entityType);
+			
+	        if(findNode != null){
 				
 				if(findNode.hasProperty(ENTITY_CLASS)) {
 					String dsClass = (String) findNode.getProperty(ENTITY_CLASS);
@@ -247,8 +237,8 @@ public class Neo4jAOM implements IModelRetriever {
 				
 				for (Relationship relationship : findNode.getRelationships(RELATIONSHIP_ENTITY_PROPERTY)) {
 					Node propertyGraphNode = relationship.getEndNode();
-					Boolean isRelationshipProperty = (Boolean) propertyGraphNode.getProperty(PROPERTY_IS_RELATIONSHIP);
 					String propertyName = propertyGraphNode.getLabels().iterator().next().name();
+					Boolean isRelationshipProperty = (Boolean) propertyGraphNode.getProperty(PROPERTY_IS_RELATIONSHIP);
 					if (isRelationshipProperty) {
 						String entityTypeId = (String) propertyGraphNode.getProperty(PROPERTY_ENTITY_TYPE);
 						String entityId = (String) propertyGraphNode.getProperty(PROPERTY_ENTITY_ID);
@@ -272,6 +262,21 @@ public class Neo4jAOM implements IModelRetriever {
 			throw new EsfingeAOMException(e);
 		}
 		
+	}
+
+	private Node findEntityByIDAndEntityType(Object id, IEntityType entityType) throws EsfingeAOMException {
+		Node findNode = null;
+		ResourceIterator<Node> findNodes = graphdb.findNodes(DynamicLabel.label(entityType.getName()));
+		for (Node entityTypeGraphNode : IteratorUtil.asCollection(findNodes)) {
+			Iterable<Relationship> typeObjectsRelationships = entityTypeGraphNode.getRelationships(RELATIONSHIP_ENTITY_TYPE_OBJECT);
+			for (Relationship relationship : IteratorUtil.asCollection(typeObjectsRelationships)) {
+				Node entityGraphNode = relationship.getEndNode();
+				if(entityGraphNode.getProperty(ID_FIELD_NAME).equals(id)){
+					findNode = entityGraphNode;
+				}
+			}
+		}
+		return findNode;
 	}
 	
 	@Override
@@ -383,32 +388,6 @@ public class Neo4jAOM implements IModelRetriever {
 		}
 	}
 
-	/**
-	 * Método para listar todos os id's de entity para um determinado entityType, usando uma query Cypher.
-	 * Este método demora alguns milissegundos a mais do que a navegação entre nós do grafo. 
-	 * @param entityType
-	 * @return List of All Entity ID's
-	 * @throws EsfingeAOMException
-	 */
-	@SuppressWarnings("unused")
-	private List<Object> listCypherAllEntityIDsForType(IEntityType entityType) throws EsfingeAOMException {
-		List<Object> entityIDs = new ArrayList<Object>();
-		String query = "MATCH (n:"
-				+  entityType.getName()
-				+ ")-[r:"
-				+ ENTITY_TYPE_OBJECT
-				+ "]-(e) RETURN e;";
-		Result result = graphdb.execute(query);
-		Iterator<Node> resultColumn = result.columnAs("e");
-		resultColumn.forEachRemaining(
-			(entityGraphNode) -> {
-				Object entityTypeID = entityGraphNode.getProperty(ID_FIELD_NAME);
-				entityIDs.add(entityTypeID);
-			}
-		);
-		return entityIDs;
-	}
-	
 	private void persist(IEntity entity, PersistenceType persistenceType) throws EsfingeAOMException {
 
 		Transaction t = beginTx();
