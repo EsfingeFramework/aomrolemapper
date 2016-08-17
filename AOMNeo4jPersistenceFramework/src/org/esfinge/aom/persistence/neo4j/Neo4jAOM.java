@@ -346,10 +346,17 @@ public class Neo4jAOM implements IModelRetriever {
 		try {
 			ResourceIterator<Node> findNodes = graphdb.findNodes(DynamicLabel.label(entityType.getName()));
 			findNodes.forEachRemaining(
-				(node) -> {
-					Object entityTypeID = node.getProperty(ID_FIELD_NAME);
-					entityIDs.add(entityTypeID);
-			});
+				(entityTypeGraphNode) -> {
+					Iterable<Relationship> typeObjectsRelationships = entityTypeGraphNode.getRelationships(RELATIONSHIP_ENTITY_TYPE_OBJECT);
+					typeObjectsRelationships.forEach(
+						(relationship) -> {
+							Node entityGraphNode = relationship.getEndNode();
+							Object entityTypeID = entityGraphNode.getProperty(ID_FIELD_NAME);
+							entityIDs.add(entityTypeID);
+						}
+					);
+				}
+			);
 			
 			successTx(t);
 			return entityIDs;
