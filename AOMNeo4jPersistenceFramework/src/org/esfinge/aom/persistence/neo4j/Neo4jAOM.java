@@ -45,18 +45,25 @@ public class Neo4jAOM implements IModelRetriever {
 	private static String ENTITY_TYPE_PACKAGE = "esfingeEntityTypePackage";
 	private static String ENTITY_TYPE_PROPERTY_TYPES = "esfingeEntityTypePropertyTypes";
 	private static String ENTITY_TYPE_CLASS = "esfingeEntityTypeClass";
+	private static String ENTITY_TYPE_OBJECT = "esfingeEntityTypeObject";
 	private static String PROPERTY_TYPE_TYPE = "esfingePropertyTypeType";
 	private static String PROPERTY_TYPE_NAME = "esfingePropertyTypeName";
 	private static String PROPERTY_TYPE_CLASS = "esfingePropertyTypeClass";
+	private static String PROPERTY_TYPE_OBJECT = "esfingePropertyTypeObject";
 	
 	private static final Label LABEL_ENTITY_TYPE_CLASS = DynamicLabel.label(ENTITY_TYPE_CLASS);
 	
 	private static final DynamicRelationshipType RELATIONSHIP_ENTITY_TYPE_PROPERTY_TYPE =
 			DynamicRelationshipType.withName(ENTITY_TYPE_PROPERTY_TYPES);
-
 	private static final DynamicRelationshipType RELATIONSHIP_PROPERTY_TYPE_ENTITY_TYPE =
 			DynamicRelationshipType.withName(PROPERTY_TYPE_IS_RELATIONSHIP);
-
+	private static final DynamicRelationshipType RELATIONSHIP_ENTITY_PROPERTY = 
+			DynamicRelationshipType.withName(ENTITY_PROPERTY);
+	private static final DynamicRelationshipType RELATIONSHIP_ENTITY_TYPE_OBJECT = 
+			DynamicRelationshipType.withName(ENTITY_TYPE_OBJECT);
+	private static final DynamicRelationshipType RELATIONSHIP_PROPERTY_TYPE_OBJECT = 
+			DynamicRelationshipType.withName(PROPERTY_TYPE_OBJECT);
+	
 	private Neo4JAOMConfiguration neo4jAomConfig;
 	
 	private String databaseName;
@@ -209,8 +216,6 @@ public class Neo4jAOM implements IModelRetriever {
 	@Override
 	public IEntity getEntity(Object id, IEntityType entityType, IEntityVisitor entityVisitor) throws EsfingeAOMException {		
 		
-//		Index<Node> forNodes = graphdb.index().forNodes(entityType.getName());
-		
 		Transaction t = beginTx();
 		try {
 			
@@ -225,7 +230,6 @@ public class Neo4jAOM implements IModelRetriever {
 					entityVisitor.initVisit(id, entityType);
 				}
 				
-//			DBObject properties = (DBObject) dbEntity.get(ENTITY_PROPERTIES);
 				Map<String, Object> properties = findNode.getAllProperties();
 				for (String propertyName : properties.keySet()) {
 					Node propertyFields = (Node) properties.get(propertyName);
@@ -285,7 +289,6 @@ public class Neo4jAOM implements IModelRetriever {
 					String propertyName = (String) propertyTypeNode.getProperty(PROPERTY_TYPE_NAME);
 					Boolean isRelationship = (Boolean) propertyTypeNode.getProperty(PROPERTY_TYPE_IS_RELATIONSHIP);
 					
-					Object type = null; 
 					String dsClass = null;
 					
 					if (propertyTypeNode.hasProperty(PROPERTY_TYPE_CLASS)) {
@@ -294,7 +297,7 @@ public class Neo4jAOM implements IModelRetriever {
 					
 					if (!isRelationship) {
 						String typeClass = (String) propertyTypeNode.getProperty(PROPERTY_TYPE_TYPE);
-						type = getClass(typeClass);
+						Object type = getClass(typeClass);
 						entityTypeVisitor.visitPropertyType(propertyName, type, dsClass);
 					} else {
 						String entityTypeID = (String) propertyTypeNode.getProperty(PROPERTY_TYPE_TYPE);
@@ -342,9 +345,10 @@ public class Neo4jAOM implements IModelRetriever {
 		Transaction t = beginTx();
 		try {
 			ResourceIterator<Node> findNodes = graphdb.findNodes(DynamicLabel.label(entityType.getName()));
-			findNodes.forEachRemaining((node) -> {
-				Object entityTypeID = node.getProperty(ID_FIELD_NAME);
-				entityIDs.add(entityTypeID);
+			findNodes.forEachRemaining(
+				(node) -> {
+					Object entityTypeID = node.getProperty(ID_FIELD_NAME);
+					entityIDs.add(entityTypeID);
 			});
 			
 			successTx(t);
@@ -362,32 +366,40 @@ public class Neo4jAOM implements IModelRetriever {
 		try {
 			
 			String entitySimpleName = entity.getClass().getName();
-			Node entityGraphNode = this.createNewGraphNode(entitySimpleName);
-
 			Object id = entity.getProperty("id").getValue();
-			entityGraphNode.setProperty(ID_FIELD_NAME, id);
-			
+
+			Node entityGraphNode = this.createNewGraphNode(entitySimpleName);
 			entityGraphNode = putAndRetrieveIfExistentNodeFromIndex(entitySimpleName, entityGraphNode, id.toString());
 			
+			entityGraphNode.setProperty(ID_FIELD_NAME, id);
+			String entityTypeId = getEntityTypeId(entity.getEntityType());
+			entityGraphNode.setProperty(ENTITY_ENTITY_TYPE_ID, entityTypeId);
+			
+			Node findEntityTypeNode = graphdb.findNode(LABEL_ENTITY_TYPE_CLASS, ID_FIELD_NAME, entityTypeId);
+			findEntityTypeNode.createRelationshipTo(entityGraphNode, RELATIONSHIP_ENTITY_TYPE_OBJECT);
+			
 			for (IProperty property : entity.getProperties()) {
-				Node entityPropertiesGraphNode = createNewGraphNode(property.getName());
+				Node entityPropertyGraphNode = createNewGraphNode(property.getName());
 				IPropertyType propertyType = property.getPropertyType();
 				boolean isRelationshipProperty = propertyType.isRelationshipProperty();
-				entityPropertiesGraphNode.setProperty(PROPERTY_IS_RELATIONSHIP, isRelationshipProperty);
+				entityPropertyGraphNode.setProperty(PROPERTY_IS_RELATIONSHIP, isRelationshipProperty);
 				if (isRelationshipProperty) {
 					IEntity relatedEntity = (IEntity) property.getValue();
-					entityPropertiesGraphNode.setProperty(PROPERTY_ENTITY_TYPE, getEntityTypeId(relatedEntity.getEntityType()));
-					entityPropertiesGraphNode.setProperty(PROPERTY_ENTITY_ID, relatedEntity.getProperty("id").getValue());
+					entityPropertyGraphNode.setProperty(PROPERTY_ENTITY_TYPE, getEntityTypeId(relatedEntity.getEntityType()));
+					entityPropertyGraphNode.setProperty(PROPERTY_ENTITY_ID, relatedEntity.getProperty("id").getValue());
 				} else {
-					entityPropertiesGraphNode.setProperty(PROPERTY_VALUE, property.getValue());
+					entityPropertyGraphNode.setProperty(PROPERTY_VALUE, property.getValue());
 				}
+
+				entityGraphNode.createRelationshipTo(entityPropertyGraphNode, RELATIONSHIP_ENTITY_PROPERTY);
 				
-				// TODO confirmar esses parâmetroas
-//				entityProperties.put(propertyType.getName(), entityPropertiesGraphNode);
-				graphdb.index().forNodes(entitySimpleName).add(entityGraphNode, propertyType.getName(), entityPropertiesGraphNode);
-				
-				// FIXME descobrir nome para essa DynamicRelationshipType
-				entityGraphNode.createRelationshipTo(entityPropertiesGraphNode, DynamicRelationshipType.withName(ENTITY_PROPERTY));
+				Iterable<Relationship> propertyTypesRelationships = findEntityTypeNode.getRelationships(RELATIONSHIP_ENTITY_TYPE_PROPERTY_TYPE);
+				for (Relationship relationship : propertyTypesRelationships) {
+					Node endNode = relationship.getEndNode();
+					if(endNode.getProperty(PROPERTY_TYPE_NAME).equals(property.getName())){
+						endNode.createRelationshipTo(entityPropertyGraphNode, RELATIONSHIP_PROPERTY_TYPE_OBJECT);
+					}
+				}
 				
 			}
 			
@@ -396,13 +408,6 @@ public class Neo4jAOM implements IModelRetriever {
 			if (associatedEntityObj != null) {
 				entityGraphNode.setProperty(ENTITY_CLASS, associatedEntityObj.getClass().getName());
 			}
-			
-			IEntityType entityType = entity.getEntityType();
-			String entityTypeId = getEntityTypeId(entityType);
-			entityGraphNode.setProperty(ENTITY_ENTITY_TYPE_ID, entityTypeId);
-			
-			Node findEntityTypeNode = graphdb.findNode(LABEL_ENTITY_TYPE_CLASS, ID_FIELD_NAME, entityTypeId);
-			findEntityTypeNode.createRelationshipTo(entityGraphNode, DynamicRelationshipType.withName("hasProperty"));
 			
 			insertSaveOrUpdate(persistenceType, entityGraphNode, id.toString());
 			
