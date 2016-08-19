@@ -266,20 +266,16 @@ public class Neo4jAOM implements IModelRetriever {
 
 	private Node findEntityByIDAndEntityType(Object id, IEntityType entityType) throws EsfingeAOMException {
 		Node findNode = null;
-		Map<String, Object> params = new HashMap<String, Object>();
-		String query = "MATCH (n:"
-				+ entityType.getName()
-				+ ")-[r:"
-				+ ENTITY_TYPE_OBJECT
-				+ "]-(e) WHERE e."
-				+ ID_FIELD_NAME
-				+ " = {id} RETURN e;";
-		params.put("id", id);
-		Result result = graphdb.execute(query, params);
-        Iterator<Node> resultColumn = result.columnAs("e");
-        if(resultColumn.hasNext()){
-        	findNode = resultColumn.next();
-        }
+		ResourceIterator<Node> findNodes = graphdb.findNodes(DynamicLabel.label(entityType.getName()));
+		for (Node entityTypeGraphNode : IteratorUtil.asCollection(findNodes)) {
+			Iterable<Relationship> typeObjectsRelationships = entityTypeGraphNode.getRelationships(RELATIONSHIP_ENTITY_TYPE_OBJECT);
+			for (Relationship relationship : IteratorUtil.asCollection(typeObjectsRelationships)) {
+				Node entityGraphNode = relationship.getEndNode();
+				if(entityGraphNode.getProperty(ID_FIELD_NAME).equals(id)){
+					findNode = entityGraphNode;
+				}
+			}
+		}
 		return findNode;
 	}
 	
