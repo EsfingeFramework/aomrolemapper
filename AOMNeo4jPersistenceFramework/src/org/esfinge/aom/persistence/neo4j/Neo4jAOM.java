@@ -3,10 +3,7 @@ package org.esfinge.aom.persistence.neo4j;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -26,7 +23,6 @@ import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
-import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
@@ -142,11 +138,9 @@ public class Neo4jAOM implements IModelRetriever {
 		Transaction t = beginTx();
 		
 		try {
-			Index<Node> index = getIndex(clazz);
-			String entityOrEntityTypeId = getEntityTypeId(entityType);
-			Node node = index.get(entityOrEntityTypeId, id).getSingle();
-
-			deleteNodeRelationsThenNode(node);
+			Node findNode = findEntityByIDAndEntityType(id, entityType);
+			
+			deleteNodeRelationsThenNode(findNode);
 			successTx(t);
 		} catch(Exception e) {
 			failureTx(t);
@@ -155,7 +149,7 @@ public class Neo4jAOM implements IModelRetriever {
 	}
 
 	/**
-	 * To delete a node in Neo4J, all its relationships must me deleted first.
+	 * To delete a node in Neo4J, all of its relationships must me deleted first.
 	 * @param node
 	 */
 	private void deleteNodeRelationsThenNode(Node node){
@@ -164,6 +158,12 @@ public class Neo4jAOM implements IModelRetriever {
 			relation.delete();
 			deleteNodeRelationsThenNode(otherNode);
 		}
+		for(Relationship relation : node.getRelationships(Direction.INCOMING)){
+			relation.delete();
+		}
+		// FIXME delete node from index. EntityType has your own indexNameSpace,
+		// but how deal with Entity indexNameSpace (for now I'm using entitySimpleName(entity), not from node, something like:
+		// graphdb.index().forNodes(node.getLabels().iterator().next().name()).remove(node);
 		node.delete();
 	}
 
@@ -190,32 +190,21 @@ public class Neo4jAOM implements IModelRetriever {
 	@Override
 	public void removeEntityType(IEntityType entityType) throws EsfingeAOMException {
 		String id = getEntityTypeId(entityType);
-		
 		String clazz = entityType.getName();
-		Index<Node> index = getIndex(clazz);
-		String entityOrEntityTypeId = getEntityTypeId(entityType);
+
+		Transaction t = beginTx();
 		
-		/*	TODO removeAllRelationshipsFromThisEntityTypeToAllItsEntities
-		 *  TODO removeAllEntitiesOfThisGivenEntityType
-		 *  TODO removeThisEntityType
-		 */
-		
-	 /*	
-		entityPersistence.removeByEntityType(entityType);
-		query = new BasicDBObject();
-		query.put(ENTITY_ENTITY_TYPE_ID, id);
-		DBCollection entityTypeCollection = getCollectionForEntityType(entityType);
-		entityTypeCollection.findAndRemove(query);
-	 */
-		
-	/*	
-	 * entityTypePersistence.removeById(id);
-		BasicDBObject query = new BasicDBObject();
-		query.put(ID_FIELD_NAME, id);
-		DBObject entityTypeObj = entityTypeCollection.findOne(query);
-		entityTypeCollection.remove(entityTypeObj);
-	*/
-		
+		try {
+			Node findNode = graphdb.findNode(LABEL_ENTITY_TYPE_CLASS, ID_FIELD_NAME, id);
+			deleteNodeRelationsThenNode(findNode);
+			graphdb.index().forNodes(clazz).remove(findNode);
+			
+			successTx(t);
+		} catch(Exception e) {
+			failureTx(t);
+			throw new EsfingeAOMException("The entity of " + clazz + " and Id " + id + " cannot be removed because it is part of a Relationship", e);
+		}
+
 	}
 
 	@Override
@@ -394,7 +383,7 @@ public class Neo4jAOM implements IModelRetriever {
 		
 		try {
 			
-			String entitySimpleName = entity.getClass().getName();
+			String entitySimpleName = getEntitySimpleName(entity);
 			Object id = entity.getProperty("id").getValue();
 
 			Node entityGraphNode = this.createNewGraphNode(entitySimpleName);
@@ -444,6 +433,15 @@ public class Neo4jAOM implements IModelRetriever {
 		} catch (Exception e) {
 			failureTx(t);
 			throw new EsfingeAOMException(e);
+		}
+	}
+
+	private String getEntitySimpleName(IEntity entity) {
+		Object associatedObject = entity.getAssociatedObject();
+		if(associatedObject != null){
+			return associatedObject.getClass().getSimpleName();
+		} else {
+			return entity.getClass().getSimpleName();
 		}
 	}
 	
@@ -648,8 +646,8 @@ public class Neo4jAOM implements IModelRetriever {
 		t.finish();
 	}
 
-	public Index<Node> getIndex(String clazz){
-		return graphdb.index().forNodes(clazz);
+	public Index<Node> getIndex(String indexNameSpace){
+		return graphdb.index().forNodes(indexNameSpace);
 	}
 	
 	/**
