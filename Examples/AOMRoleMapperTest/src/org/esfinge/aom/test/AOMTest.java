@@ -159,6 +159,11 @@ public class AOMTest {
 	
 	private void manipulateSystem ()
 	{
+		if(model == null) {
+			System.out.println("No model has been loaded. First, read a model from file or load one from the database.");
+			showMainMenu();
+			return;
+		}
 		System.out.println("Select one: ");
 		for (int i = 0; i < model.size(); i++)
 		{

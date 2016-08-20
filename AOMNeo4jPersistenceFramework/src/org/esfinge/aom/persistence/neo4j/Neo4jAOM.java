@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
 import org.esfinge.aom.api.manager.visitors.IEntityVisitor;
@@ -26,7 +27,7 @@ import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
-import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.helpers.collection.Iterables;
 
 public class Neo4jAOM implements IModelRetriever {
 
@@ -105,6 +106,14 @@ public class Neo4jAOM implements IModelRetriever {
 
 	private void initDatabase() throws EsfingeAOMException {
 		this.graphdb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(databaseName));
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(){
+			@Override
+			public void run() {
+				graphdb.shutdown();
+				System.out.println("Neo4J Database has been safely shutdown.");
+			}
+		});
 
 		try {
 			// TODO precisa fazer mapeamento da configuração das entidades?
@@ -256,9 +265,9 @@ public class Neo4jAOM implements IModelRetriever {
 	private Node findEntityByIDAndEntityType(Object id, IEntityType entityType) throws EsfingeAOMException {
 		Node findNode = null;
 		ResourceIterator<Node> findNodes = graphdb.findNodes(DynamicLabel.label(entityType.getName()));
-		for (Node entityTypeGraphNode : IteratorUtil.asCollection(findNodes)) {
+		for (Node entityTypeGraphNode : findNodes.stream().collect(Collectors.toList())) {
 			Iterable<Relationship> typeObjectsRelationships = entityTypeGraphNode.getRelationships(RELATIONSHIP_ENTITY_TYPE_OBJECT);
-			for (Relationship relationship : IteratorUtil.asCollection(typeObjectsRelationships)) {
+			for (Relationship relationship : Iterables.asList(typeObjectsRelationships)) {
 				Node entityGraphNode = relationship.getEndNode();
 				if(entityGraphNode.getProperty(ID_FIELD_NAME).equals(id)){
 					findNode = entityGraphNode;
@@ -638,12 +647,12 @@ public class Neo4jAOM implements IModelRetriever {
 	
 	private void successTx(Transaction t) {
 		t.success();
-		t.finish();
+		t.close();
 	}
 	
 	private void failureTx(Transaction t) {
 		t.failure();
-		t.finish();
+		t.close();
 	}
 
 	public Index<Node> getIndex(String indexNameSpace){
