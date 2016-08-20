@@ -17,12 +17,11 @@ import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.api.modelretriever.IModelRetriever;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -52,18 +51,18 @@ public class Neo4jAOM implements IModelRetriever {
 	private static String PROPERTY_TYPE_CLASS = "esfingePropertyTypeClass";
 	private static String PROPERTY_TYPE_OBJECT = "esfingePropertyTypeObject";
 	
-	private static final Label LABEL_ENTITY_TYPE_CLASS = DynamicLabel.label(ENTITY_TYPE_CLASS);
+	private static final Label LABEL_ENTITY_TYPE_CLASS = Label.label(ENTITY_TYPE_CLASS);
 	
-	private static final DynamicRelationshipType RELATIONSHIP_ENTITY_TYPE_PROPERTY_TYPE =
-			DynamicRelationshipType.withName(ENTITY_TYPE_PROPERTY_TYPES);
-	private static final DynamicRelationshipType RELATIONSHIP_PROPERTY_TYPE_ENTITY_TYPE =
-			DynamicRelationshipType.withName(PROPERTY_TYPE_IS_RELATIONSHIP);
-	private static final DynamicRelationshipType RELATIONSHIP_ENTITY_PROPERTY = 
-			DynamicRelationshipType.withName(ENTITY_PROPERTY);
-	private static final DynamicRelationshipType RELATIONSHIP_ENTITY_TYPE_OBJECT = 
-			DynamicRelationshipType.withName(ENTITY_TYPE_OBJECT);
-	private static final DynamicRelationshipType RELATIONSHIP_PROPERTY_TYPE_OBJECT = 
-			DynamicRelationshipType.withName(PROPERTY_TYPE_OBJECT);
+	private static final RelationshipType RELATIONSHIP_ENTITY_TYPE_PROPERTY_TYPE =
+			RelationshipType.withName(ENTITY_TYPE_PROPERTY_TYPES);
+	private static final RelationshipType RELATIONSHIP_PROPERTY_TYPE_ENTITY_TYPE =
+			RelationshipType.withName(PROPERTY_TYPE_IS_RELATIONSHIP);
+	private static final RelationshipType RELATIONSHIP_ENTITY_PROPERTY = 
+			RelationshipType.withName(ENTITY_PROPERTY);
+	private static final RelationshipType RELATIONSHIP_ENTITY_TYPE_OBJECT = 
+			RelationshipType.withName(ENTITY_TYPE_OBJECT);
+	private static final RelationshipType RELATIONSHIP_PROPERTY_TYPE_OBJECT = 
+			RelationshipType.withName(PROPERTY_TYPE_OBJECT);
 	
 	private Neo4JAOMConfiguration neo4jAomConfig;
 	
@@ -264,7 +263,7 @@ public class Neo4jAOM implements IModelRetriever {
 
 	private Node findEntityByIDAndEntityType(Object id, IEntityType entityType) throws EsfingeAOMException {
 		Node findNode = null;
-		ResourceIterator<Node> findNodes = graphdb.findNodes(DynamicLabel.label(entityType.getName()));
+		ResourceIterator<Node> findNodes = graphdb.findNodes(Label.label(entityType.getName()));
 		for (Node entityTypeGraphNode : findNodes.stream().collect(Collectors.toList())) {
 			Iterable<Relationship> typeObjectsRelationships = entityTypeGraphNode.getRelationships(RELATIONSHIP_ENTITY_TYPE_OBJECT);
 			for (Relationship relationship : Iterables.asList(typeObjectsRelationships)) {
@@ -364,7 +363,7 @@ public class Neo4jAOM implements IModelRetriever {
 		try {
 			
 			List<Object> entityIDs = new ArrayList<Object>();
-			ResourceIterator<Node> findNodes = graphdb.findNodes(DynamicLabel.label(entityType.getName()));
+			ResourceIterator<Node> findNodes = graphdb.findNodes(Label.label(entityType.getName()));
 			findNodes.forEachRemaining(
 				(entityTypeGraphNode) -> {
 					Iterable<Relationship> typeObjectsRelationships = entityTypeGraphNode.getRelationships(RELATIONSHIP_ENTITY_TYPE_OBJECT);
@@ -553,7 +552,7 @@ public class Neo4jAOM implements IModelRetriever {
 	private Node createNewGraphNode(String... labels) {
 		Node entityTypeGraphNode = graphdb.createNode();
 		for (String label : labels) {
-			entityTypeGraphNode.addLabel(DynamicLabel.label(label));
+			entityTypeGraphNode.addLabel(Label.label(label));
 		}
 		return entityTypeGraphNode;
 	}
