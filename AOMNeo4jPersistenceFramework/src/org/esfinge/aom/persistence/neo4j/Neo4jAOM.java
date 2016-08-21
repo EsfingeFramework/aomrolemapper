@@ -107,23 +107,12 @@ public class Neo4jAOM implements IModelRetriever {
 	private void initDatabase() throws EsfingeAOMException {
 		this.graphdb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(databaseName));
 		
-		Runtime.getRuntime().addShutdownHook(new Thread(){
-			@Override
-			public void run() {
+		Runtime.getRuntime().addShutdownHook(new Thread(
+			() -> {
 				graphdb.shutdown();
 				System.out.println("Neo4J Database has been safely shutdown.");
 			}
-		});
-
-		try {
-			// TODO precisa fazer mapeamento da configuração das entidades?
-			String entityTypeNodeName = neo4jAomConfig.getEntityTypeNodeName();
-//			this.graphdb.map(IEntityType.class);
-//			entityTypeCollection = db.getCollection(entityTypeNodeName);
-			
-		} catch (Exception e) {
-			throw new EsfingeAOMException(e);
-		}
+		));
 	}
 	
 	@Override
@@ -218,7 +207,8 @@ public class Neo4jAOM implements IModelRetriever {
 		
 		try {
 			Node findNode = graphdb.findNode(LABEL_ENTITY_TYPE_CLASS, ID_FIELD_NAME, id);
-			deleteNodeRelationsThenNode(findNode, clazz);
+			if(findNode != null)
+				deleteNodeRelationsThenNode(findNode, clazz);
 			
 			successTx(t);
 		} catch(Exception e) {
@@ -275,18 +265,17 @@ public class Neo4jAOM implements IModelRetriever {
 	}
 
 	private Node findEntityByIDAndEntityType(Object id, IEntityType entityType) throws EsfingeAOMException {
-		Node findNode = null;
 		ResourceIterator<Node> findNodes = graphdb.findNodes(Label.label(entityType.getName()));
 		for (Node entityTypeGraphNode : findNodes.stream().collect(Collectors.toList())) {
 			Iterable<Relationship> typeObjectsRelationships = entityTypeGraphNode.getRelationships(RELATIONSHIP_ENTITY_TYPE_OBJECT);
 			for (Relationship relationship : Iterables.asList(typeObjectsRelationships)) {
 				Node entityGraphNode = relationship.getEndNode();
 				if(entityGraphNode.getProperty(ID_FIELD_NAME).equals(id)){
-					findNode = entityGraphNode;
+					return entityGraphNode;
 				}
 			}
 		}
-		return findNode;
+		return null;
 	}
 	
 	@Override
@@ -355,7 +344,7 @@ public class Neo4jAOM implements IModelRetriever {
 		Transaction t = beginTx();
 		try {
 			ResourceIterator<Node> entityTypeNodes = graphdb.findNodes(LABEL_ENTITY_TYPE_CLASS);
-			entityTypeNodes.forEachRemaining(
+			entityTypeNodes.stream().forEach(
 				(node) -> 
 					entityTypeIds.add((String) node.getProperty(ID_FIELD_NAME))
 				);
