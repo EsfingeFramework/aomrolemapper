@@ -172,9 +172,6 @@ public class Neo4jAOM implements IModelRetriever {
 		for(Relationship relation : node.getRelationships(Direction.INCOMING)){
 			relation.delete();
 		}
-		// FIXME delete node from index. EntityType has your own indexNameSpace,
-		// but how deal with Entity indexNameSpace (for now I'm using entitySimpleName(entity), not from node, something like:
-		// graphdb.index().forNodes(node.getLabels().iterator().next().name()).remove(node);
 		removeNodeFromIndex(node, entityLabel);
 		node.delete();
 	}
