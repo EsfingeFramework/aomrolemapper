@@ -52,6 +52,7 @@ public class Neo4jAOM implements IModelRetriever {
 	private static String PROPERTY_TYPE_OBJECT = "esfingePropertyTypeObject";
 	
 	private static final Label LABEL_ENTITY_TYPE_CLASS = Label.label(ENTITY_TYPE_CLASS);
+	private static final Label LABEL_PROPERTY_ENTITY_TYPE = Label.label(PROPERTY_ENTITY_TYPE);
 	
 	private static final RelationshipType RELATIONSHIP_ENTITY_TYPE_PROPERTY_TYPE =
 			RelationshipType.withName(ENTITY_TYPE_PROPERTY_TYPES);
@@ -142,29 +143,31 @@ public class Neo4jAOM implements IModelRetriever {
 
 	@Override
 	public void removeEntity(Object id, IEntityType entityType) throws EsfingeAOMException {
-		String clazz = entityType.getName();
 		Transaction t = beginTx();
 		
 		try {
 			Node findNode = findEntityByIDAndEntityType(id, entityType);
-			
-			deleteNodeRelationsThenNode(findNode);
+			if(findNode != null) {
+				String entityLabel = findNode.getLabels().iterator().next().name();
+				deleteNodeRelationsThenNode(findNode, entityLabel);
+			}
 			successTx(t);
 		} catch(Exception e) {
 			failureTx(t);
-			throw new EsfingeAOMException("The entity of " + clazz + " and Id " + id + " cannot be removed because it is part of a Relationship", e);
+			throw new EsfingeAOMException("The entity of " + entityType.getName() + " and Id " + id + " cannot be removed because it is part of a Relationship", e);
 		}
 	}
 
 	/**
 	 * To delete a node in Neo4J, all of its relationships must me deleted first.
 	 * @param node
+	 * @param entityLabel 
 	 */
-	private void deleteNodeRelationsThenNode(Node node){
+	private void deleteNodeRelationsThenNode(Node node, String entityLabel){
 		for(Relationship relation : node.getRelationships(Direction.OUTGOING)){
 			Node otherNode = relation.getOtherNode(node);
 			relation.delete();
-			deleteNodeRelationsThenNode(otherNode);
+			deleteNodeRelationsThenNode(otherNode, entityLabel);
 		}
 		for(Relationship relation : node.getRelationships(Direction.INCOMING)){
 			relation.delete();
@@ -172,7 +175,21 @@ public class Neo4jAOM implements IModelRetriever {
 		// FIXME delete node from index. EntityType has your own indexNameSpace,
 		// but how deal with Entity indexNameSpace (for now I'm using entitySimpleName(entity), not from node, something like:
 		// graphdb.index().forNodes(node.getLabels().iterator().next().name()).remove(node);
+		removeNodeFromIndex(node, entityLabel);
 		node.delete();
+	}
+
+	private void removeNodeFromIndex(Node node, String entityLabel) {
+		List<Label> labels = Iterables.asList(node.getLabels());
+		if(labels.contains(LABEL_ENTITY_TYPE_CLASS)) {
+			graphdb.index().forNodes(ENTITY_TYPE_CLASS).remove(node);
+		}
+		if(labels.contains(LABEL_PROPERTY_ENTITY_TYPE)) {
+			graphdb.index().forNodes(PROPERTY_ENTITY_TYPE).remove(node);
+		}
+		if(labels.contains(Label.label(entityLabel))) {
+			graphdb.index().forNodes(entityLabel).remove(node);
+		}
 	}
 
 	@Override
@@ -204,8 +221,7 @@ public class Neo4jAOM implements IModelRetriever {
 		
 		try {
 			Node findNode = graphdb.findNode(LABEL_ENTITY_TYPE_CLASS, ID_FIELD_NAME, id);
-			deleteNodeRelationsThenNode(findNode);
-			graphdb.index().forNodes(clazz).remove(findNode);
+			deleteNodeRelationsThenNode(findNode, clazz);
 			
 			successTx(t);
 		} catch(Exception e) {
@@ -473,6 +489,9 @@ public class Neo4jAOM implements IModelRetriever {
 			for (IPropertyType propertyType : entityType.getPropertyTypes()) {
 				
 				String propertyTypeName = propertyType.getName();
+				if(existsRelationshipForPropertyType(entityTypeGraphNode, propertyTypeName))
+					continue;
+				
 				Node propertyTypeGraphNode = this.createNewGraphNode(PROPERTY_ENTITY_TYPE, propertyTypeName);
 				propertyTypeGraphNode.setProperty(PROPERTY_TYPE_NAME, propertyTypeName);
 				
@@ -519,6 +538,18 @@ public class Neo4jAOM implements IModelRetriever {
 		}
 	}
 
+	private boolean existsRelationshipForPropertyType(Node entityTypeGraphNode, String propertyTypeName) {
+		List<Relationship> relationships = Iterables.asList(entityTypeGraphNode.getRelationships());
+		for (Relationship relationship : relationships) {
+			Node propertyTypeGraphNode = relationship.getEndNode();
+			if(propertyTypeGraphNode.hasProperty(PROPERTY_TYPE_NAME) &&
+			   propertyTypeGraphNode.getProperty(PROPERTY_TYPE_NAME).equals(propertyTypeName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void createPropertyTypeEntityTypeRelationship(Node propertyTypeGraphNode, IEntityType propertyTypeType, String entityTypeId) throws EsfingeAOMException {
 		String propertyTypeTypeName = propertyTypeType.getName();
 		Node relationshipNode = this.createNewGraphNode(ENTITY_TYPE_CLASS, propertyTypeTypeName);
@@ -551,8 +582,8 @@ public class Neo4jAOM implements IModelRetriever {
 
 	private Node createNewGraphNode(String... labels) {
 		Node entityTypeGraphNode = graphdb.createNode();
-		for (String label : labels) {
-			entityTypeGraphNode.addLabel(Label.label(label));
+		for (String caption : labels) {
+			entityTypeGraphNode.addLabel(Label.label(caption));
 		}
 		return entityTypeGraphNode;
 	}
