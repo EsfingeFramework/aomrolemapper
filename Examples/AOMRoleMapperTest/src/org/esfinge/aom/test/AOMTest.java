@@ -160,7 +160,7 @@ public class AOMTest {
 	private void manipulateSystem ()
 	{
 		if(model == null) {
-			System.out.println("No model has been loaded. First, read a model from file or load one from the database.");
+			System.out.println("Please load/read model first.");
 			showMainMenu();
 			return;
 		}
@@ -271,7 +271,12 @@ public class AOMTest {
 			
 		case 3:
 			removeEntityType(entityType);
-			manipulateSystem();
+			try {
+				model = manager.loadModel();
+			} catch (EsfingeAOMException e1) {
+				e1.printStackTrace();
+			}
+			showMainMenu();
 			return;
 		
 		case 4:
