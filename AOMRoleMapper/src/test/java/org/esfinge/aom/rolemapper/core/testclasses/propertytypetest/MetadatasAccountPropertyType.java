@@ -1,6 +1,5 @@
 package org.esfinge.aom.rolemapper.core.testclasses.propertytypetest;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.Metadata;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyValue;

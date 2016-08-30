@@ -33,7 +33,7 @@ public class AdapterFixedPropertyType implements IPropertyType {
 
 	@Override
 	public void setType(Object type) throws EsfingeAOMException {
-		
+		throw new EsfingeAOMException("You can't set the type of a fixed property");
 	}
 
 	@Override

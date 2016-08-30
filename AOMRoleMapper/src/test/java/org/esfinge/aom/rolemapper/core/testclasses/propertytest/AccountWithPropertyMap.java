@@ -1,14 +1,11 @@
 package org.esfinge.aom.rolemapper.core.testclasses.propertytest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityPropertyMap;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytest.AccountProperty;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytest.AccountType;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytest.IAccount;

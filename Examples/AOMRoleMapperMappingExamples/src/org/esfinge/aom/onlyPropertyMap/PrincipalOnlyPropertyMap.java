@@ -2,7 +2,6 @@ package org.esfinge.aom.onlyPropertyMap;
 
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IProperty;
-import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.rolemapper.core.AdapterEntity;
 

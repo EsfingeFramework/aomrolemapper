@@ -18,7 +18,7 @@ public class PropertiesReaderJsonPattern {
 	
 	private PropertiesReaderJsonPattern(String propertiesFileName) throws ParseException, IOException{
 		JSONParser parser = new JSONParser();
-			URL url = getClass().getClassLoader().getResource(propertiesFileName);
+			URL url = PropertiesReaderJsonPattern.class.getClassLoader().getResource(propertiesFileName);
 			File file = new File(url.getPath());
 			jsonObject = (JSONObject) parser.parse(new FileReader(file));	
 	}

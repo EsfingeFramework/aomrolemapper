@@ -2,7 +2,6 @@ package org.esfinge.aom.model.rolemapper.metadata.descriptors;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MetadataDescriptor {
 	private FieldDescriptor metadataDescriptor;

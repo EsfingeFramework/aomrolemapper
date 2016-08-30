@@ -3,7 +3,6 @@ package org.esfinge.aom.onlyTypeObject;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
-import org.esfinge.aom.simpletypesquare.ProductType;
 
 @Entity
 public class Person {

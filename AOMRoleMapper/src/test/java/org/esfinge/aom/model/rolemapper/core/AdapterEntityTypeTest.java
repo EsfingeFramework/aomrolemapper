@@ -16,8 +16,6 @@ import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.AccountTypeWit
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.IAccountType;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.MetadatasAccountType;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.SimpleAccountType;
-import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.AccountPropertyTypeWithMetadataMap;
-import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.MetadatasAccountPropertyType;
 import org.junit.Test;
 
 public class AdapterEntityTypeTest {

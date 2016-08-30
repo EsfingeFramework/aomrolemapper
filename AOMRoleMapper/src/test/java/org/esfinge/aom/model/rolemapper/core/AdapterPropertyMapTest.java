@@ -1,21 +1,11 @@
 package org.esfinge.aom.model.rolemapper.core;
 
-import static org.junit.Assert.*;
-
-import java.util.Map;
+import org.esfinge.aom.api.model.IEntity;
+import org.esfinge.aom.rolemapper.core.testclasses.propertytest.AccountWithPropertyMap;
+import org.junit.After;
+import org.junit.Test;
 
 import junit.framework.Assert;
-
-import org.esfinge.aom.api.model.IEntity;
-import org.esfinge.aom.api.model.IProperty;
-import org.esfinge.aom.rolemapper.core.testclasses.propertytest.Account;
-import org.esfinge.aom.rolemapper.core.testclasses.propertytest.AccountProperty;
-import org.esfinge.aom.rolemapper.core.testclasses.propertytest.AccountPropertyType;
-import org.esfinge.aom.rolemapper.core.testclasses.propertytest.AccountWithPropertyMap;
-import org.esfinge.aom.utils.UtilsTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 public class AdapterPropertyMapTest {
 	

@@ -2,15 +2,12 @@ package org.esfinge.aom.model.dynamic.factory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
-import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.dynamic.exceptions.AdapterFactoryClassConstructionException;
 import org.esfinge.aom.model.dynamic.exceptions.AdapterFactoryFileReaderException;
@@ -68,7 +65,7 @@ public class AdapterFactory {
 								.getPropertyType().getType().getClass())) {
 							String propertyType = ((IEntity) p.getValue()).getEntityType().getName() + suffixAdapterClassName;
 							if(!storedClasses.containsKey(name)){
-								//Gera um adapter aqui apenas para criar a classe do adapter da composição no ClassPath para o get funcionar
+								//Gera um adapter aqui apenas para criar a classe do adapter da composiï¿½ï¿½o no ClassPath para o get funcionar
 								this.getInstance(metadataFileName).generate((IEntity)p.getValue());								
 								mv = ClassConstructor.createComplexPropertyGetter(name, cw, p.getName(), propertyType);
 								ClassConstructor.createComplexPropertySetter(name,cw, p.getName(), propertyType);

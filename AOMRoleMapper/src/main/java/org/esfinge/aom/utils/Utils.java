@@ -3,8 +3,7 @@ package org.esfinge.aom.utils;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.InvalidParameterException;
-
-import org.apache.commons.lang3.ClassUtils;
+import java.util.HashMap;
 
 public class Utils {
 
@@ -144,15 +143,49 @@ public class Utils {
 			return true;
 		}
 		
-		if (ClassUtils.isAssignable(classToBeChecked, Number.class))
+		if (Number.class.isAssignableFrom(classToBeChecked))
 		{
-			return true;
-		}
-		else
-		{
-			return classToBeChecked.isAssignableFrom(value.getClass());
+			// FIXME Tratar Autobox - quando classToBeChecked é do tipo primiário (ex.: int.class)
+			/* AOMRoleMapperTest/bankingExample/savingsAccount/CreateEntity
+			Caused by: org.esfinge.aom.exceptions.EsfingeAOMException: The given value 0 is not valid for type accountNumber
+				at org.esfinge.aom.model.rolemapper.core.AdapterFixedProperty.setValue(AdapterFixedProperty.java:59)
+				at org.esfinge.aom.model.rolemapper.core.AdapterEntity.setProperty(AdapterEntity.java:231)
+			 */
+			if (Number.class.isAssignableFrom(value.getClass()))
+			{
+				if (classToBeChecked.equals(Double.class))
+				{
+					return true;
+				}
+				if (classToBeChecked.equals(Float.class) && !value.getClass().equals(Double.class))
+				{
+					return true;
+				}
+				if (classToBeChecked.equals(Long.class) && !value.getClass().equals(Double.class)
+						&& !value.getClass().equals(Float.class))
+				{
+					return true;
+				}
+				if (classToBeChecked.equals(Integer.class) && !value.getClass().equals(Double.class)
+						&& !value.getClass().equals(Float.class) && !value.getClass().equals(Long.class))
+				{
+					return true;
+				}
+				if (classToBeChecked.equals(Short.class) && value.getClass().equals(Byte.class))
+				{
+					return true;
+				}
+				return false;
+			}else if (value.getClass().equals(HashMap.class)){
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 				
+		return classToBeChecked.isAssignableFrom(value.getClass());
 	}
 			
 }
