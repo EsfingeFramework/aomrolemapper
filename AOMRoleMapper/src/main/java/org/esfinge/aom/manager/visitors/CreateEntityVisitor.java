@@ -17,7 +17,7 @@ public class CreateEntityVisitor implements IEntityVisitor {
 	@Override
 	public void initVisit(Object id, IEntityType entityType)
 			throws EsfingeAOMException {
-		initVisit(id, entityType, null);
+		entity = EntityFactory.createEntity(entityType, (Class<?>) null);
 	}
 
 	@Override

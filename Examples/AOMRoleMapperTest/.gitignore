@@ -1,1 +1,3 @@
 /bin/
+/target/
+/neo4jaomtest.graphdb/

@@ -1,5 +1,6 @@
 package org.esfinge.aom.test;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -18,7 +19,7 @@ import org.esfinge.aom.model.factories.PropertyTypeFactory;
 
 public class AOMTest {
 
-	private ModelManager manager = ModelManager.getInstance();
+	private ModelManager manager;
 	
 	private IEntity entity;
 	
@@ -32,7 +33,37 @@ public class AOMTest {
 	public static void main(String[] args) throws EsfingeAOMException {		
 		
 		AOMTest program = new AOMTest();
+		program.selectPersistenceFrameworkMenu();
 		program.showMainMenu();
+	}
+	
+	private void selectPersistenceFrameworkMenu() {
+		int option;
+		Scanner in = new Scanner(System.in);
+		do {
+			System.out.println("Select the persistence framework you want to use:");
+			System.out.println("1- Autoselect using ServiceLocator.");
+			System.out.println("2- Use MongoDB.");
+			System.out.println("3- Use CouchDB.");
+			System.out.println("4- Use Neo4J.");
+			option = Integer.parseInt(in.nextLine());
+			switch (option) {
+				case 1:
+					manager = ModelManager.getInstance();
+					break;
+				case 2:
+					manager = ModelManager.getInstance("org.esfinge.aom.persistence.mongodb.MongoAOM");
+					break;
+				case 3:
+					manager = ModelManager.getInstance("org.esfinge.aom.persistence.couchdb.CouchAOM");
+					break;
+				case 4:
+					manager = ModelManager.getInstance("org.esfinge.aom.persistence.neo4j.Neo4jAOM");
+					break;
+				default:
+					System.out.println("Invalid choice.");
+			}
+		} while(option < 1 || option > 4);
 	}
 	
 	private void showMainMenu ()
@@ -49,9 +80,8 @@ public class AOMTest {
 		
 		switch (option)
 		{
-			case 1:
-				System.out.println("Enter the path to the application configuration file: ");	
-				ModelConfiguration configuration = new ModelConfiguration(in.nextLine());
+			case 1:	
+				ModelConfiguration configuration = new ModelConfiguration(modelConfigPathMenu());
 				model = configuration.getModel();		
 				showMainMenu();
 				return;
@@ -94,8 +124,46 @@ public class AOMTest {
 		}
 	}
 	
+	private String modelConfigPathMenu() {
+		String configPath = null;
+		int option;
+		Scanner in = new Scanner(System.in);
+		do {
+			System.out.println("Select the configuration file you want to use:");
+			System.out.println("1- src/Config/BankingModelConfiguration.xml");
+			System.out.println("2- src/Config/MedicalModelConfiguration.xml");
+			System.out.println("3- Enter configuration file path.");
+			option = Integer.parseInt(in.nextLine());
+			switch (option) {
+				case 1:
+					configPath = "src/Config/BankingModelConfiguration.xml"; 
+					break;
+				case 2:
+					configPath = "src/Config/MedicalModelConfiguration.xml"; 
+					break;
+				case 3:
+					configPath = in.nextLine();
+					File f = new File(configPath);
+					if (!f.exists() || f.isDirectory()) {
+						System.out.println("File not found: " + f.getAbsolutePath());
+						configPath = null;
+					}
+					break;
+				default:
+					System.out.println("Invalid  option.");
+			}
+			
+		} while(configPath == null);
+		return configPath;		
+	}
+	
 	private void manipulateSystem ()
 	{
+		if(model == null) {
+			System.out.println("Please load/read model first.");
+			showMainMenu();
+			return;
+		}
 		System.out.println("Select one: ");
 		for (int i = 0; i < model.size(); i++)
 		{
@@ -203,7 +271,12 @@ public class AOMTest {
 			
 		case 3:
 			removeEntityType(entityType);
-			manipulateSystem();
+			try {
+				model = manager.loadModel();
+			} catch (EsfingeAOMException e1) {
+				e1.printStackTrace();
+			}
+			showMainMenu();
 			return;
 		
 		case 4:

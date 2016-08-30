@@ -3,7 +3,8 @@ package org.esfinge.aom.utils;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.InvalidParameterException;
-import java.util.HashMap;
+
+import org.apache.commons.lang3.ClassUtils;
 
 public class Utils {
 
@@ -143,43 +144,15 @@ public class Utils {
 			return true;
 		}
 		
-		if (Number.class.isAssignableFrom(classToBeChecked))
+		if (ClassUtils.isAssignable(classToBeChecked, Number.class))
 		{
-			if (Number.class.isAssignableFrom(value.getClass()))
-			{
-				if (classToBeChecked.equals(Double.class))
-				{
-					return true;
-				}
-				if (classToBeChecked.equals(Float.class) && !value.getClass().equals(Double.class))
-				{
-					return true;
-				}
-				if (classToBeChecked.equals(Long.class) && !value.getClass().equals(Double.class)
-						&& !value.getClass().equals(Float.class))
-				{
-					return true;
-				}
-				if (classToBeChecked.equals(Integer.class) && !value.getClass().equals(Double.class)
-						&& !value.getClass().equals(Float.class) && !value.getClass().equals(Long.class))
-				{
-					return true;
-				}
-				if (classToBeChecked.equals(Short.class) && value.getClass().equals(Byte.class))
-				{
-					return true;
-				}
-				return false;
-			}else if (value.getClass().equals(HashMap.class)){
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return true;
+		}
+		else
+		{
+			return classToBeChecked.isAssignableFrom(value.getClass());
 		}
 				
-		return classToBeChecked.isAssignableFrom(value.getClass());
 	}
 			
 }
