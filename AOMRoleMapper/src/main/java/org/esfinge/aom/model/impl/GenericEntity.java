@@ -9,6 +9,7 @@ import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
+import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 
 
@@ -98,5 +99,11 @@ public class GenericEntity extends ThingWithProperties implements IEntity {
 	@Override
 	public Object getAssociatedObject() {
 		return null;
+	}
+
+	@Override
+	public Object executeOperation(String name, Object[] params) {
+		RuleObject operation = getEntityType().getOperation(name);
+		return operation.execute(this, params);
 	}
 }

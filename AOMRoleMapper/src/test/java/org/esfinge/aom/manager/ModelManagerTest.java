@@ -2,8 +2,6 @@ package org.esfinge.aom.manager;
 
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
@@ -12,8 +10,9 @@ import org.esfinge.aom.manager.fake.FakeModelRetriever;
 import org.esfinge.aom.model.impl.GenericEntityType;
 import org.esfinge.aom.model.impl.GenericPropertyType;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+
+import junit.framework.Assert;
 
 public class ModelManagerTest {
 

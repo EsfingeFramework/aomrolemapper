@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -15,6 +16,7 @@ import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
+import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.impl.GenericPropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityTypeDescriptor;
@@ -36,6 +38,8 @@ public class AdapterEntityType implements IEntityType {
 	private static Map<Object, AdapterEntityType> objectMap = new WeakHashMap<Object, AdapterEntityType>();
 
 	private Map<String, IPropertyType> fixedPropertyTypes = new HashMap<String, IPropertyType>();
+
+	private Map<String, RuleObject> operations = new LinkedHashMap<>();
 
 	public AdapterEntityType(String entityTypeClass)
 			throws EsfingeAOMException, ClassNotFoundException {
@@ -358,5 +362,15 @@ public class AdapterEntityType implements IEntityType {
 				return metadata;
 		}
 		return null;
+	}
+
+	@Override
+	public void addOperation(String name, RuleObject rule) {
+		operations.put(name, rule);		
+	}
+
+	@Override
+	public RuleObject getOperation(String name) {
+		return operations.get(name);
 	}
 }

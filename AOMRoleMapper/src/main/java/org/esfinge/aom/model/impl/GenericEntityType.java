@@ -1,6 +1,7 @@
 package org.esfinge.aom.model.impl;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -9,6 +10,7 @@ import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
+import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 
 
@@ -19,6 +21,8 @@ public class GenericEntityType extends ThingWithProperties implements IEntityTyp
 	private String name;
 	
 	private String packageName;
+	
+	private Map<String, RuleObject> operations = new LinkedHashMap<>();
 	
 	public GenericEntityType (String packageName, String name)
 	{
@@ -60,6 +64,7 @@ public class GenericEntityType extends ThingWithProperties implements IEntityTyp
 		for (IPropertyType propertyType : propertyTypes.values())
 		{
 			entity.setProperty(propertyType.getName(), null);
+			System.out.println("property: "+ propertyType.getName());
 		}
 		
 		return entity;
@@ -134,5 +139,15 @@ public class GenericEntityType extends ThingWithProperties implements IEntityTyp
 	public void removeProperty(String propertyName) throws EsfingeAOMException {		
 		IPropertyType propertyType = getPropertyType(propertyName);
 		properties.remove(propertyType);
-	}	
+	}
+	
+	@Override
+	public void addOperation(String name, RuleObject rule) {
+		operations.put(name, rule);		
+	}
+
+	@Override
+	public RuleObject getOperation(String name) {
+		return operations.get(name);
+	}
 }

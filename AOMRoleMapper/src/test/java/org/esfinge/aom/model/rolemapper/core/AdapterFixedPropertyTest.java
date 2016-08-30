@@ -20,6 +20,7 @@ public class AdapterFixedPropertyTest {
 		Assert.assertEquals("Marcelo", account.getOwner());
 	}	
 	
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testSetValue_invalidValue() throws Exception 
 	{	

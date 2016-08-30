@@ -1,5 +1,7 @@
 package org.esfinge.aom.model.impl;
 
+import java.util.HashMap;
+
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IPropertyType;
@@ -103,7 +105,7 @@ public class GenericPropertyType extends ThingWithProperties implements IPropert
 		
 		Object type = getType();
 		if (type instanceof Class<?>){
-			if (type.equals(Object.class))
+			if (type.equals(Object.class) || (value.getClass().equals(HashMap.class)))
 				return true;
 			
 			Class<?> classType = (Class<?>)type;			

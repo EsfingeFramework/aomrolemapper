@@ -12,16 +12,14 @@ import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
+import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.factories.PropertyFactory;
 import org.esfinge.aom.model.impl.GenericEntityType;
-import org.esfinge.aom.model.impl.GenericProperty;
 import org.esfinge.aom.model.impl.GenericPropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.FieldDescriptor;
-import org.esfinge.aom.model.rolemapper.metadata.descriptors.PropertyDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.repository.EntityMetadataRepository;
-import org.esfinge.aom.model.rolemapper.metadata.repository.PropertyMetadataRepository;
 
 public class AdapterEntity implements IEntity {
 	
@@ -227,10 +225,8 @@ public class AdapterEntity implements IEntity {
 				{
 					if(entityDescriptor.getMapPropertiesDescriptor() != null){
 						Method getPropertiesMethod = entityDescriptor.getMapPropertiesDescriptor().getGetFieldMethod();
-						Map dsMapProperties = (Map<String,?>) getPropertiesMethod.invoke(dsObject);
-						if (dsMapProperties.containsKey(propertyName)) {
-							dsMapProperties.put(propertyName, propertyValue);
-						}
+						Map dsMapProperties = (Map<String,?>) getPropertiesMethod.invoke(dsObject);					
+						dsMapProperties.replace(propertyName, propertyValue);
 					}
 					property.setValue(propertyValue);
 					return;
@@ -334,5 +330,16 @@ public class AdapterEntity implements IEntity {
 		objectMap = new WeakHashMap<Object, AdapterEntity>();		
 		Class<?> dsPropertiesClass = null;
 		Class<?> dsMapPropertiesClass = null;
+	}
+
+	@Override
+	public Object executeOperation(String name, Object[] params) {
+		try {
+			RuleObject operation = getEntityType().getOperation(name);
+			return operation.execute(this, params);
+		} catch (EsfingeAOMException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}	
 }

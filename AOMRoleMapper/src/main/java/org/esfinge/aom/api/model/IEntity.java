@@ -9,21 +9,36 @@ public interface IEntity extends HasProperties {
 
 	/**
 	 * Gets the Entity Type for this Entity
+	 * 
 	 * @return Entity Type for this Entity
 	 * @throws EsfingeAOMException
 	 */
 	public IEntityType getEntityType() throws EsfingeAOMException;
-	
+
 	/**
-	 * Sets the Entity Type for this Entity 
-	 * @param entityType Entity Type for the Entity
+	 * Sets the Entity Type for this Entity
+	 * 
+	 * @param entityType
+	 *            Entity Type for the Entity
 	 * @throws EsfingeAOMException
 	 */
 	public void setEntityType(IEntityType entityType) throws EsfingeAOMException;
-	
+
 	/**
-	 * If the object is an Adapter, returns the adapted object. Otherwise, returns null.
-	 * @return If the object is an Adapter, returns the adapted object. Otherwise, returns null.
+	 * If the object is an Adapter, returns the adapted object. Otherwise,
+	 * returns null.
+	 * 
+	 * @return If the object is an Adapter, returns the adapted object.
+	 *         Otherwise, returns null.
 	 */
-	public Object getAssociatedObject ();
+	public Object getAssociatedObject();
+
+	/**
+	 * 
+	 * @param name
+	 * @param params
+	 * @return
+	 */
+	public Object executeOperation(String name, Object[] params);
+
 }
