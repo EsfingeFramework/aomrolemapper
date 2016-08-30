@@ -1,0 +1,17 @@
+{ "entity":[
+    {"target":"class"},
+	{"annotationPath":"javax.persistence.Entity"}
+  ],
+  
+  "column":[
+    {"target":"method"},
+	{"annotationPath":"javax.persistence.Column"},
+	{"parameter_1": "name"},
+	{"parameter_2": "nullable"}
+   ],
+   
+  "oneToOne":[
+    {"target":"method"},
+	{"annotationPath":"javax.persistence.OneToOne"}	
+   ]
+}
