@@ -6,7 +6,6 @@ import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
-import org.esfinge.aom.manager.ModelManager;
 import org.esfinge.aom.model.factories.EntityTypeFactory;
 import org.esfinge.aom.model.factories.PropertyTypeFactory;
 import org.esfinge.aom.model.rolemapper.core.AdapterEntity;

@@ -20,7 +20,6 @@ import static org.objectweb.asm.Opcodes.PUTFIELD;
 import static org.objectweb.asm.Opcodes.RETURN;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.objectweb.asm.AnnotationVisitor;

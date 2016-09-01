@@ -1,6 +1,5 @@
 package org.esfinge.aom.model.rolemapper.core;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,19 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.impl.GenericPropertyType;
-import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.FieldDescriptor;
-import org.esfinge.aom.model.rolemapper.metadata.descriptors.FixedPropertyDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.PropertyTypeDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.repository.EntityTypeMetadataRepository;
-import org.esfinge.aom.model.rolemapper.metadata.repository.FixedPropertyMetadataRepository;
 import org.esfinge.aom.model.rolemapper.metadata.repository.PropertyTypeMetadataRepository;
 import org.esfinge.aom.utils.Utils;
 

@@ -1,12 +1,11 @@
 package org.esfinge.aom.model.rolemapper.core;
 
-import junit.framework.Assert;
-
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.impl.GenericPropertyType;
-import org.esfinge.aom.model.rolemapper.core.AdapterFixedProperty;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytest.AccountWithFixedProperties;
 import org.junit.Test;
+
+import junit.framework.Assert;
 
 public class AdapterFixedPropertyTest {
 	

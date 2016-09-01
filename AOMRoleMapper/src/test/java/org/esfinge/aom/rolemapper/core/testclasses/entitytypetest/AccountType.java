@@ -5,14 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.CreateEntityMethod;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedMetadata;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Metadata;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
-import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.MetadatasAccountPropertyType;
 
 @EntityType
 public class AccountType implements IAccountType {

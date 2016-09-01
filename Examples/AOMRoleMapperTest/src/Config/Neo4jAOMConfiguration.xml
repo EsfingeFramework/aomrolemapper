@@ -1,0 +1,10 @@
+<Configuration>
+	<Database>neo4jaomtest.graphdb</Database>
+ 	<EntityTypeNodeName>EntityTypeNode</EntityTypeNodeName>
+	<EntityTypeToNode entityType=".*Account.*" package="banking" node="AccountType" />
+	<EntityTypeToNode entityType="person" package="banking" node="PersonType" />
+	<EntityTypeToNode entityType="legalEntity" package="banking" node="PersonType" />
+	<EntityTypeToNode entityType="departmentAPatient" package="medical" node="PartyTypeA" />
+	<EntityTypeToNode entityType="departmentBPatient" package="medical" node="PartyTypeB" />
+	<EntityTypeToNode entityType=".*" node="GenericType" />	
+</Configuration>

@@ -1,8 +1,5 @@
 package org.esfinge.aom.model.rolemapper.core;
 
-import junit.framework.Assert;
-
-import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.Account;
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.AccountPropertyType;
@@ -10,6 +7,8 @@ import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.AccountPrope
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.AccountType;
 import org.esfinge.aom.rolemapper.core.testclasses.propertytypetest.MetadatasAccountPropertyType;
 import org.junit.Test;
+
+import junit.framework.Assert;
 
 public class AdapterPropertyTypeTest {
 

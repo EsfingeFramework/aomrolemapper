@@ -1,13 +1,13 @@
 package org.esfinge.aom.model.dynamic.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import javassist.expr.Instanceof;
-
 import org.esfinge.aom.model.dynamic.utils.PropertiesReaderJsonPattern;
-import org.hamcrest.CoreMatchers;
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;

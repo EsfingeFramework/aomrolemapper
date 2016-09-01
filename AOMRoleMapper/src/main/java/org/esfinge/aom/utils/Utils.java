@@ -145,6 +145,12 @@ public class Utils {
 		
 		if (Number.class.isAssignableFrom(classToBeChecked))
 		{
+			// FIXME Tratar Autobox - quando classToBeChecked é do tipo primiário (ex.: int.class)
+			/* AOMRoleMapperTest/bankingExample/savingsAccount/CreateEntity
+			Caused by: org.esfinge.aom.exceptions.EsfingeAOMException: The given value 0 is not valid for type accountNumber
+				at org.esfinge.aom.model.rolemapper.core.AdapterFixedProperty.setValue(AdapterFixedProperty.java:59)
+				at org.esfinge.aom.model.rolemapper.core.AdapterEntity.setProperty(AdapterEntity.java:231)
+			 */
 			if (Number.class.isAssignableFrom(value.getClass()))
 			{
 				if (classToBeChecked.equals(Double.class))

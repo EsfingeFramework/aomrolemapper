@@ -1,7 +1,6 @@
 package org.esfinge.aom.model.rolemapper.metadata.descriptors;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 public class EntityTypeDescriptor extends MetadataDescriptor{
 

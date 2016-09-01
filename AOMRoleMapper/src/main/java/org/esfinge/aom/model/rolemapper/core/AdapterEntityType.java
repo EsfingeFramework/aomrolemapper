@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
@@ -37,7 +38,7 @@ public class AdapterEntityType implements IEntityType {
 	private static Map<Object, AdapterEntityType> objectMap = new WeakHashMap<Object, AdapterEntityType>();
 
 	private Map<String, IPropertyType> fixedPropertyTypes = new HashMap<String, IPropertyType>();
-	
+
 	private Map<String, RuleObject> operations = new LinkedHashMap<>();
 
 	public AdapterEntityType(String entityTypeClass)
@@ -208,12 +209,11 @@ public class AdapterEntityType implements IEntityType {
 					Object propertyTypeType = propertyType.getType();
 					if (!propertyType.isRelationshipProperty()) {
 						Class<?> propertyTypeClazz = (Class<?>) propertyTypeType;
-						if (propertyTypeClazz.equals(Boolean.class)) {
+						if (ClassUtils.isAssignable(propertyTypeClazz, Boolean.class)) {
 							entity.setProperty(propertyType.getName(), false);
-						} else if (Number.class
-								.isAssignableFrom(propertyTypeClazz)) {
+						} else if (ClassUtils.isAssignable(propertyTypeClazz, Number.class)) {
 							entity.setProperty(propertyType.getName(), 0);
-						} else if (propertyTypeClazz.equals(Character.class)) {
+						} else if (ClassUtils.isAssignable(propertyTypeClazz, Character.class)) {
 							entity.setProperty(propertyType.getName(), (char) 0);
 						} else {
 							entity.setProperty(propertyType.getName(), null);
