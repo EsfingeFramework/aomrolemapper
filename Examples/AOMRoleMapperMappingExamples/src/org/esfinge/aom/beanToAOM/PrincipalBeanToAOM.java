@@ -2,10 +2,10 @@ package org.esfinge.aom.beanToAOM;
 
 import java.util.Date;
 
-import org.esfinge.aom.api.model.IEntity;
-import org.esfinge.aom.api.model.IPropertyType;
-import org.esfinge.aom.exceptions.EsfingeAOMException;
-import org.esfinge.aom.model.rolemapper.core.AdapterEntity;
+import net.sf.esfinge.aom.api.model.IEntity;
+import net.sf.esfinge.aom.api.model.IPropertyType;
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
+import net.sf.esfinge.aom.model.rolemapper.core.AdapterEntity;
 
 public class PrincipalBeanToAOM {
 	

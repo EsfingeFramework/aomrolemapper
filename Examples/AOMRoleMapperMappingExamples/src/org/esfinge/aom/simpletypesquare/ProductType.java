@@ -3,9 +3,9 @@ package org.esfinge.aom.simpletypesquare;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.Name;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
 
 @EntityType
 public class ProductType {

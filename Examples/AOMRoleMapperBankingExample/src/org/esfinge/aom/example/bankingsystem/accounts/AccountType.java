@@ -3,10 +3,10 @@ package org.esfinge.aom.example.bankingsystem.accounts;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.CreateEntityMethod;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.CreateEntityMethod;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.Name;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
 
 @EntityType
 public class AccountType {

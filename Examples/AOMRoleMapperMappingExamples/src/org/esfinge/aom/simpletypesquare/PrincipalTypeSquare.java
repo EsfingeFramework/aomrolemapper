@@ -1,14 +1,14 @@
 package org.esfinge.aom.simpletypesquare;
 
-import org.esfinge.aom.api.model.HasProperties;
-import org.esfinge.aom.api.model.IEntity;
-import org.esfinge.aom.api.model.IEntityType;
-import org.esfinge.aom.api.model.IProperty;
-import org.esfinge.aom.api.model.IPropertyType;
-import org.esfinge.aom.exceptions.EsfingeAOMException;
-import org.esfinge.aom.model.factories.EntityTypeFactory;
-import org.esfinge.aom.model.factories.PropertyTypeFactory;
-import org.esfinge.aom.model.rolemapper.core.AdapterEntity;
+import net.sf.esfinge.aom.api.model.HasProperties;
+import net.sf.esfinge.aom.api.model.IEntity;
+import net.sf.esfinge.aom.api.model.IEntityType;
+import net.sf.esfinge.aom.api.model.IProperty;
+import net.sf.esfinge.aom.api.model.IPropertyType;
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
+import net.sf.esfinge.aom.model.factories.EntityTypeFactory;
+import net.sf.esfinge.aom.model.factories.PropertyTypeFactory;
+import net.sf.esfinge.aom.model.rolemapper.core.AdapterEntity;
 
 public class PrincipalTypeSquare {
 	

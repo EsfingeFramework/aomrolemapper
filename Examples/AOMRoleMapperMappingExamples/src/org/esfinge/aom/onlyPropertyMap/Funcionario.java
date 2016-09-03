@@ -3,8 +3,8 @@ package org.esfinge.aom.onlyPropertyMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityPropertyMap;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.EntityPropertyMap;
 
 @Entity
 public class Funcionario {

@@ -1,10 +1,10 @@
 package org.esfinge.aom.onlyTypeObject;
 
-import org.esfinge.aom.api.model.IEntity;
-import org.esfinge.aom.api.model.IEntityType;
-import org.esfinge.aom.exceptions.EsfingeAOMException;
-import org.esfinge.aom.model.rolemapper.core.AdapterEntity;
-import org.esfinge.aom.model.rolemapper.core.AdapterEntityType;
+import net.sf.esfinge.aom.api.model.IEntity;
+import net.sf.esfinge.aom.api.model.IEntityType;
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
+import net.sf.esfinge.aom.model.rolemapper.core.AdapterEntity;
+import net.sf.esfinge.aom.model.rolemapper.core.AdapterEntityType;
 
 
 public class PrincipalTypeObjectOnly {

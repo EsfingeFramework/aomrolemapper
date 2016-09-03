@@ -3,9 +3,9 @@ package org.esfinge.aom.example.bankingsystem.person;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
 
 @Entity
 public class Person {

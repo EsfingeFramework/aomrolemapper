@@ -6,16 +6,16 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Scanner;
 
-import org.esfinge.aom.api.model.HasProperties;
-import org.esfinge.aom.api.model.IEntity;
-import org.esfinge.aom.api.model.IEntityType;
-import org.esfinge.aom.api.model.IProperty;
-import org.esfinge.aom.api.model.IPropertyType;
-import org.esfinge.aom.exceptions.EsfingeAOMException;
-import org.esfinge.aom.manager.ModelManager;
-import org.esfinge.aom.manager.configuration.ModelConfiguration;
-import org.esfinge.aom.model.factories.EntityTypeFactory;
-import org.esfinge.aom.model.factories.PropertyTypeFactory;
+import net.sf.esfinge.aom.api.model.HasProperties;
+import net.sf.esfinge.aom.api.model.IEntity;
+import net.sf.esfinge.aom.api.model.IEntityType;
+import net.sf.esfinge.aom.api.model.IProperty;
+import net.sf.esfinge.aom.api.model.IPropertyType;
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
+import net.sf.esfinge.aom.manager.ModelManager;
+import net.sf.esfinge.aom.manager.configuration.ModelConfiguration;
+import net.sf.esfinge.aom.model.factories.EntityTypeFactory;
+import net.sf.esfinge.aom.model.factories.PropertyTypeFactory;
 
 public class AOMTest {
 
@@ -52,13 +52,13 @@ public class AOMTest {
 					manager = ModelManager.getInstance();
 					break;
 				case 2:
-					manager = ModelManager.getInstance("org.esfinge.aom.persistence.mongodb.MongoAOM");
+					manager = ModelManager.getInstance("net.sf.esfinge.aom.persistence.mongodb.MongoAOM");
 					break;
 				case 3:
-					manager = ModelManager.getInstance("org.esfinge.aom.persistence.couchdb.CouchAOM");
+					manager = ModelManager.getInstance("net.sf.esfinge.aom.persistence.couchdb.CouchAOM");
 					break;
 				case 4:
-					manager = ModelManager.getInstance("org.esfinge.aom.persistence.neo4j.Neo4jAOM");
+					manager = ModelManager.getInstance("net.sf.esfinge.aom.persistence.neo4j.Neo4jAOM");
 					break;
 				default:
 					System.out.println("Invalid choice.");

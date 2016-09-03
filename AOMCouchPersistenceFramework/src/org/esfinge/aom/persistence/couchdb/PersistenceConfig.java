@@ -4,12 +4,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
 
-import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.lightcouch.CouchDbProperties;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
 
 public class PersistenceConfig {
 	

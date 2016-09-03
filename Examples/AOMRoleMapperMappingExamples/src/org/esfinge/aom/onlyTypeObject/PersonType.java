@@ -1,7 +1,7 @@
 package org.esfinge.aom.onlyTypeObject;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 
 @EntityType
 public class PersonType {

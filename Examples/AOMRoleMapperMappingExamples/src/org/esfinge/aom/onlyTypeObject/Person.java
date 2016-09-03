@@ -1,8 +1,8 @@
 package org.esfinge.aom.onlyTypeObject;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 
 @Entity
 public class Person {

@@ -1,0 +1,63 @@
+package net.sf.esfinge.aom.rolemapper.core.testclasses.entitytypetest;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.Name;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.PropertyTypeType;
+
+@PropertyType
+public class AccountPropertyType {
+
+	@EntityProperty
+	private Set<AccountProperty> properties = new HashSet<AccountProperty>();
+
+	@Name
+	private String name;
+	
+	@PropertyTypeType
+	private Object propertyType;
+	
+	public boolean validate(Object value)
+	{
+		if (value.getClass().equals(propertyType))
+			return true;
+		return false;
+	}
+
+	public Set<AccountProperty> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Set<AccountProperty> properties) {
+		this.properties = properties;
+	}
+
+	public void addProperties (AccountProperty property)
+	{
+		properties.add(property);
+	}
+	
+	public void removeProperties (AccountProperty property)
+	{
+		properties.remove(property);
+	}
+	
+	public Object getPropertyType() {
+		return propertyType;
+	}
+
+	public void setPropertyType(Object propertyType) {
+		this.propertyType = propertyType;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+}

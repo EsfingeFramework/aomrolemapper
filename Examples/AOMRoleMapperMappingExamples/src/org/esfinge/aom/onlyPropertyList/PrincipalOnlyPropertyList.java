@@ -1,9 +1,9 @@
 package org.esfinge.aom.onlyPropertyList;
 
-import org.esfinge.aom.api.model.HasProperties;
-import org.esfinge.aom.api.model.IProperty;
-import org.esfinge.aom.exceptions.EsfingeAOMException;
-import org.esfinge.aom.model.rolemapper.core.AdapterEntity;
+import net.sf.esfinge.aom.api.model.HasProperties;
+import net.sf.esfinge.aom.api.model.IProperty;
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
+import net.sf.esfinge.aom.model.rolemapper.core.AdapterEntity;
 
 public class PrincipalOnlyPropertyList {
 	

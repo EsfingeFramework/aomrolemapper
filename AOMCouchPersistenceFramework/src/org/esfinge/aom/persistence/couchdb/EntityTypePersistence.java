@@ -5,10 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
-import org.esfinge.aom.api.model.IEntityType;
-import org.esfinge.aom.api.model.IPropertyType;
-import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.lightcouch.CouchDbClient;
 import org.lightcouch.CouchDbProperties;
 import org.lightcouch.Document;
@@ -16,6 +12,11 @@ import org.lightcouch.NoDocumentException;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import net.sf.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
+import net.sf.esfinge.aom.api.model.IEntityType;
+import net.sf.esfinge.aom.api.model.IPropertyType;
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
 
 public class EntityTypePersistence extends BasePersistence {
 	private CouchDbClient db;

@@ -3,12 +3,12 @@ package org.esfinge.aom.persistence.couchdb;
 import java.util.List;
 import java.util.UUID;
 
-import org.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
-import org.esfinge.aom.api.manager.visitors.IEntityVisitor;
-import org.esfinge.aom.api.model.IEntity;
-import org.esfinge.aom.api.model.IEntityType;
-import org.esfinge.aom.api.modelretriever.IModelRetriever;
-import org.esfinge.aom.exceptions.EsfingeAOMException;
+import net.sf.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
+import net.sf.esfinge.aom.api.manager.visitors.IEntityVisitor;
+import net.sf.esfinge.aom.api.model.IEntity;
+import net.sf.esfinge.aom.api.model.IEntityType;
+import net.sf.esfinge.aom.api.modelretriever.IModelRetriever;
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
 
 public class CouchAOM extends BasePersistence implements IModelRetriever {
 

@@ -2,8 +2,8 @@ package org.esfinge.aom.beanToAOM;
 
 import java.util.Date;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 
 @Entity
 public class Person {

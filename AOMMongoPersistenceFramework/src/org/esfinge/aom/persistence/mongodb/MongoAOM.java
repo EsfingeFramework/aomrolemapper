@@ -5,14 +5,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.bson.types.ObjectId;
-import org.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
-import org.esfinge.aom.api.manager.visitors.IEntityVisitor;
-import org.esfinge.aom.api.model.IEntity;
-import org.esfinge.aom.api.model.IEntityType;
-import org.esfinge.aom.api.model.IProperty;
-import org.esfinge.aom.api.model.IPropertyType;
-import org.esfinge.aom.api.modelretriever.IModelRetriever;
-import org.esfinge.aom.exceptions.EsfingeAOMException;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -20,6 +12,15 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+
+import net.sf.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
+import net.sf.esfinge.aom.api.manager.visitors.IEntityVisitor;
+import net.sf.esfinge.aom.api.model.IEntity;
+import net.sf.esfinge.aom.api.model.IEntityType;
+import net.sf.esfinge.aom.api.model.IProperty;
+import net.sf.esfinge.aom.api.model.IPropertyType;
+import net.sf.esfinge.aom.api.modelretriever.IModelRetriever;
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
 
 
 public class MongoAOM implements IModelRetriever {

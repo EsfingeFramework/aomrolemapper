@@ -3,11 +3,11 @@ package org.esfinge.aom.performance;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.esfinge.aom.api.model.IEntity;
-import org.esfinge.aom.api.model.IEntityType;
-import org.esfinge.aom.api.model.IPropertyType;
-import org.esfinge.aom.exceptions.EsfingeAOMException;
-import org.esfinge.aom.manager.ModelManager;
+import net.sf.esfinge.aom.api.model.IEntity;
+import net.sf.esfinge.aom.api.model.IEntityType;
+import net.sf.esfinge.aom.api.model.IPropertyType;
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
+import net.sf.esfinge.aom.manager.ModelManager;
 
 public class Scenario1 {
 
@@ -22,12 +22,12 @@ public class Scenario1 {
 
 		for (int i = 0; i < numberOfEntityTypes; i++) {
 			IEntityType entityType = helper.createEntityType("banking", "entity" + i, 
-					"org.esfinge.aom.example.bankingsystem.accounts.AccountType");
+					"net.sf.esfinge.aom.example.bankingsystem.accounts.AccountType");
 			
 			List<IPropertyType> propertyTypes = new ArrayList<IPropertyType>();
 			for (int j = 0; j < numberOfPropertyTypes; j++) {
 				IPropertyType propertyType = helper.createPropertyType(entityType, "property" + j, java.lang.Integer.class, 
-						"org.esfinge.aom.example.bankingsystem.accounts.AccountPropertyType");
+						"net.sf.esfinge.aom.example.bankingsystem.accounts.AccountPropertyType");
 				propertyTypes.add(propertyType);
 			}
 

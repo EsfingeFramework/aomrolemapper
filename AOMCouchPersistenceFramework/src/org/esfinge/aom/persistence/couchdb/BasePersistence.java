@@ -2,8 +2,8 @@ package org.esfinge.aom.persistence.couchdb;
 
 import java.util.regex.Pattern;
 
-import org.esfinge.aom.api.model.IEntityType;
-import org.esfinge.aom.exceptions.EsfingeAOMException;
+import net.sf.esfinge.aom.api.model.IEntityType;
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
 
 public abstract class BasePersistence {
 

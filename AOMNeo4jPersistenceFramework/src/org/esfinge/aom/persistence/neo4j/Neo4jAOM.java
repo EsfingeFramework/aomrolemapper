@@ -8,14 +8,6 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
-import org.esfinge.aom.api.manager.visitors.IEntityVisitor;
-import org.esfinge.aom.api.model.IEntity;
-import org.esfinge.aom.api.model.IEntityType;
-import org.esfinge.aom.api.model.IProperty;
-import org.esfinge.aom.api.model.IPropertyType;
-import org.esfinge.aom.api.modelretriever.IModelRetriever;
-import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
@@ -27,6 +19,15 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.helpers.collection.Iterables;
+
+import net.sf.esfinge.aom.api.manager.visitors.IEntityTypeVisitor;
+import net.sf.esfinge.aom.api.manager.visitors.IEntityVisitor;
+import net.sf.esfinge.aom.api.model.IEntity;
+import net.sf.esfinge.aom.api.model.IEntityType;
+import net.sf.esfinge.aom.api.model.IProperty;
+import net.sf.esfinge.aom.api.model.IPropertyType;
+import net.sf.esfinge.aom.api.modelretriever.IModelRetriever;
+import net.sf.esfinge.aom.exceptions.EsfingeAOMException;
 
 public class Neo4jAOM implements IModelRetriever {
 

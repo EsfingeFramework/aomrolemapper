@@ -1,8 +1,8 @@
 package org.esfinge.aom.example.bankingsystem.accounts;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyTypeType;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.Name;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.PropertyTypeType;
 
 @PropertyType
 public class AccountPropertyType {

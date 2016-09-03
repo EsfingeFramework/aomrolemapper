@@ -1,8 +1,8 @@
 package org.esfinge.aom.onlyPropertyList;
 
-import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyValue;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.Name;
+import net.sf.esfinge.aom.model.rolemapper.metadata.annotations.PropertyValue;
 
 @EntityProperty
 public class FuncionarioInfo {
