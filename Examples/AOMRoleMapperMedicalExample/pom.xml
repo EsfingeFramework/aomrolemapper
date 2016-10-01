@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.esfinge</groupId>
+	<groupId>net.sf.esfinge</groupId>
 	<artifactId>aomrolemapper-medical-example</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -18,7 +18,6 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
 
 	<developers>
 		<developer>
@@ -70,7 +69,7 @@
 	<dependencies>
 	
 		<dependency>
-			<groupId>org.esfinge</groupId>
+			<groupId>net.sf.esfinge</groupId>
 			<artifactId>aomrolemapper</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
