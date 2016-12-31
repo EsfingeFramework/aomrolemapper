@@ -2,10 +2,14 @@ package org.esfinge.aom.model.rolemapper.metadata.reader;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.esfinge.aom.api.model.IEntityType;
+import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.api.model.rolemapper.metadata.reader.IAOMMetadataReader;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
+import org.esfinge.aom.manager.ModelManager;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.CreateEntityMethod;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
@@ -14,6 +18,7 @@ import org.esfinge.aom.model.rolemapper.metadata.annotations.Metadata;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.MetadataMap;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.RuleClass;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityTypeDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.FieldDescriptor;
 
@@ -71,7 +76,7 @@ public class EntityTypeAnnotationReader implements IAOMMetadataReader {
 		}
 		
 		for (Method m : c.getDeclaredMethods())
-		{
+		{			
 			Annotation annotation = m.getAnnotation(CreateEntityMethod.class);
 
 			if (annotation != null)
@@ -81,6 +86,17 @@ public class EntityTypeAnnotationReader implements IAOMMetadataReader {
 			}
 		}
 		return entityTypeDescriptor;
+	}
+	
+	public List<RuleObject> getRuleMethods(Class<?> c) throws EsfingeAOMException{
+		 List<RuleObject> rules = new ArrayList<>();
+		 List<IEntityType> model = ModelManager.getInstance().loadModel();
+		 for (IEntityType iEntityType : model) {
+			if(c.isAnnotationPresent(RuleClass.class)){						
+				rules.addAll(iEntityType.getAllRules());
+			}
+		}
+		return rules;
 	}
 	
 	@Override

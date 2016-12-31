@@ -13,5 +13,22 @@
   "oneToOne":[
     {"target":"method"},
 	{"annotationPath":"javax.persistence.OneToOne"}	
+   ],
+     
+ "ruleClass":[
+    {"target":"class"},
+	{"annotationPath":"org.esfinge.aom.model.rolemapper.metadata.annotations.RuleClass"}
+  ],
+  
+  "ruleObject":[
+    {"target":"method"},
+	{"annotationPath":"org.esfinge.aom.model.rolemapper.metadata.annotations.RuleMethod"}
+   ],
+   
+  "ruleAttribute":[
+    {"target":"method"},
+	{"annotationPath":"org.esfinge.aom.model.rolemapper.metadata.annotations.RuleAttribute"},
+	{"parameter_1":"dataFabricacao"},
+	{"parameter_2":"perecivel"}
    ]
 }

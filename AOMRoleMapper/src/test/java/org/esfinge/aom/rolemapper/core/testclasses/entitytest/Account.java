@@ -6,6 +6,7 @@ import java.util.List;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.RuleMethod;
 
 @Entity
 public class Account implements IAccount {
@@ -20,6 +21,19 @@ public class Account implements IAccount {
 
 	public AccountType getAccountType() {
 		return accountType;
+	}
+	
+	@RuleMethod // isso (anotacao) tem q virar uma anotacao no adapter
+	public boolean isValid(){
+		boolean ret = true;
+		IAccount iAccount = accountType.createAccount();
+		List<AccountProperty> properties2 = iAccount.getProperties();
+		for (AccountProperty accountProperty : properties2) {
+			if(accountProperty.getValue() == null){
+				return false;
+			}
+		}
+		return ret;
 	}
 
 	public void setAccountType(AccountType accountType) {

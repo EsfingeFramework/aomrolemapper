@@ -2,11 +2,14 @@ package org.esfinge.aom.model.rolemapper.core;
 
 import junit.framework.Assert;
 
+import java.util.List;
+
 import org.esfinge.aom.api.model.HasProperties;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.impl.GenericPropertyType;
+import org.esfinge.aom.model.impl.MethodRuleAdapter;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.Account;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.AccountPropertyType;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.AccountType;
@@ -27,7 +30,24 @@ public class AdapterEntityTypeTest {
 	{	
 		AdapterEntityType entityType = new AdapterEntityType(accountTypeClass);
 		Assert.assertTrue(entityType.getAssociatedObject() instanceof AccountType);
-	}	
+	}
+	
+	@Test
+	public void testConstructor2() throws Exception 
+	{	
+		AdapterEntityType entityType = new AdapterEntityType(accountTypeClass);
+		List<MethodRuleAdapter> fixedRules = entityType.getFixedRules();
+		Assert.assertTrue(fixedRules.size() == 0);
+	}
+
+	@Test
+	public void testConstructor3() throws Exception 
+	{	
+		AdapterEntityType entityType = new AdapterEntityType(accountTypeClass);
+		List<MethodRuleAdapter> fixedRules = entityType.getFixedRules();
+		Assert.assertTrue(fixedRules.size() == 0);
+	}
+	
 	
 	@Test
 	public void testConstructor_fromDsObject() throws Exception 
@@ -392,5 +412,15 @@ public class AdapterEntityTypeTest {
 		accountType.getMetadatas().put("configuration1", new Integer(10));
 		AdapterPropertyType adapterAccountType = AdapterPropertyType.getAdapter(accountType);
 		Assert.assertEquals(10, adapterAccountType.getProperty("configuration1").getValue());
+	}
+	
+	@Test
+	public void testAddPropertyType_rule() throws Exception 
+	{	
+		AccountType accountType = new AccountType();
+		AdapterEntityType entityType = AdapterEntityType.getAdapter(accountType);	
+		IEntity iEntity = entityType.createNewEntity();
+		Object executeOperation = iEntity.executeOperation("fixedRule");
+		System.out.println("resultado " + executeOperation);
 	}
 }

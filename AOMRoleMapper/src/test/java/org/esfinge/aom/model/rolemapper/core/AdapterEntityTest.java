@@ -2,6 +2,7 @@ package org.esfinge.aom.model.rolemapper.core;
 
 import junit.framework.Assert;
 
+import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.impl.GenericEntityType;

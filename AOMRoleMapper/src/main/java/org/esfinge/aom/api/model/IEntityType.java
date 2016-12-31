@@ -1,6 +1,8 @@
 package org.esfinge.aom.api.model;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 
@@ -116,5 +118,9 @@ public interface IEntityType extends HasProperties {
 	 * @return
 	 */
 	public RuleObject getOperation(String name);
+	
+	public Map<String, RuleObject> getAllOperation();
+	
+	public Collection<RuleObject> getAllRules();
 
 }

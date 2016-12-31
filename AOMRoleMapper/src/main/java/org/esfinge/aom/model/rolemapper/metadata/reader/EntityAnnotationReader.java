@@ -7,8 +7,8 @@ import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityPropertyMap;
-import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedEntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.FieldDescriptor;
 
@@ -47,7 +47,7 @@ public class EntityAnnotationReader implements IAOMMetadataReader {
 		List<FieldDescriptor> propertyDesc = fieldAnnotationReader.getDescriptor(c, FixedEntityProperty.class);
 		
 		entityDescriptor.setFixedPropertiesDescriptor(propertyDesc);
-		
+				
 		return entityDescriptor;
 	}	
 	

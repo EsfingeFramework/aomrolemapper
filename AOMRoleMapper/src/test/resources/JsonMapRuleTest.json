@@ -1,0 +1,19 @@
+{     
+ "ruleClass":[
+    {"target":"class"},
+	{"annotationPath":"org.esfinge.aom.model.rolemapper.metadata.annotations.RuleClass"}
+  ],
+  
+  "ruleObject":[
+    {"target":"method"},
+	{"annotationPath":"org.esfinge.aom.model.rolemapper.metadata.annotations.RuleMethod"},
+	{"parameter_1": "p1"},
+	{"parameter_2": "p2"}
+   ],
+   
+  "ruleAttribute":[
+    {"target":"field"},
+	{"annotationPath":"org.esfinge.aom.model.rolemapper.metadata.annotations.RuleAttribute"},
+	{"parameter_1":"p1"}
+   ]
+}

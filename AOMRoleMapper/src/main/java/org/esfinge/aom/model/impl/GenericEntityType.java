@@ -1,6 +1,7 @@
 package org.esfinge.aom.model.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,5 +150,14 @@ public class GenericEntityType extends ThingWithProperties implements IEntityTyp
 	@Override
 	public RuleObject getOperation(String name) {
 		return operations.get(name);
+	}
+
+	@Override
+	public Collection<RuleObject> getAllRules() {
+		return operations.values();
+	}
+	
+	public  Map<String, RuleObject> getAllOperation() {
+		return operations;
 	}
 }

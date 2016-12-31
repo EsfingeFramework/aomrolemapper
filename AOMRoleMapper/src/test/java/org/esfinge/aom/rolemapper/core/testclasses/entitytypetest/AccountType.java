@@ -11,6 +11,7 @@ import org.esfinge.aom.model.rolemapper.metadata.annotations.FixedMetadata;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Metadata;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Name;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.PropertyType;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.RuleMethod;
 
 @EntityType
 public class AccountType implements IAccountType {
@@ -95,5 +96,19 @@ public class AccountType implements IAccountType {
 
 	public void setMetadatas(List<MetadatasAccountType> metadatas) {
 		this.metadatas = metadatas;
+	}
+	
+
+	@RuleMethod
+	public boolean isValid(){
+		boolean ret = true;
+		Account iAccount = createAccount();
+		List<AccountProperty> properties2 = iAccount.getProperties();
+		for (AccountProperty accountProperty : properties2) {
+			if(accountProperty.getValue() == null){
+				return false;
+			}
+		}
+		return ret;
 	}
 }

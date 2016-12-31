@@ -6,6 +6,7 @@ import java.util.List;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.Entity;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityProperty;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.EntityType;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.RuleMethod;
 
 @Entity
 public class Account {
@@ -50,5 +51,10 @@ public class Account {
 	public void removeProperties (AccountProperty property)
 	{
 		this.properties.remove(property);
+	}
+	
+	@RuleMethod
+	public void testeRule(){
+		System.out.println(" teste regra ");
 	}
 }

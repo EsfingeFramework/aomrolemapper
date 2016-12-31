@@ -16,9 +16,17 @@ import org.esfinge.aom.exceptions.EsfingeAOMException;
 public class GenericEntity extends ThingWithProperties implements IEntity {
 		
 	private IEntityType entityType;
+		
 	private Map<IPropertyType, IProperty> properties = new WeakHashMap<IPropertyType, IProperty>();
+	private Map<String, String> propertiesMonitored = new WeakHashMap<String, String>();
+	private Map<String, Object> ruleResult = new WeakHashMap<String, Object>();
+
 			
 	protected GenericEntity () {
+	}
+	
+	public void addPropertyMonitored(String propertyName, String ruleName){
+		propertiesMonitored.put(propertyName, ruleName);
 	}
 	
 	@Override
@@ -61,6 +69,13 @@ public class GenericEntity extends ThingWithProperties implements IEntity {
 			IPropertyType propertyType = getEntityType().getPropertyType(propertyName);
 			properties.put(propertyType, new GenericProperty(propertyType, propertyValue));
 		}	
+		if(propertiesMonitored.containsKey(propertyName)){
+			System.out.println("valor mudou executando regra");
+			String ruleName = propertiesMonitored.get(propertyName);
+			Object resultOperation = executeOperation(ruleName);
+			ruleResult.put(ruleName, resultOperation);
+			System.out.println("valor mudou resultado regra " + resultOperation);
+		}
 	}
 		
 	@Override
@@ -102,8 +117,13 @@ public class GenericEntity extends ThingWithProperties implements IEntity {
 	}
 
 	@Override
-	public Object executeOperation(String name, Object[] params) {
-		RuleObject operation = getEntityType().getOperation(name);
+	public Object executeOperation(String name, Object... params) {
+		RuleObject operation = this.getEntityType().getOperation(name);
 		return operation.execute(this, params);
+	}
+
+	@Override
+	public Object getResultOperation(String ruleName) {
+		return ruleResult.get(ruleName);
 	}
 }

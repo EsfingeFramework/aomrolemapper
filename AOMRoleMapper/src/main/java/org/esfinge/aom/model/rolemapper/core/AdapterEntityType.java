@@ -19,6 +19,8 @@ import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.impl.GenericPropertyType;
+import org.esfinge.aom.model.impl.MethodRuleAdapter;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.RuleMethod;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityTypeDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.FieldDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.FixedPropertyDescriptor;
@@ -40,6 +42,7 @@ public class AdapterEntityType implements IEntityType {
 	private Map<String, IPropertyType> fixedPropertyTypes = new HashMap<String, IPropertyType>();
 
 	private Map<String, RuleObject> operations = new LinkedHashMap<>();
+	private List<MethodRuleAdapter> fixedRules = new ArrayList<>();
 
 	public AdapterEntityType(String entityTypeClass)
 			throws EsfingeAOMException, ClassNotFoundException {
@@ -81,8 +84,7 @@ public class AdapterEntityType implements IEntityType {
 					AdapterFixedPropertyType fixedPropertyType = new AdapterFixedPropertyType(f);
 					fixedPropertyTypes.put(fixedPropertyType.getName(),fixedPropertyType);
 				}
-			}
-			
+			}			
 
 			List<FieldDescriptor> fixedMetadataDescriptor = entityTypeDescriptor.getFixedMetadataDescriptor();
 			for (FieldDescriptor fixedMetadata : fixedMetadataDescriptor)
@@ -92,6 +94,7 @@ public class AdapterEntityType implements IEntityType {
 				AdapterFixedProperty property = new AdapterFixedProperty(dsObj, propertyType);
 				fixedMetadataPerName.put(fixedMetadata.getFieldName(), property);				
 			}	
+			addFixedRules();
 		} catch (Exception e) {
 			throw new EsfingeAOMException(e);
 		}
@@ -118,9 +121,9 @@ public class AdapterEntityType implements IEntityType {
 						.invoke(dsObject);
 				for (Object dsPropertyType : dsPropertyTypes) {
 					propertyTypes.add(AdapterPropertyType
-							.getAdapter(dsPropertyType));
+							.getAdapter(dsPropertyType));					
 				}
-			}
+			}			
 			
 			// Adding the fixed property types
 			for (IPropertyType propertyType : fixedPropertyTypes.values())
@@ -129,6 +132,23 @@ public class AdapterEntityType implements IEntityType {
 			return propertyTypes;
 		} catch (Exception e) {
 			throw new EsfingeAOMException(e);
+		}
+	}
+	
+	public List<MethodRuleAdapter> getFixedRules(){		
+		return fixedRules;
+	}
+	
+
+	public void addFixedRules(){
+		Method[] declaredMethods = dsObject.getClass().getDeclaredMethods();
+		System.out.println("métodos " + dsObject.getClass().getDeclaredMethods().length);
+		for (Method method : declaredMethods) {				
+			if(method.isAnnotationPresent(RuleMethod.class)){
+				System.out.println("found RuleMethod " + method.getName());
+				MethodRuleAdapter methodRuleAdapter = new MethodRuleAdapter(method, dsObject);
+				addOperation("fixedRule", methodRuleAdapter);
+			}	
 		}
 	}
 
@@ -372,5 +392,15 @@ public class AdapterEntityType implements IEntityType {
 	@Override
 	public RuleObject getOperation(String name) {
 		return operations.get(name);
+	}
+
+	@Override
+	public Map<String, RuleObject> getAllOperation() {
+		return operations;
+	}
+
+	@Override
+	public Collection<RuleObject> getAllRules() {
+		return operations.values();
 	}
 }

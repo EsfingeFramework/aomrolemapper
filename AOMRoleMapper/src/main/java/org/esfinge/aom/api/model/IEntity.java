@@ -39,6 +39,10 @@ public interface IEntity extends HasProperties {
 	 * @param params
 	 * @return
 	 */
-	public Object executeOperation(String name, Object[] params);
+	public Object executeOperation(String name, Object... params);
+	
+	public void addPropertyMonitored(String propertyName, String ruleName);
+	
+	public Object getResultOperation(String ruleName);
 
 }

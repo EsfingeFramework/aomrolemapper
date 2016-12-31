@@ -38,7 +38,10 @@ public class AdapterEntity implements IEntity {
 	private Map<String, IProperty> relationshipProperties = new WeakHashMap<String, IProperty>();
 	
 	private Map<String, AdapterFixedProperty> fixedPropertiesPerName = new WeakHashMap<String, AdapterFixedProperty>();
-			
+	
+	private Map<String, String> propertiesMonitored = new WeakHashMap<String, String>();
+	private Map<String, Object> ruleResult = new WeakHashMap<String, Object>();
+
 	public AdapterEntity (IEntityType entityType, Class clazz) throws EsfingeAOMException
 	{
 		this(entityType, clazz, null);
@@ -103,6 +106,10 @@ public class AdapterEntity implements IEntity {
 			return new AdapterEntity(entityType, dsEntity.getClass(), dsEntity);
 		}
 		return null;
+	}
+
+	public void addPropertyMonitored(String propertyName, String ruleName){
+		propertiesMonitored.put(propertyName, ruleName);
 	}
 	
 	@Override
@@ -255,7 +262,14 @@ public class AdapterEntity implements IEntity {
 				Map dsMapProperties = (Map<String,?>) getPropertiesMethod.invoke(dsObject);
 				AdapterPropertyMap mapProperty = AdapterPropertyMap.getAdapter(propertyName, propertyValue);			
 				dsMapProperties.put(propertyName, mapProperty.getAssociatedObject());
-			}			
+			}	
+			
+			if(propertiesMonitored.containsKey(propertyName)){
+				System.out.println("valor mudou executa regra");
+				String ruleName = propertiesMonitored.get(propertyName);
+				Object resultOperation = executeOperation(ruleName);
+				ruleResult.put(ruleName, resultOperation);
+			}
 		}
 		catch (Exception e)
 		{
@@ -333,13 +347,20 @@ public class AdapterEntity implements IEntity {
 	}
 
 	@Override
-	public Object executeOperation(String name, Object[] params) {
+	public Object executeOperation(String name, Object... params) {
 		try {
 			RuleObject operation = getEntityType().getOperation(name);
-			return operation.execute(this, params);
+			if(operation != null){
+				return operation.execute(this, params);
+			}
 		} catch (EsfingeAOMException e) {
-			e.printStackTrace();
+			System.out.println("Error: " + e);
 		}
 		return null;
-	}	
+	}
+
+	@Override
+	public Object getResultOperation(String ruleName) {
+		return ruleResult.get(ruleName);
+	}
 }
