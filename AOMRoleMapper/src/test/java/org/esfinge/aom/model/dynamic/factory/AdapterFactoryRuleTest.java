@@ -199,7 +199,7 @@ public class AdapterFactoryRuleTest {
 
 			Long days = (Long) resultOperation;
 			Integer value = (Integer) produto.getProperty("validade").getValue();
-			boolean result = days < value.intValue();
+			boolean result = days > value.intValue();
 			System.out.println(" periodo consumo " + days + " validade " + value);
 			assertTrue("@@@ Regra executeOperation executada com sucesso ", result);
 		} catch (Exception e) {
@@ -257,7 +257,7 @@ public class AdapterFactoryRuleTest {
 		contactType.addPropertyType(new GenericPropertyType("type", String.class));
 
 		HasProperties home = contactType.createNewEntity();
-		home.setProperty("phone", "1232312312");
+		home.setProperty("phone", "551197735588");
 		home.setProperty("type", "home");
 
 		IEntity person = personType.createNewEntity();
@@ -272,6 +272,31 @@ public class AdapterFactoryRuleTest {
 
 		assertEquals(phone, home.getProperty("phone").getValue());
 		assertEquals(type, home.getProperty("type").getValue());
+	}
+	
+	
+
+	@Test
+	public void createAdapterSensorProperty() throws EsfingeAOMException, AdapterFactoryFileReaderException,
+			AdapterFactoryClassConstructionException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException {
+		
+		IEntityType sensorType = new GenericEntityType("Sensor");
+		
+		sensorType.addPropertyType(new GenericPropertyType("name", String.class));
+		sensorType.addPropertyType(new GenericPropertyType("type", String.class));
+
+		IEntity person = sensorType.createNewEntity();
+		person.setProperty("name", "radiometerX");
+		person.setProperty("type", "radiometer");
+
+		Object personAdapter = af.generate(person);
+
+		String phone = (String) personAdapter.getClass().getMethod("getName").invoke(personAdapter);
+		String type = (String) personAdapter.getClass().getMethod("getType").invoke(personAdapter);
+
+		assertEquals(phone, person.getProperty("name").getValue());
+		assertEquals(type, person.getProperty("type").getValue());
 	}
 
 }
