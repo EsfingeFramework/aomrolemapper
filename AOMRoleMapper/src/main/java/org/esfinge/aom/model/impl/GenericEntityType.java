@@ -24,40 +24,29 @@ public class GenericEntityType extends ThingWithProperties implements IEntityTyp
 	private String packageName;
 	
 	private Map<String, RuleObject> operations = new LinkedHashMap<>();
-	
-	public GenericEntityType (String packageName, String name)
-	{
-		this.name = name;
-		this.packageName = (packageName != null) ? packageName : "";
-	}
+	private Map<String, Object> operationProperties = new LinkedHashMap<>();
 	
 	public GenericEntityType (String name)
 	{
 		this("", name);
 	}
-	
-	@Override
-	public List<IPropertyType> getPropertyTypes() {
-		List<IPropertyType> result = new ArrayList<IPropertyType>();
-		result.addAll(propertyTypes.values());
-		return result;
+
+	public GenericEntityType (String packageName, String name)
+	{
+		this.name = name;
+		this.packageName = (packageName != null) ? packageName : "";
 	}
 
+	@Override
+	public void addOperation(String name, RuleObject rule) {
+		operations.put(name, rule);		
+	}
+	
 	@Override
 	public void addPropertyType(IPropertyType propertyType) throws EsfingeAOMException {
 		propertyTypes.put(propertyType.getName(), propertyType);
 	}
-
-	@Override
-	public void removePropertyType(IPropertyType propertyType) throws EsfingeAOMException {
-		removePropertyType(propertyType.getName());
-	}
 	
-	@Override
-	public void removePropertyType(String propertyName) throws EsfingeAOMException {
-		propertyTypes.remove(propertyName);
-	}
-
 	@Override
 	public IEntity createNewEntity() throws EsfingeAOMException {
 		GenericEntity entity = new GenericEntity();
@@ -71,14 +60,13 @@ public class GenericEntityType extends ThingWithProperties implements IEntityTyp
 		return entity;
 	}
 
-	@Override
-	public String getName() {
-		return name;
+	public  Map<String, RuleObject> getAllOperation() {
+		return operations;
 	}
 
 	@Override
-	public void setName(String name) {
-		this.name = name;
+	public Collection<RuleObject> getAllRules() {
+		return operations.values();
 	}
 	
 	@Override
@@ -87,8 +75,23 @@ public class GenericEntityType extends ThingWithProperties implements IEntityTyp
 	}
 
 	@Override
-	public IPropertyType getPropertyType(String name) throws EsfingeAOMException {
-		return propertyTypes.get(name);
+	public IEntityType getEntityType() {
+		return null;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public RuleObject getOperation(String name) {
+		return operations.get(name);
+	}
+	
+	@Override
+	public Map<String, Object> getOperationProperties() {
+		return operationProperties;
 	}
 
 	@Override
@@ -96,16 +99,6 @@ public class GenericEntityType extends ThingWithProperties implements IEntityTyp
 		return packageName;
 	}
 
-	@Override
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
-	}
-
-	@Override
-	public IEntityType getEntityType() {
-		return null;
-	}
-	
 	@Override
 	public IProperty getProperty(String propertyName) throws EsfingeAOMException {
 		IPropertyType propertyType = getPropertyType(propertyName);
@@ -116,6 +109,49 @@ public class GenericEntityType extends ThingWithProperties implements IEntityTyp
 		}
 		
 		return null;
+	}
+
+	@Override
+	public IPropertyType getPropertyType(String name) throws EsfingeAOMException {
+		return propertyTypes.get(name);
+	}
+
+	@Override
+	public List<IPropertyType> getPropertyTypes() {
+		List<IPropertyType> result = new ArrayList<IPropertyType>();
+		result.addAll(propertyTypes.values());
+		return result;
+	}
+	
+	@Override
+	public void removeProperty(String propertyName) throws EsfingeAOMException {		
+		IPropertyType propertyType = getPropertyType(propertyName);
+		properties.remove(propertyType);
+	}
+	
+	@Override
+	public void removePropertyType(IPropertyType propertyType) throws EsfingeAOMException {
+		removePropertyType(propertyType.getName());
+	}
+
+	@Override
+	public void removePropertyType(String propertyName) throws EsfingeAOMException {
+		propertyTypes.remove(propertyName);
+	}
+	
+	@Override
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public void setOperationProperties(Map<String, Object> operationProperties) {
+		this.operationProperties = operationProperties;
+	}
+
+	@Override
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
 	}
 	
 	@Override
@@ -134,30 +170,5 @@ public class GenericEntityType extends ThingWithProperties implements IEntityTyp
 		}
 		
 		properties.put(propertyType, new GenericProperty(propertyType, propertyValue));
-	}
-
-	@Override
-	public void removeProperty(String propertyName) throws EsfingeAOMException {		
-		IPropertyType propertyType = getPropertyType(propertyName);
-		properties.remove(propertyType);
-	}
-	
-	@Override
-	public void addOperation(String name, RuleObject rule) {
-		operations.put(name, rule);		
-	}
-
-	@Override
-	public RuleObject getOperation(String name) {
-		return operations.get(name);
-	}
-
-	@Override
-	public Collection<RuleObject> getAllRules() {
-		return operations.values();
-	}
-	
-	public  Map<String, RuleObject> getAllOperation() {
-		return operations;
 	}
 }

@@ -32,13 +32,14 @@ import org.objectweb.asm.Opcodes;
 public class ClassConstructor {
 	private static String adapterFactoryPath = "org/esfinge/aom/model/dynamic/factory/";
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void putAnnotationParameters(Map<String, Object> annotationParameters, AnnotationVisitor av) {
 		Iterator iterator = annotationParameters.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Map.Entry<String, Object> mapEntry = (Map.Entry) iterator.next();
 			String parameter = (String) mapEntry.getKey();
 			Object value = mapEntry.getValue();
-			if (parameter != null) {
+			if (parameter != null && parameter.length() > 0) {
 				if (value instanceof Enum) {
 
 					if (parameter.equals("fetch")) {
@@ -50,7 +51,20 @@ public class ClassConstructor {
 						av1.visitEnd();
 					}
 				} else {
-					av.visit(parameter, value);
+					if (value.getClass().isArray()) {
+						AnnotationVisitor av1 = av.visitArray(parameter);
+				
+						if (av1 != null) {
+			                String [] values = (String[]) value;
+			                for (int i = 0; i < values.length; i++) {	
+			                	Object valueX = values[i];
+			                	av1.visit(null, valueX);
+			                }
+			            }
+						av1.visitEnd();
+					} else {
+						av.visit(parameter, value);
+					}
 				}
 			}
 		}
@@ -421,7 +435,7 @@ public class ClassConstructor {
 		mv.visitEnd();
 	}
 
-	public static void createMethod(String name, String methodName, ClassWriter cw) {
+	public static MethodVisitor createMethod(String name, String methodName, ClassWriter cw) {
 
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC + Opcodes.ACC_VARARGS, "executeOperation",
 				"(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;", null,
@@ -456,5 +470,7 @@ public class ClassConstructor {
 		mv.visitLocalVariable("operation", "Lorg/esfinge/aom/api/model/RuleObject;", null, l1, l2, 3);
 		mv.visitMaxs(3, 4);
 		mv.visitEnd();
+		
+		return mv;
 	}
 }

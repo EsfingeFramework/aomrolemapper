@@ -122,5 +122,8 @@ public interface IEntityType extends HasProperties {
 	public Map<String, RuleObject> getAllOperation();
 	
 	public Collection<RuleObject> getAllRules();
+	
+	public void setOperationProperties(Map<String, Object> operationProperties);
+	public Map<String, Object> getOperationProperties();
 
 }

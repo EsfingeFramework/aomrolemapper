@@ -11,65 +11,56 @@ import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
-
+import org.esfinge.aom.rule.MeuELContext;
 
 public class GenericEntity extends ThingWithProperties implements IEntity {
-		
+
 	private IEntityType entityType;
-		
+
 	private Map<IPropertyType, IProperty> properties = new WeakHashMap<IPropertyType, IProperty>();
 	private Map<String, String> propertiesMonitored = new WeakHashMap<String, String>();
 	private Map<String, Object> ruleResult = new WeakHashMap<String, Object>();
 
-			
-	protected GenericEntity () {
+	protected GenericEntity() {
 	}
-	
-	public void addPropertyMonitored(String propertyName, String ruleName){
+
+	public void addPropertyMonitored(String propertyName, String ruleName) {
 		propertiesMonitored.put(propertyName, ruleName);
 	}
-	
+
 	@Override
 	public List<IProperty> getProperties() throws EsfingeAOMException {
-		
+
 		ArrayList<IProperty> result = new ArrayList<IProperty>();
 
 		List<IPropertyType> validPropertyTypes = getEntityType().getPropertyTypes();
 		List<IPropertyType> invaliPropertyTypes = new ArrayList<IPropertyType>();
 
-		for (IProperty property : properties.values())
-		{
+		for (IProperty property : properties.values()) {
 			IPropertyType propertyType = property.getPropertyType();
-			if (validPropertyTypes.contains(propertyType))
-			{
+			if (validPropertyTypes.contains(propertyType)) {
 				result.add(property);
-			}
-			else
-			{
+			} else {
 				invaliPropertyTypes.add(propertyType);
 			}
 		}
-		
-		for (IPropertyType propertyType : invaliPropertyTypes)
-		{
+
+		for (IPropertyType propertyType : invaliPropertyTypes) {
 			properties.remove(propertyType);
 		}
-		
+
 		return result;
 	}
-	
+
 	@Override
-	public void setProperty(String propertyName, Object propertyValue) throws EsfingeAOMException {			
-		if (properties.containsKey(propertyName))
-		{
+	public void setProperty(String propertyName, Object propertyValue) throws EsfingeAOMException {
+		if (properties.containsKey(propertyName)) {
 			properties.get(propertyName).setValue(propertyValue);
-		}
-		else
-		{
+		} else {
 			IPropertyType propertyType = getEntityType().getPropertyType(propertyName);
 			properties.put(propertyType, new GenericProperty(propertyType, propertyValue));
-		}	
-		if(propertiesMonitored.containsKey(propertyName)){
+		}
+		if (propertiesMonitored.containsKey(propertyName)) {
 			System.out.println("valor mudou executando regra");
 			String ruleName = propertiesMonitored.get(propertyName);
 			Object resultOperation = executeOperation(ruleName);
@@ -77,30 +68,28 @@ public class GenericEntity extends ThingWithProperties implements IEntity {
 			System.out.println("valor mudou resultado regra " + resultOperation);
 		}
 	}
-		
+
 	@Override
 	public void removeProperty(String propertyName) throws EsfingeAOMException {
-		
+
 		IPropertyType propertyType = getEntityType().getPropertyType(propertyName);
-		
-		if (propertyType != null)
-		{
+
+		if (propertyType != null) {
 			properties.remove(propertyType);
 		}
 	}
-	
+
 	@Override
 	public IProperty getProperty(String propertyName) throws EsfingeAOMException {
 		IPropertyType propertyType = getEntityType().getPropertyType(propertyName);
-		
-		if (propertyType != null)
-		{
+
+		if (propertyType != null) {
 			return properties.get(propertyType);
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public IEntityType getEntityType() {
 		return entityType;
@@ -108,9 +97,9 @@ public class GenericEntity extends ThingWithProperties implements IEntity {
 
 	@Override
 	public void setEntityType(IEntityType entityType) {
-		this.entityType = entityType; 
+		this.entityType = entityType;
 	}
-	
+
 	@Override
 	public Object getAssociatedObject() {
 		return null;
@@ -125,5 +114,15 @@ public class GenericEntity extends ThingWithProperties implements IEntity {
 	@Override
 	public Object getResultOperation(String ruleName) {
 		return ruleResult.get(ruleName);
+	}
+
+	public Object executeEL(String expr, Class<? extends Object> objectClass, Map<String, Object> map) {
+		try {
+			Object result = MeuELContext.execute(expr, objectClass, map);
+			return result;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return -1;
+		}
 	}
 }

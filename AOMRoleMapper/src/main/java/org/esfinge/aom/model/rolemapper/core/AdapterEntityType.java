@@ -42,6 +42,8 @@ public class AdapterEntityType implements IEntityType {
 	private Map<String, IPropertyType> fixedPropertyTypes = new HashMap<String, IPropertyType>();
 
 	private Map<String, RuleObject> operations = new LinkedHashMap<>();
+	private Map<String, Object> operationProperties = new LinkedHashMap<>();
+
 	private List<MethodRuleAdapter> fixedRules = new ArrayList<>();
 
 	public AdapterEntityType(String entityTypeClass)
@@ -393,6 +395,13 @@ public class AdapterEntityType implements IEntityType {
 	public RuleObject getOperation(String name) {
 		return operations.get(name);
 	}
+	
+
+	@Override
+	public Map<String, Object> getOperationProperties() {
+		return operationProperties;
+	}
+
 
 	@Override
 	public Map<String, RuleObject> getAllOperation() {
@@ -403,4 +412,11 @@ public class AdapterEntityType implements IEntityType {
 	public Collection<RuleObject> getAllRules() {
 		return operations.values();
 	}
+	
+
+	@Override
+	public void setOperationProperties(Map<String, Object> operationProperties) {
+		this.operationProperties = operationProperties;
+	}
+
 }

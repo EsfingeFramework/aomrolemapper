@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
@@ -88,7 +89,10 @@ public class AdapterFactory {
 
 				// Rule Object
 				if (entityType.getAllOperation().isEmpty() == false) {
-					ClassConstructor.createMethod(name, EXECUTE_OPERATION, cw);
+					MethodVisitor methodVisitor = ClassConstructor.createMethod(name, EXECUTE_OPERATION, cw);
+					if (entityType.getOperationProperties().isEmpty() == false) { 
+						annotateRuleMethod(pr, entityType, methodVisitor);
+					}
 				}
 
 				DynamicClassLoader cl = DynamicClassLoader.getInstance(Thread.currentThread().getContextClassLoader());
@@ -140,7 +144,7 @@ public class AdapterFactory {
 		}
 	}
 
-	// Verifica propriedades da propertyType, busca propiedades no arquivo, e
+	// Verifica propriedades da propertyType, busca propriedades no arquivo, e
 	// anota o get
 	@SuppressWarnings("unchecked")
 	private void annotateMethod(PropertiesReaderJsonPattern pr, IEntityType entityType, IProperty p, MethodVisitor mv)
@@ -169,33 +173,17 @@ public class AdapterFactory {
 		}
 	}
 
-	public void annotateRuleMethod(PropertiesReaderJsonPattern pr,IEntityType entityType, IProperty p, MethodVisitor mv) throws SecurityException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException, EsfingeAOMException {
-		
-		Map<String, Object> annotationParameters = new HashMap<String, Object>();
-		
-		for (IProperty metadataPropertyType : entityType.getPropertyType(p.getName()).getProperties()) {
-			System.out.println("rule " + entityType.getName() + " prop type "  + metadataPropertyType.getName());
-			
-			String annotationClassPath = pr.readProperty(metadataPropertyType.getName());
-			if (annotationClassPath != null && annotationClassPath.length() != 0) {
-				String[] metadataParameters = pr.readPropertyParameters(metadataPropertyType.getName());
-				if (metadataParameters != null) {
-					for (String metadataParameter : metadataParameters) {
-						Map<String, Object> parameters = null;
-						try {
-							parameters = (Map<String, Object>) metadataPropertyType.getValue();
-						} catch (ClassCastException e) {
-							annotationParameters.put(metadataParameter, metadataPropertyType.getValue());
-							break;
-						}
-						if (parameters.get(metadataParameter) != null)
-							annotationParameters.put(metadataParameter, parameters.get(metadataParameter));
+	public void annotateRuleMethod(PropertiesReaderJsonPattern pr, IEntityType entityType, MethodVisitor mv)
+			throws SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			EsfingeAOMException {
 
-					}
-					ClassConstructor.createAnnotationMethod(annotationClassPath, annotationParameters, mv);
-				}
-			}
+		Map<String, Object> operationProperties = entityType.getOperationProperties();
+		Set<String> keySet = operationProperties.keySet();
+		for (String key : keySet) {
+			String annotationClassPath = pr.readProperty(key);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> mapAnnotations = (Map<String, Object>) operationProperties.get(key);
+			ClassConstructor.createAnnotationMethod(annotationClassPath, mapAnnotations, mv);
 		}
 	}
 
