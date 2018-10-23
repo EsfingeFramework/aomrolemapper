@@ -19,6 +19,7 @@ import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.dynamic.exceptions.AdapterFactoryClassConstructionException;
 import org.esfinge.aom.model.dynamic.exceptions.AdapterFactoryFileReaderException;
 import org.esfinge.aom.model.impl.CalculaAnos;
+import org.esfinge.aom.model.impl.CalculaVolume;
 import org.esfinge.aom.model.impl.GenericEntityType;
 import org.esfinge.aom.model.impl.GenericPropertyType;
 import org.esfinge.aom.model.impl.PeriodoConsumo;
@@ -248,6 +249,37 @@ public class AdapterFactoryRuleTest {
 			Object executeEL = produto.executeEL(expr, DynamicELTest.class, mapa);
 			System.out.println(executeEL);
 
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+	}
+
+	@Test
+	public void testVolume() {
+		try {
+			IEntityType tipoProduto = new GenericEntityType("Cilindro");
+
+			// criando property types
+			GenericPropertyType raio = new GenericPropertyType("raio", Double.class);
+
+			// adicionando property types no tipo de entidade
+			tipoProduto.addPropertyType(raio);
+
+			tipoProduto.addOperation("volume", new CalculaVolume("raio"));
+
+			IEntity produto = tipoProduto.createNewEntity();
+			produto.setProperty("raio", 10d);
+
+			Object personAdapter = af.generate(produto);
+			Method declaredMethod = personAdapter.getClass().getDeclaredMethod("executeOperation", String.class,
+					Object[].class);
+			Object[] params = new Object[1];
+			params[0] = 5d;
+			Object resultOperation = declaredMethod.invoke(personAdapter, "volume", params);
+
+			String result = (String) resultOperation;
+			System.out.println(" rule object anosFabricacao retornou " + result);
+			assertTrue("produto deve ser preenchido corretamente", result != null);
 		} catch (Exception e) {
 			assertTrue(false);
 		}
