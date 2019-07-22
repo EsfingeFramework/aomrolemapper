@@ -7,7 +7,7 @@ import javax.el.ValueExpression;
 
 import org.apache.el.ExpressionFactoryImpl;
 import org.apache.el.lang.EvaluationContext;
-import org.esfinge.aom.rule.MeuELContext;
+import org.esfinge.aom.rule.ELContextAOM;
 import org.junit.Test;
 
 public class DynamicELTest {
@@ -18,7 +18,7 @@ public class DynamicELTest {
 		mapa.put("a", 23);
 		mapa.put("b", 10);
 		String expr = "${a+duplicar(b)}";
-		EvaluationContext ec = MeuELContext.criarContexto(DynamicELTest.class, mapa);
+		EvaluationContext ec = ELContextAOM.criarContexto(DynamicELTest.class, mapa);
 		ValueExpression result = new ExpressionFactoryImpl().createValueExpression(ec, expr, int.class);
 		System.out.println(result.getValue(ec));
 	}
@@ -30,7 +30,7 @@ public class DynamicELTest {
 		mapa.put("a", 23);
 		mapa.put("b", 10);
 		String expr = "${a*b+b}";
-		EvaluationContext ec = MeuELContext.criarContexto(DynamicELTest.class, mapa);
+		EvaluationContext ec = ELContextAOM.criarContexto(DynamicELTest.class, mapa);
 		ValueExpression result = new ExpressionFactoryImpl().createValueExpression(ec, expr, Object.class);
 		System.out.println(result.getValue(ec));
 	}

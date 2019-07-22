@@ -2,10 +2,9 @@ package org.esfinge.aom.model.impl;
 
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IProperty;
-import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 
-public class CalculaVolume implements RuleObject {
+public class CalculaVolume extends BasicRuleObject {
 
 	String paramName;
 

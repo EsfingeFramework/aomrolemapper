@@ -2,6 +2,7 @@ package org.esfinge.aom.model.dynamic.factory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -9,6 +10,7 @@ import java.util.Set;
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IEntityType;
 import org.esfinge.aom.api.model.IProperty;
+import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.dynamic.exceptions.AdapterFactoryClassConstructionException;
 import org.esfinge.aom.model.dynamic.exceptions.AdapterFactoryFileReaderException;
@@ -55,6 +57,7 @@ public class AdapterFactory {
 				ClassConstructor.createClassAndConstructor(name, cw);
 				Map<String, Object> annotationClassParameters = new HashMap<String, Object>();
 				annotateClass(cw, pr, entityType);
+				annotateClassRuleObject(cw, pr, entityType);
 
 				ClassConstructor.createPrivateAttribute(null, cw);
 
@@ -88,10 +91,21 @@ public class AdapterFactory {
 				}
 
 				// Rule Object
+				// if (entityType.getAllOperation().isEmpty() == false) {
+				// MethodVisitor methodVisitor =
+				// ClassConstructor.createMethod(name, EXECUTE_OPERATION, cw);
+				// if (entityType.getOperationProperties().isEmpty() == false) {
+				// annotateRuleMethod(pr, entityType, methodVisitor);
+				// }
+				// }
+
 				if (entityType.getAllOperation().isEmpty() == false) {
-					MethodVisitor methodVisitor = ClassConstructor.createMethod(name, EXECUTE_OPERATION, cw);
-					if (entityType.getOperationProperties().isEmpty() == false) { 
-						annotateRuleMethod(pr, entityType, methodVisitor);
+					Set<String> keySet = entityType.getAllOperation().keySet();
+					for (String methodName : keySet) {
+						MethodVisitor methodVisitor = ClassConstructor.createMethod(name, methodName, cw);
+						if (entityType.getOperationProperties().isEmpty() == false) {
+							annotateRuleMethod(pr, entityType, methodVisitor);
+						}
 					}
 				}
 
@@ -108,6 +122,42 @@ public class AdapterFactory {
 			throw new AdapterFactoryClassConstructionException(ex.getCause());
 		} catch (ParseException | IOException ex) {
 			throw new AdapterFactoryFileReaderException(ex.getCause());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void annotateClassRuleObject(ClassWriter cw, PropertiesReaderJsonPattern pr, IEntityType entityType)
+			throws EsfingeAOMException {
+		Map<String, Object> annotationClassParameters;
+
+		Collection<RuleObject> rules = entityType.getAllRules();
+		for (RuleObject ruleObject : rules) {
+			Map<String, Object> operationProperties = ruleObject.getOperationProperties();
+			Set<String> keySet = operationProperties.keySet();
+			for (String key : keySet) {
+				String annotationClassPath = pr.readProperty(key);
+				boolean targetClass = pr.isPropertyTarget(key, "class");
+				if (targetClass) {
+					annotationClassParameters = new HashMap<String, Object>();
+					if (annotationClassPath != null && annotationClassPath.length() != 0) {
+						String[] metadataParameters = pr.readPropertyParameters(key);
+						if (metadataParameters != null) {
+							for (String metadataParameter : metadataParameters) {
+								Map<String, Object> parameters = null;
+								try {
+									parameters = (Map<String, Object>) operationProperties.get(key);
+								} catch (ClassCastException e) {
+									annotationClassParameters.put(metadataParameter, operationProperties.get(key));
+									break;
+								}
+								annotationClassParameters.put(metadataParameter, parameters.get(metadataParameter));
+							}
+						}
+
+						ClassConstructor.createAnnotationClass(annotationClassPath, annotationClassParameters, cw);
+					}
+				}
+			}
 		}
 	}
 
@@ -177,13 +227,20 @@ public class AdapterFactory {
 			throws SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			EsfingeAOMException {
 
-		Map<String, Object> operationProperties = entityType.getOperationProperties();
-		Set<String> keySet = operationProperties.keySet();
-		for (String key : keySet) {
-			String annotationClassPath = pr.readProperty(key);
-			@SuppressWarnings("unchecked")
-			Map<String, Object> mapAnnotations = (Map<String, Object>) operationProperties.get(key);
-			ClassConstructor.createAnnotationMethod(annotationClassPath, mapAnnotations, mv);
+		Collection<RuleObject> rules = entityType.getAllRules();
+		for (RuleObject ruleObject : rules) {
+			Map<String, Object> operationProperties = ruleObject.getOperationProperties();
+			Set<String> keySet = operationProperties.keySet();
+
+			for (String key : keySet) {
+				boolean targetMethod = pr.isPropertyTarget(key, "method");
+				if (targetMethod) {
+					String annotationClassPath = pr.readProperty(key);
+					@SuppressWarnings("unchecked")
+					Map<String, Object> mapAnnotations = (Map<String, Object>) operationProperties.get(key);
+					ClassConstructor.createAnnotationMethod(annotationClassPath, mapAnnotations, mv);
+				}
+			}
 		}
 	}
 
@@ -245,5 +302,46 @@ public class AdapterFactory {
 			storedClasses.remove(entity.getEntityType().getName());
 		}
 		return generate(entity);
+	}
+
+	public Object generateAdapted(IEntity entity, String preName) throws Exception {
+		try {
+			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+			PropertiesReaderJsonPattern pr = PropertiesReaderJsonPattern.getInstance(metadataFileName);
+			IEntityType entityType = entity.getEntityType();
+			String name = preName + suffixAdapterClassName;
+
+			ClassConstructor.createClassAndConstructor(name, cw);
+			annotateClass(cw, pr, entityType);
+			annotateClassRuleObject(cw, pr, entityType);
+			ClassConstructor.createPrivateAttribute(null, cw);
+
+			// Rule Object
+//			if (entityType.getAllOperation().isEmpty() == false) {
+//				MethodVisitor methodVisitor = ClassConstructor.createMethod(name, EXECUTE_OPERATION, cw);
+//				if (entityType.getOperationProperties().isEmpty() == false) {
+//					annotateRuleMethod(pr, entityType, methodVisitor);
+//				}
+//			}			
+
+			if (entityType.getAllOperation().isEmpty() == false) {
+				Set<String> keySet = entityType.getAllOperation().keySet();
+				for (String methodName : keySet) {
+					MethodVisitor methodVisitor = ClassConstructor.createMethod(name, methodName, cw);
+					if (entityType.getOperationProperties().isEmpty() == false) {
+						annotateRuleMethod(pr, entityType, methodVisitor);
+					}
+				}
+			}
+
+			DynamicClassLoader cl = DynamicClassLoader.getInstance(Thread.currentThread().getContextClassLoader());
+			Class<?> clazz = cl.defineClass(name, cw.toByteArray());
+			// addStoredClass(entity, clazz);
+
+			return clazz.getConstructor(IEntity.class).newInstance(entity);
+
+		} catch (ParseException | IOException ex) {
+			throw new AdapterFactoryFileReaderException(ex.getCause());
+		}
 	}
 }

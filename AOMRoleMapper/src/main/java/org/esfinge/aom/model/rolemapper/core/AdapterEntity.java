@@ -20,7 +20,7 @@ import org.esfinge.aom.model.impl.GenericPropertyType;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.FieldDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.repository.EntityMetadataRepository;
-import org.esfinge.aom.rule.MeuELContext;
+import org.esfinge.aom.rule.ELContextAOM;
 
 public class AdapterEntity implements IEntity {
 
@@ -325,6 +325,19 @@ public class AdapterEntity implements IEntity {
 			RuleObject operation = getEntityType().getOperation(name);
 			if (operation != null) {
 				return operation.execute(this, params);
+			} else {
+				operation = getEntityType().getOperation("fixedRule");
+				if(params != null){
+					Object [] parameters = new Object[params.length];
+					for (int i = 0; i < params.length; i++) {
+						String param = (String) params[i];
+						Object value = getProperty(param).getValue();
+						parameters[i] = value;
+					}
+					return operation.execute(this, parameters);
+				}else{
+					return operation.execute(this, params);
+				}
 			}
 		} catch (EsfingeAOMException e) {
 			System.out.println("Error: " + e);
@@ -334,7 +347,7 @@ public class AdapterEntity implements IEntity {
 
 	public Object executeEL(String expr, Class<? extends Object> objectClass, Map<String, Object> map) {
 		try {
-			Object result = MeuELContext.execute(expr, objectClass, map);
+			Object result = ELContextAOM.execute(expr, objectClass, map);
 			return result;
 		} catch (Exception w) {
 			System.out.println(w);
@@ -346,4 +359,17 @@ public class AdapterEntity implements IEntity {
 	public Object getResultOperation(String ruleName) {
 		return ruleResult.get(ruleName);
 	}
+
+//	@Override
+//	public Object executeEL(String name, Object... params) {
+//		try {
+//			if (this.getEntityType().getOperation(name) instanceof ELRuleObject) {
+//				ELRuleObject operation = (ELRuleObject) this.getEntityType().getOperation(name);
+//				return operation.execute(this, params);
+//			}
+//			return -1;
+//		} catch (Exception e) {
+//			return -1;
+//		}
+//	}
 }

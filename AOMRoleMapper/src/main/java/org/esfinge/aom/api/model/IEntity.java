@@ -1,7 +1,5 @@
 package org.esfinge.aom.api.model;
 
-import java.util.Map;
-
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 
 /**
@@ -40,12 +38,13 @@ public interface IEntity extends HasProperties {
 	 * @param name
 	 * @param params
 	 * @return
+	 * @throws EsfingeAOMException 
 	 */
-	public Object executeOperation(String name, Object... params);
+	public Object executeOperation(String name, Object... params) throws EsfingeAOMException;
 	
 	public void addPropertyMonitored(String propertyName, String ruleName);
 	
 	public Object getResultOperation(String ruleName);
 
-	public Object executeEL(String expr, Class<? extends Object> objectClass, Map<String, Object> map);
+	//public Object executeEL(String name, Object... params);
 }

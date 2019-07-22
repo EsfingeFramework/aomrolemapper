@@ -9,10 +9,10 @@ import java.util.GregorianCalendar;
 
 import org.esfinge.aom.api.model.IEntity;
 import org.esfinge.aom.api.model.IProperty;
-import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
+import org.esfinge.aom.model.rolemapper.core.AdapterFixedProperty;
 
-public class CalculaAnos implements RuleObject {
+public class CalculaAnos extends BasicRuleObject {
 
 	String paramName;
 
@@ -24,7 +24,6 @@ public class CalculaAnos implements RuleObject {
 	public Object execute(IEntity obj, Object... params) {
 		try {
 			IProperty property = obj.getProperty(paramName);
-			GenericProperty gn = (GenericProperty) property;
 			GregorianCalendar gregorianCalendar = new GregorianCalendar();
 
 			if (property.getValue() instanceof String) {
@@ -36,15 +35,22 @@ public class CalculaAnos implements RuleObject {
 					e.printStackTrace();
 				}
 			} else if (property.getValue() instanceof Date) {
-				Date dataObj = (Date) gn.getValue();
-				gregorianCalendar.setTime(dataObj);
+				if (property instanceof AdapterFixedProperty) {
+					AdapterFixedProperty adp = (AdapterFixedProperty) property;
+					Date dataObj = (Date) adp.getValue();
+					gregorianCalendar.setTime(dataObj);
+				} else {
+					GenericProperty gn = (GenericProperty) property;
+					Date dataObj = (Date) gn.getValue();
+					gregorianCalendar.setTime(dataObj);
+				}
 			}
 
 			LocalDate today = LocalDate.now();
 			int year = 1;
 			int month = 2;
 			int day = 5;
-			LocalDate birthday = LocalDate.of(gregorianCalendar.get(year), gregorianCalendar.get(month)+1,
+			LocalDate birthday = LocalDate.of(gregorianCalendar.get(year), gregorianCalendar.get(month) + 1,
 					gregorianCalendar.get(day));
 			Period p = Period.between(birthday, today);
 

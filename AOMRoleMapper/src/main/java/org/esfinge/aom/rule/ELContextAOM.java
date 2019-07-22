@@ -21,12 +21,12 @@ import org.apache.el.lang.EvaluationContext;
 import org.apache.el.lang.FunctionMapperImpl;
 import org.apache.el.lang.VariableMapperImpl;
 
-public class MeuELContext extends ELContext {
+public class ELContextAOM extends ELContext {
 	private FunctionMapper functionMapper;
 	private VariableMapper variableMapper;
 	private CompositeELResolver elResolver;
 
-	public MeuELContext(FunctionMapper functionMapper, VariableMapper variableMapper, ELResolver... resolvers) {
+	public ELContextAOM(FunctionMapper functionMapper, VariableMapper variableMapper, ELResolver... resolvers) {
 		this.functionMapper = functionMapper;
 		this.variableMapper = variableMapper;
 		elResolver = new CompositeELResolver();
@@ -71,13 +71,13 @@ public class MeuELContext extends ELContext {
 	public static EvaluationContext criarContexto(Class<?> functionClass, Map<String, Object> attributeMap) {
 		VariableMapper vMapper = mapearVariaveis(attributeMap);
 		FunctionMapper fMapper = mapearFuncoes(functionClass);
-		MeuELContext context = new MeuELContext(fMapper, vMapper, new ArrayELResolver(), new ListELResolver(),
+		ELContextAOM context = new ELContextAOM(fMapper, vMapper, new ArrayELResolver(), new ListELResolver(),
 				new MapELResolver(), new BeanELResolver());
 		return new EvaluationContext(context, fMapper, vMapper);
 	}
 
 	public static Object execute(String expr, Class<? extends Object> objectClass, Map<String, Object> map) {
-		EvaluationContext ec = MeuELContext.criarContexto(objectClass, map);
+		EvaluationContext ec = ELContextAOM.criarContexto(objectClass, map);
 		ValueExpression result = new ExpressionFactoryImpl().createValueExpression(ec, expr, Object.class);
 		return result.getValue(ec);
 	}

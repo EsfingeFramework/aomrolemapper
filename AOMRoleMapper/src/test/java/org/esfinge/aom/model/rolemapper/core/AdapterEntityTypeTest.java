@@ -19,6 +19,7 @@ import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.AccountTypeWit
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.IAccountType;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.MetadatasAccountType;
 import org.esfinge.aom.rolemapper.core.testclasses.entitytypetest.SimpleAccountType;
+import org.esfinge.aom.utils.ObjectPrinter;
 import org.junit.Test;
 
 public class AdapterEntityTypeTest {
@@ -400,6 +401,10 @@ public class AdapterEntityTypeTest {
 		AdapterEntityType adapterAccountType = AdapterEntityType.getAdapter(accountType);
 		Assert.assertEquals(10, adapterAccountType.getProperty("configuration1").getValue());
 
+		accountType.getMetadatas().add(new MetadatasAccountType("nome", "Fusca"));
+		AdapterEntityType adapterAccountType3 = AdapterEntityType.getAdapter(accountType);
+		Assert.assertEquals("Fusca", adapterAccountType3.getProperty("nome").getValue());
+
 		accountType.getMetadatas().add(new MetadatasAccountType("configuration2", new Boolean(true)));
 		AdapterEntityType adapterAccountType2 = AdapterEntityType.getAdapter(accountType);		
 		Assert.assertEquals(true, adapterAccountType2.getProperty("configuration2").getValue());
@@ -412,6 +417,7 @@ public class AdapterEntityTypeTest {
 		accountType.getMetadatas().put("configuration1", new Integer(10));
 		AdapterPropertyType adapterAccountType = AdapterPropertyType.getAdapter(accountType);
 		Assert.assertEquals(10, adapterAccountType.getProperty("configuration1").getValue());
+		ObjectPrinter.printClass(adapterAccountType);
 	}
 	
 	@Test
@@ -421,6 +427,7 @@ public class AdapterEntityTypeTest {
 		AdapterEntityType entityType = AdapterEntityType.getAdapter(accountType);	
 		IEntity iEntity = entityType.createNewEntity();
 		Object executeOperation = iEntity.executeOperation("fixedRule");
+		ObjectPrinter.printClass(iEntity);
 		System.out.println("resultado " + executeOperation);
 	}
 }

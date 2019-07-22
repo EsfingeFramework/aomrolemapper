@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.commons.lang3.ClassUtils;
@@ -20,6 +21,7 @@ import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
 import org.esfinge.aom.model.impl.GenericPropertyType;
 import org.esfinge.aom.model.impl.MethodRuleAdapter;
+import org.esfinge.aom.model.rolemapper.metadata.annotations.RuleMap;
 import org.esfinge.aom.model.rolemapper.metadata.annotations.RuleMethod;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.EntityTypeDescriptor;
 import org.esfinge.aom.model.rolemapper.metadata.descriptors.FieldDescriptor;
@@ -34,7 +36,7 @@ public class AdapterEntityType implements IEntityType {
 	private String packageName;
 
 	private EntityTypeDescriptor entityTypeDescriptor;
-	
+
 	private Map<String, AdapterFixedProperty> fixedMetadataPerName = new WeakHashMap<String, AdapterFixedProperty>();
 
 	private static Map<Object, AdapterEntityType> objectMap = new WeakHashMap<Object, AdapterEntityType>();
@@ -46,8 +48,7 @@ public class AdapterEntityType implements IEntityType {
 
 	private List<MethodRuleAdapter> fixedRules = new ArrayList<>();
 
-	public AdapterEntityType(String entityTypeClass)
-			throws EsfingeAOMException, ClassNotFoundException {
+	public AdapterEntityType(String entityTypeClass) throws EsfingeAOMException, ClassNotFoundException {
 		this(entityTypeClass, null);
 	}
 
@@ -60,8 +61,7 @@ public class AdapterEntityType implements IEntityType {
 		this(Class.forName(entityTypeClass), dsEntityType);
 	}
 
-	private AdapterEntityType(Class<?> clazz, Object dsEntityType)
-			throws EsfingeAOMException {
+	private AdapterEntityType(Class<?> clazz, Object dsEntityType) throws EsfingeAOMException {
 		try {
 
 			packageName = clazz.getName();
@@ -77,33 +77,70 @@ public class AdapterEntityType implements IEntityType {
 			dsObject = dsObj;
 			objectMap.put(dsObj, this);
 
-			FixedPropertyDescriptor fixedPropertyDescriptor = FixedPropertyMetadataRepository
-					.getInstance().getDescriptor();
-			List<Field> fixedFields = fixedPropertyDescriptor
-					.getFixedProperties(clazz);
-			if (fixedFields != null) {
-				for (Field f : fixedFields) {
-					AdapterFixedPropertyType fixedPropertyType = new AdapterFixedPropertyType(f);
-					fixedPropertyTypes.put(fixedPropertyType.getName(),fixedPropertyType);
+			FixedPropertyDescriptor fixedPropertyDescriptor = FixedPropertyMetadataRepository.getInstance()
+					.getDescriptor();
+			if (fixedPropertyDescriptor != null) {
+				List<Field> fixedFields = fixedPropertyDescriptor.getFixedProperties(clazz);
+				if (fixedFields != null) {
+					for (Field f : fixedFields) {
+						AdapterFixedPropertyType fixedPropertyType = new AdapterFixedPropertyType(f);
+						fixedPropertyTypes.put(fixedPropertyType.getName(), fixedPropertyType);
+					}
 				}
-			}			
+			}
 
 			List<FieldDescriptor> fixedMetadataDescriptor = entityTypeDescriptor.getFixedMetadataDescriptor();
-			for (FieldDescriptor fixedMetadata : fixedMetadataDescriptor)
-			{
+			for (FieldDescriptor fixedMetadata : fixedMetadataDescriptor) {
 				Class proptype = fixedMetadata.getFieldClass();
 				IPropertyType propertyType = new GenericPropertyType(fixedMetadata.getFieldName(), proptype);
 				AdapterFixedProperty property = new AdapterFixedProperty(dsObj, propertyType);
-				fixedMetadataPerName.put(fixedMetadata.getFieldName(), property);				
-			}	
+				fixedMetadataPerName.put(fixedMetadata.getFieldName(), property);
+			}
 			addFixedRules();
+			addOperations();
 		} catch (Exception e) {
 			throw new EsfingeAOMException(e);
 		}
 	}
 
-	public static AdapterEntityType getAdapter(Object dsEntityType)
-			throws EsfingeAOMException {
+	private void addOperations() {
+		try {
+			Field[] declaredFields = dsObject.getClass().getDeclaredFields();
+			for (int i = 0; i < declaredFields.length; i++) {
+				Field field = declaredFields[i];
+				if (field.isAnnotationPresent(RuleMap.class)) {
+					String name = field.getName();
+					//Class<?> type = field.getType();
+					// Method[] declaredMethods = type.getDeclaredMethods();
+
+					name = name.substring(0, 1).toUpperCase() + name.substring(1);
+
+					Method method1 = dsObject.getClass().getMethod("get" + name);
+					Object result = method1.invoke(dsObject);
+					if (result != null) {
+						@SuppressWarnings("unchecked")
+						Map<String, Object> results = (Map<String, Object>) result;
+						Set<String> keySet = results.keySet();
+
+						for (String key : keySet) {
+							Object object = results.get(key);
+							Method[] declaredMethods = object.getClass().getDeclaredMethods();
+							for (Method method : declaredMethods) {
+								System.out.println("found RuleMethod " + method.getName());
+								MethodRuleAdapter methodRuleAdapter = new MethodRuleAdapter(method, object);
+								addOperation(key, methodRuleAdapter);
+							}
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static AdapterEntityType getAdapter(Object dsEntityType) throws EsfingeAOMException {
 		if (dsEntityType != null) {
 			if (objectMap.containsKey(dsEntityType))
 				return objectMap.get(dsEntityType);
@@ -116,64 +153,56 @@ public class AdapterEntityType implements IEntityType {
 	public List<IPropertyType> getPropertyTypes() throws EsfingeAOMException {
 		List<IPropertyType> propertyTypes = new ArrayList<IPropertyType>();
 		try {
-			if(entityTypeDescriptor.getPropertyTypesDescriptor()!= null){
-				Method getPropertyTypesMethod = entityTypeDescriptor
-						.getPropertyTypesDescriptor().getGetFieldMethod();
-				Collection<?> dsPropertyTypes = (Collection<?>) getPropertyTypesMethod
-						.invoke(dsObject);
+			if (entityTypeDescriptor.getPropertyTypesDescriptor() != null) {
+				Method getPropertyTypesMethod = entityTypeDescriptor.getPropertyTypesDescriptor().getGetFieldMethod();
+				Collection<?> dsPropertyTypes = (Collection<?>) getPropertyTypesMethod.invoke(dsObject);
 				for (Object dsPropertyType : dsPropertyTypes) {
-					propertyTypes.add(AdapterPropertyType
-							.getAdapter(dsPropertyType));					
+					propertyTypes.add(AdapterPropertyType.getAdapter(dsPropertyType));
 				}
-			}			
-			
+			}
+
 			// Adding the fixed property types
 			for (IPropertyType propertyType : fixedPropertyTypes.values())
 				propertyTypes.add(propertyType);
-			
+
 			return propertyTypes;
 		} catch (Exception e) {
 			throw new EsfingeAOMException(e);
 		}
 	}
-	
-	public List<MethodRuleAdapter> getFixedRules(){		
+
+	public List<MethodRuleAdapter> getFixedRules() {
 		return fixedRules;
 	}
-	
 
-	public void addFixedRules(){
+	public void addFixedRules() {
 		Method[] declaredMethods = dsObject.getClass().getDeclaredMethods();
 		System.out.println("métodos " + dsObject.getClass().getDeclaredMethods().length);
-		for (Method method : declaredMethods) {				
-			if(method.isAnnotationPresent(RuleMethod.class)){
+		for (Method method : declaredMethods) {
+			if (method.isAnnotationPresent(RuleMethod.class)) {
 				System.out.println("found RuleMethod " + method.getName());
 				MethodRuleAdapter methodRuleAdapter = new MethodRuleAdapter(method, dsObject);
 				addOperation("fixedRule", methodRuleAdapter);
-			}	
+			}
 		}
 	}
 
 	@Override
-	public void removePropertyType(IPropertyType propertyType)
-			throws EsfingeAOMException {
+	public void removePropertyType(IPropertyType propertyType) throws EsfingeAOMException {
 		try {
 			if (fixedPropertyTypes.containsValue(propertyType)) {
 				fixedPropertyTypes.remove(propertyType);
 				return;
 			}
 
-			Method removePropertyTypeMethod = entityTypeDescriptor
-					.getPropertyTypesDescriptor().getRemoveElementMethod();
+			Method removePropertyTypeMethod = entityTypeDescriptor.getPropertyTypesDescriptor()
+					.getRemoveElementMethod();
 
 			if (removePropertyTypeMethod != null) {
-				removePropertyTypeMethod.invoke(dsObject,
-						propertyType.getAssociatedObject());
+				removePropertyTypeMethod.invoke(dsObject, propertyType.getAssociatedObject());
 			} else {
-				Method getPropertyTypesMethod = entityTypeDescriptor
-						.getPropertyTypesDescriptor().getGetFieldMethod();
-				Collection dsPropertyTypes = (Collection<?>) getPropertyTypesMethod
-						.invoke(dsObject);
+				Method getPropertyTypesMethod = entityTypeDescriptor.getPropertyTypesDescriptor().getGetFieldMethod();
+				Collection dsPropertyTypes = (Collection<?>) getPropertyTypesMethod.invoke(dsObject);
 				dsPropertyTypes.remove(propertyType.getAssociatedObject());
 			}
 		} catch (Exception e) {
@@ -182,32 +211,30 @@ public class AdapterEntityType implements IEntityType {
 	}
 
 	@Override
-	public void addPropertyType(IPropertyType propertyType)
-			throws EsfingeAOMException {
+	public void addPropertyType(IPropertyType propertyType) throws EsfingeAOMException {
 
 		try {
 			if (!(propertyType instanceof AdapterPropertyType)) {
-				Class<?> propertyTypeClass = entityTypeDescriptor
-						.getPropertyTypesDescriptor().getInnerFieldClass();
-				AdapterPropertyType apt = AdapterPropertyType
-						.getAdapter(propertyTypeClass.newInstance());
-				apt.setName(propertyType.getName());
-				apt.setType(propertyType.getType());
-				propertyType = apt;
+				if (entityTypeDescriptor.getPropertyTypesDescriptor() != null) {
+					Class<?> propertyTypeClass = entityTypeDescriptor.getPropertyTypesDescriptor().getInnerFieldClass();
+					AdapterPropertyType apt = AdapterPropertyType.getAdapter(propertyTypeClass.newInstance());
+					apt.setName(propertyType.getName());
+					apt.setType(propertyType.getType());
+					propertyType = apt;
+				}
 			}
 
-			Method addPropertyTypeMethod = entityTypeDescriptor
-					.getPropertyTypesDescriptor().getAddElementMethod();
+			if (entityTypeDescriptor.getPropertyTypesDescriptor() != null) {
+				Method addPropertyTypeMethod = entityTypeDescriptor.getPropertyTypesDescriptor().getAddElementMethod();
 
-			if (addPropertyTypeMethod != null) {
-				addPropertyTypeMethod.invoke(dsObject,
-						propertyType.getAssociatedObject());
-			} else {
-				Method getPropertyTypesMethod = entityTypeDescriptor
-						.getPropertyTypesDescriptor().getGetFieldMethod();
-				Collection dsPropertyTypes = (Collection<?>) getPropertyTypesMethod
-						.invoke(dsObject);
-				dsPropertyTypes.add(propertyType.getAssociatedObject());
+				if (addPropertyTypeMethod != null) {
+					addPropertyTypeMethod.invoke(dsObject, propertyType.getAssociatedObject());
+				} else {
+					Method getPropertyTypesMethod = entityTypeDescriptor.getPropertyTypesDescriptor()
+							.getGetFieldMethod();
+					Collection dsPropertyTypes = (Collection<?>) getPropertyTypesMethod.invoke(dsObject);
+					dsPropertyTypes.add(propertyType.getAssociatedObject());
+				}
 			}
 
 		} catch (Exception e) {
@@ -220,8 +247,7 @@ public class AdapterEntityType implements IEntityType {
 
 		AdapterEntity entity = null;
 
-		Method createEntityMethod = entityTypeDescriptor
-				.getCreateEntityMethod();
+		Method createEntityMethod = entityTypeDescriptor.getCreateEntityMethod();
 
 		if (createEntityMethod != null) {
 			try {
@@ -248,8 +274,7 @@ public class AdapterEntityType implements IEntityType {
 				throw new EsfingeAOMException("Could not create new entity", e);
 			}
 		} else {
-			throw new EsfingeAOMException(
-					"Could not create new entity because no creation method was found");
+			throw new EsfingeAOMException("Could not create new entity because no creation method was found");
 		}
 
 		return entity;
@@ -258,8 +283,7 @@ public class AdapterEntityType implements IEntityType {
 	@Override
 	public String getName() throws EsfingeAOMException {
 		try {
-			Method getNameMethod = entityTypeDescriptor.getNameDescriptor()
-					.getGetFieldMethod();
+			Method getNameMethod = entityTypeDescriptor.getNameDescriptor().getGetFieldMethod();
 			Object dsName = getNameMethod.invoke(dsObject);
 			return (String) dsName;
 		} catch (Exception e) {
@@ -271,8 +295,7 @@ public class AdapterEntityType implements IEntityType {
 	public void setName(String name) throws EsfingeAOMException {
 		FieldDescriptor descriptor = entityTypeDescriptor.getNameDescriptor();
 		if (descriptor == null) {
-			throw new EsfingeAOMException(
-					"Metadata \"Name\" not found in entity type");
+			throw new EsfingeAOMException("Metadata \"Name\" not found in entity type");
 		}
 		try {
 			Method setNameMethod = descriptor.getSetFieldMethod();
@@ -288,8 +311,7 @@ public class AdapterEntityType implements IEntityType {
 	}
 
 	@Override
-	public void removePropertyType(String propertyName)
-			throws EsfingeAOMException {
+	public void removePropertyType(String propertyName) throws EsfingeAOMException {
 
 		IPropertyType propertyType = getPropertyType(propertyName);
 		if (propertyType != null) {
@@ -298,8 +320,7 @@ public class AdapterEntityType implements IEntityType {
 	}
 
 	@Override
-	public IPropertyType getPropertyType(String propertyName)
-			throws EsfingeAOMException {
+	public IPropertyType getPropertyType(String propertyName) throws EsfingeAOMException {
 
 		for (IPropertyType type : getPropertyTypes()) {
 			if (type.getName().equals(propertyName)) {
@@ -325,61 +346,74 @@ public class AdapterEntityType implements IEntityType {
 		List<IProperty> result = new ArrayList<IProperty>();
 		try {
 			// Metadatas
-			if(entityTypeDescriptor.getMetadataDescriptor() != null){
-				Method getMetadadaMethod = entityTypeDescriptor.getMetadataDescriptor().getGetFieldMethod();		
-				//TODO We consider that the ds class initializes the collection objects properly
+			if (entityTypeDescriptor.getMetadataDescriptor() != null) {
+				Method getMetadadaMethod = entityTypeDescriptor.getMetadataDescriptor().getGetFieldMethod();
+				// TODO We consider that the ds class initializes the collection
+				// objects properly
 				Collection<?> dsProperties = (Collection<?>) getMetadadaMethod.invoke(dsObject);
-			
-				for (Object property : dsProperties)
-				{
-					IProperty adapterProperty = AdapterProperty.getAdapter(property);						
+
+				for (Object property : dsProperties) {
+					IProperty adapterProperty = AdapterProperty.getAdapter(property);
 					result.add(adapterProperty);
 				}
-			}	
-			
+			}
+
 			// Fixed metadatas
-			if(entityTypeDescriptor.getFixedMetadataDescriptor() != null){
+			if (entityTypeDescriptor.getFixedMetadataDescriptor() != null) {
 				for (IProperty metadata : fixedMetadataPerName.values()) {
 					result.add(metadata);
 				}
 			}
-			
+
 			// Map properties
-			if(entityTypeDescriptor.getMapMetadataDescriptor() != null){
-				Method getMetadataMapMethod = entityTypeDescriptor.getMapMetadataDescriptor().getGetFieldMethod();				
-				Map dsMapMetadata = (Map<String, Object>) getMetadataMapMethod.invoke(dsObject);				
-				Iterator iterator = dsMapMetadata.entrySet().iterator();				
-				while(iterator.hasNext()){
-					Map.Entry pair = (Map.Entry) iterator.next();	
-					IProperty adapterPropertyMap = AdapterPropertyMap.getAdapter(pair.getKey(), 
-							dsMapMetadata.get(pair.getKey()));					
+			if (entityTypeDescriptor.getMapMetadataDescriptor() != null) {
+				Method getMetadataMapMethod = entityTypeDescriptor.getMapMetadataDescriptor().getGetFieldMethod();
+				Map dsMapMetadata = (Map<String, Object>) getMetadataMapMethod.invoke(dsObject);
+				Iterator iterator = dsMapMetadata.entrySet().iterator();
+				while (iterator.hasNext()) {
+					Map.Entry pair = (Map.Entry) iterator.next();
+					IProperty adapterPropertyMap = AdapterPropertyMap.getAdapter(pair.getKey(),
+							dsMapMetadata.get(pair.getKey()));
 					result.add(adapterPropertyMap);
 				}
 			}
-			
+
 		} catch (Exception e) {
 			throw new EsfingeAOMException(e);
-		}		
+		}
 		return result;
 	}
 
 	@Override
-	public void setProperty(String propertyName, Object propertyValue)
-			throws EsfingeAOMException {
-		// TODO Auto-generated method stub
-		
+	public void setProperty(String propertyName, Object propertyValue) throws EsfingeAOMException {
+		if (fixedMetadataPerName.containsKey(propertyName)) {
+			fixedMetadataPerName.remove(propertyName);
+		}
+
+		IPropertyType propertyType = getPropertyType(propertyName);
+
+		if (propertyType == null) {
+			IPropertyType ipropertyType = new GenericPropertyType(propertyName, propertyValue.getClass());
+			addPropertyType(ipropertyType);
+			propertyType = getPropertyType(propertyName);
+			AdapterFixedProperty property = new AdapterFixedProperty(dsObject, propertyType);
+			fixedMetadataPerName.put(propertyName, property);
+		} // else{
+			// AdapterFixedProperty property = new
+			// AdapterFixedProperty(dsObject,
+			// propertyType);
+			// fixedMetadataPerName.put(propertyName, property);
+			// }
 	}
 
 	@Override
 	public void removeProperty(String propertyName) throws EsfingeAOMException {
-		// TODO Auto-generated method stub
-		
+		fixedMetadataPerName.remove(propertyName);
 	}
 
 	@Override
 	public IProperty getProperty(String metadataName) throws EsfingeAOMException {
-		for (IProperty metadata : getProperties())
-		{
+		for (IProperty metadata : getProperties()) {
 			if (metadata.getName().equals(metadataName))
 				return metadata;
 		}
@@ -388,20 +422,18 @@ public class AdapterEntityType implements IEntityType {
 
 	@Override
 	public void addOperation(String name, RuleObject rule) {
-		operations.put(name, rule);		
+		operations.put(name, rule);
 	}
 
 	@Override
 	public RuleObject getOperation(String name) {
 		return operations.get(name);
 	}
-	
 
 	@Override
 	public Map<String, Object> getOperationProperties() {
 		return operationProperties;
 	}
-
 
 	@Override
 	public Map<String, RuleObject> getAllOperation() {
@@ -412,7 +444,6 @@ public class AdapterEntityType implements IEntityType {
 	public Collection<RuleObject> getAllRules() {
 		return operations.values();
 	}
-	
 
 	@Override
 	public void setOperationProperties(Map<String, Object> operationProperties) {

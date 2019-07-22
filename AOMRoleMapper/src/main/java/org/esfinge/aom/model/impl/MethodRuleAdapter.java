@@ -3,9 +3,8 @@ package org.esfinge.aom.model.impl;
 import java.lang.reflect.Method;
 
 import org.esfinge.aom.api.model.IEntity;
-import org.esfinge.aom.api.model.RuleObject;
 
-public class MethodRuleAdapter implements RuleObject {
+public class MethodRuleAdapter extends BasicRuleObject {
 	
 	Method method;
 	Object ientity;

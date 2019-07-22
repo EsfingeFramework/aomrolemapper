@@ -11,7 +11,6 @@ import org.esfinge.aom.api.model.IProperty;
 import org.esfinge.aom.api.model.IPropertyType;
 import org.esfinge.aom.api.model.RuleObject;
 import org.esfinge.aom.exceptions.EsfingeAOMException;
-import org.esfinge.aom.rule.MeuELContext;
 
 public class GenericEntity extends ThingWithProperties implements IEntity {
 
@@ -106,7 +105,7 @@ public class GenericEntity extends ThingWithProperties implements IEntity {
 	}
 
 	@Override
-	public Object executeOperation(String name, Object... params) {
+	public Object executeOperation(String name, Object... params) throws EsfingeAOMException {
 		RuleObject operation = this.getEntityType().getOperation(name);
 		return operation.execute(this, params);
 	}
@@ -116,13 +115,12 @@ public class GenericEntity extends ThingWithProperties implements IEntity {
 		return ruleResult.get(ruleName);
 	}
 
-	public Object executeEL(String expr, Class<? extends Object> objectClass, Map<String, Object> map) {
-		try {
-			Object result = MeuELContext.execute(expr, objectClass, map);
-			return result;
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return -1;
-		}
-	}
+//	public Object executeEL(String name, Object... params) {
+//		try {
+//			RuleObject operation = this.getEntityType().getOperation(name);
+//			return operation.execute(this, params);
+//		} catch (Exception e) {
+//			return -1;
+//		}
+//	}
 }

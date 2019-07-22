@@ -437,7 +437,7 @@ public class ClassConstructor {
 
 	public static MethodVisitor createMethod(String name, String methodName, ClassWriter cw) {
 
-		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC + Opcodes.ACC_VARARGS, "executeOperation",
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC + Opcodes.ACC_VARARGS, methodName,
 				"(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;", null,
 				new String[] { "org/esfinge/aom/exceptions/EsfingeAOMException" });
 		mv.visitCode();
